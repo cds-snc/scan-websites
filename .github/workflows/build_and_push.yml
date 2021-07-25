@@ -33,7 +33,7 @@ jobs:
         working-directory: ./${{ matrix.image }}
         run: |
           docker build \
-          --build-arg GIT_SHA=$GITHUB_SHA \
+          --build-arg git_sha=$GITHUB_SHA \
           -t $REGISTRY/${{ matrix.image }}:$GITHUB_SHA \
           -t $REGISTRY/${{ matrix.image }}:latest .
 

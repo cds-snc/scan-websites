@@ -13,6 +13,12 @@ resource "aws_lambda_function" "api" {
   }
 
   role = aws_iam_role.api.arn
+
+  lifecycle {
+    ignore_changes = [
+      image_uri,
+    ]
+  }
 }
 
 resource "aws_lambda_permission" "api" {
