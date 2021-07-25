@@ -1,0 +1,61 @@
+name: Build and Push Container to ECR
+
+on:
+  push:
+    branches: [main]
+
+env:
+  GITHUB_SHA: ${{ github.sha }}
+  REGISTRY: ${{ secrets.AWS_ACCOUNT }}.dkr.ecr.ca-central-1.amazonaws.com
+
+jobs:
+  build-and-push:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image: api
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: dorny/paths-filter@v2.2.1
+        id: filter
+        with:
+          filters: |
+            image:
+              - '${{ matrix.image }}/**'
+
+      - name: Build container
+        if: ${{ steps.filter.outputs.image == 'true' }}
+        working-directory: ./${{ matrix.image }}
+        run: |
+          docker build \
+          -t $REGISTRY/${{ matrix.image }}:$GITHUB_SHA \
+          -t $REGISTRY/${{ matrix.image }}:latest .
+
+      - name: Configure AWS credentials
+        if: ${{ steps.filter.outputs.image == 'true' }}
+        id: aws-creds
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ca-central-1
+
+      - name: Login to ECR
+        if: ${{ steps.filter.outputs.image == 'true' }}
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Push containers to ECR
+        if: ${{ steps.filter.outputs.image == 'true' }}
+        run: |
+          docker push $REGISTRY/${{ matrix.image }}:$GITHUB_SHA
+          docker push $REGISTRY/${{ matrix.image }}:latest
+
+      - name: Logout of Amazon ECR
+        if: ${{ steps.filter.outputs.image == 'true' }}
+        run: docker logout ${{ steps.login-ecr.outputs.registry }}

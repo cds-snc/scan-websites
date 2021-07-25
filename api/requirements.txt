@@ -1,0 +1,4 @@
+boto3==1.17.84
+fastapi==0.67.0
+logzero==1.7.0
+mangum==0.12.1
