@@ -1,4 +1,4 @@
 variable "git_sha" {
-  type = string
+  type    = string
   default = "latest"
 }
