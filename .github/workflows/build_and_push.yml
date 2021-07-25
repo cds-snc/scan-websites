@@ -2,7 +2,7 @@ name: Build and Push Container to ECR, deploy to lambda
 
 on:
   push:
-    branches: [feat/api_scaffold]
+    branches: [main]
 
 env:
   GITHUB_SHA: ${{ github.sha }}
