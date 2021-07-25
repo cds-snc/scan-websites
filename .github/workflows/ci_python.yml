@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        dir:
+        package:
           - api
     steps:
       - name: Checkout
