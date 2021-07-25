@@ -20,7 +20,7 @@ jobs:
         with:
           filters: |
             package:
-              - '${{ matrix.package }}/**'
+              - './${{ matrix.package }}/**'
 
       - name: Setup python
         if: ${{ steps.filter.outputs.package == 'true' }}
