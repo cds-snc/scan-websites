@@ -2,7 +2,7 @@ resource "aws_lambda_function" "api" {
   function_name = "api"
 
   package_type = "Image"
-  image_uri    = "${aws_ecr_repository.api.repository_url}:2"
+  image_uri    = "${aws_ecr_repository.api.repository_url}:${var.git_sha}"
 
   timeout = 900
 
@@ -10,7 +10,7 @@ resource "aws_lambda_function" "api" {
 
   environment {
     variables = {
-      GIT_SHA = "alpha"
+      GIT_SHA = var.git_sha
     }
   }
 
