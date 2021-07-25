@@ -44,6 +44,6 @@ jobs:
         with:
           comment-delete: true
           comment-title: Plan for ${{ matrix.module }}
-          directory: ./terragrunt/${{ matrix.module }}
+          directory: ./terragrunt/env/${{ matrix.module }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           terragrunt: true
