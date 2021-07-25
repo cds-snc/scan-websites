@@ -6,7 +6,7 @@ on:
 
 env:
   GITHUB_SHA: ${{ github.sha }}
-  REGISTRY: ${{ secrets.AWS_ACCOUNT }}.dkr.ecr.ca-central-1.amazonaws.com
+  REGISTRY: ${{ secrets.AWS_ACCOUNT }}.dkr.ecr.ca-central-1.amazonaws.com/scan-websites
 
 jobs:
   build-push-and-deploy:
