@@ -2,16 +2,14 @@ resource "aws_lambda_function" "api" {
   function_name = "api"
 
   package_type = "Image"
-  image_uri    = "${aws_ecr_repository.api.repository_url}:${var.git_sha}"
+  image_uri    = "${aws_ecr_repository.api.repository_url}:latest"
 
   timeout = 900
 
   memory_size = 512
 
   environment {
-    variables = {
-      GIT_SHA = var.git_sha
-    }
+    variables = {}
   }
 
   role = aws_iam_role.api.arn

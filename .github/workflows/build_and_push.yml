@@ -1,15 +1,15 @@
-name: Build and Push Container to ECR
+name: Build and Push Container to ECR, deploy to lambda
 
 on:
   push:
-    branches: [main]
+    branches: [feat/api_scaffold]
 
 env:
   GITHUB_SHA: ${{ github.sha }}
   REGISTRY: ${{ secrets.AWS_ACCOUNT }}.dkr.ecr.ca-central-1.amazonaws.com
 
 jobs:
-  build-and-push:
+  build-push-and-deploy:
     strategy:
       fail-fast: false
       matrix:
@@ -33,6 +33,7 @@ jobs:
         working-directory: ./${{ matrix.image }}
         run: |
           docker build \
+          --build-arg GIT_SHA=$GITHUB_SHA \
           -t $REGISTRY/${{ matrix.image }}:$GITHUB_SHA \
           -t $REGISTRY/${{ matrix.image }}:latest .
 
@@ -59,3 +60,10 @@ jobs:
       - name: Logout of Amazon ECR
         if: ${{ steps.filter.outputs.image == 'true' }}
         run: docker logout ${{ steps.login-ecr.outputs.registry }}
+
+      - name: Deploy lambda
+        if: ${{ steps.filter.outputs.image == 'true' }}
+        run: |
+          aws lambda update-function-code \
+            --function-name ${{ matrix.image }} \
+            --image-uri $REGISTRY/${{ matrix.image }}:latest
