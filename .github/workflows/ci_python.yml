@@ -31,7 +31,7 @@ jobs:
       - name: Install dev dependencies
         if: ${{ steps.filter.outputs.package == 'true' }}
         working-directory: ${{ matrix.package }}
-        run: pip3 install --user -r dev_requirements.txt
+        run: pip3 install --user -r requirements_dev.txt
 
       - name: Install lambda dependencies
         if: ${{ steps.filter.outputs.package == 'true' }}
