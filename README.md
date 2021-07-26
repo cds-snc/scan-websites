@@ -1,4 +1,3 @@
-# Project template
+# Scan Websites
 
-This repository provides some base files for setting up a repository at
-CDS.
+On-demand scanning of websites for accessibility and security vulnerabilities/compliance / Analyse à la demande des sites Web pour les vulnérabilités/conformité en matière d'accessibilité et de sécurité

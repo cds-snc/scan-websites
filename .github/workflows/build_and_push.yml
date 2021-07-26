@@ -1,6 +1,7 @@
 name: Build and Push Container to ECR, deploy to lambda
 
 on:
+  workflow_dispatch:
   push:
     branches: [main]
 
@@ -15,7 +16,8 @@ jobs:
       images: ${{ steps.filter.outputs.changes }}
     steps:
       - name: Checkout
-          uses: actions/checkout@v2
+        uses: actions/checkout@v2
+
       - uses: dorny/paths-filter@v2
         id: filter
         with:
