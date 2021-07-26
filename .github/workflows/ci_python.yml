@@ -1,0 +1,53 @@
+name: Lint, format and test python code
+on:
+  workflow_dispatch:
+  pull_request:
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      packages: ${{ steps.filter.outputs.changes }}
+    steps:
+    - uses: dorny/paths-filter@v2
+      id: filter
+      with:
+        filters: |
+          api: 'api/**'
+
+  python-tests:
+    runs-on: ubuntu-latest
+    needs: changes
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJSON(needs.changes.outputs.packages) }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2 
+
+      - name: Setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+
+      - name: Install dev dependencies
+        working-directory: ${{ matrix.package }}
+        run: pip3 install --user -r requirements_dev.txt
+
+      - name: Install lambda dependencies
+        working-directory: ${{ matrix.package }}
+        run: make install
+
+      # - name: Lint
+      #  working-directory: ${{ matrix.package }}
+      #  run: make lint
+
+      - name: Format
+        working-directory: ${{ matrix.package }}
+        run: make ARGS=--check fmt
+
+      - name: Test
+        working-directory: ${{ matrix.package }}
+        run: make test       
