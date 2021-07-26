@@ -14,11 +14,13 @@ jobs:
     outputs:
       images: ${{ steps.filter.outputs.changes }}
     steps:
-    - uses: dorny/paths-filter@v2
-      id: filter
-      with:
-        filters: |
-          api: 'api/**'
+      - name: Checkout
+          uses: actions/checkout@v2
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            api: 'api/**'
 
   build-push-and-deploy:
     runs-on: ubuntu-latest
