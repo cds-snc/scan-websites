@@ -8,9 +8,9 @@ resource "aws_lambda_function" "api" {
 
   memory_size = 512
 
-  environment {
-    variables = {}
-  }
+  // environment {
+  //  variables = {}
+  // }
 
   role = aws_iam_role.api.arn
 
