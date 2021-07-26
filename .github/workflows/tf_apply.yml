@@ -45,6 +45,6 @@ jobs:
 
       - name: Apply api
         if: ${{ steps.filter.outputs.api == 'true' }}
+        working-directory: terragrunt/env/api
         run: |
-          cd env/api
           terragrunt apply --terragrunt-non-interactive
