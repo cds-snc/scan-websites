@@ -6,8 +6,8 @@ on:
       - main
 
 env:
-  TERRAFORM_VERSION: 0.14.2
-  TERRAGRUNT_VERSION: v0.29.2
+  TERRAFORM_VERSION: 1.0.3
+  TERRAGRUNT_VERSION: v0.31.1
 
 jobs:
   terragrunt-apply:
