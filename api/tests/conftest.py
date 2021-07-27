@@ -9,7 +9,7 @@ from sqlalchemy.orm import sessionmaker
 
 
 @pytest.fixture(scope="session")
-def db():
+def session():
     db_engine = create_engine(os.environ.get("SQLALCHEMY_DATABASE_TEST_URI"))
     Session = sessionmaker(bind=db_engine)
     return Session()
@@ -22,8 +22,7 @@ def setup_db():
         "SQLALCHEMY_DATABASE_TEST_URI"
     )
     alembic_cfg = Config("./alembic.ini")
+    command.downgrade(alembic_cfg, "base")
     command.upgrade(alembic_cfg, "head")
 
     yield
-
-    # command.downgrade(alembic_cfg, "base")

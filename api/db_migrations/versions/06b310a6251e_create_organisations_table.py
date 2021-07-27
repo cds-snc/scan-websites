@@ -21,7 +21,7 @@ def upgrade():
     op.create_table(
         "organisations",
         sa.Column("id", postgresql.UUID(as_uuid=True), primary_key=True),
-        sa.Column("name", sa.Unicode(255), nullable=False),
+        sa.Column("name", sa.Unicode(255), nullable=False, unique=True),
         sa.Column("created_at", sa.DateTime, default=sa.func.now()),
         sa.Column("updated_at", sa.DateTime, onupdate=sa.func.utc_timestamp()),
     )
