@@ -1,5 +1,9 @@
+import os
+
 import logzero
 from mangum import Mangum
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 from api_gateway import api
 
@@ -7,6 +11,9 @@ logzero.json()
 logger = logzero.logger
 
 app = api.app
+
+db_engine = create_engine(os.environ.get("SQLALCHEMY_DATABASE_URI"))
+db_session = sessionmaker(bind=db_engine)
 
 
 def handler(event, context):

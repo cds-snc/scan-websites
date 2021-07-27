@@ -1,6 +1,6 @@
 .PHONY: dev
 dev:
-	uvicorn main:app --reload
+	uvicorn main:app --reload --host 0.0.0.0 --port 8000
 
 .PHONY: fmt
 fmt:
@@ -13,6 +13,11 @@ install:
 .PHONY: lint
 lint:
 	pylint .
+
+.PHONY: migrations
+migrations:
+	cd db_migrations &&\
+	alembic upgrade head
 
 .PHONY: test
 test:

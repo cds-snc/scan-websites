@@ -1,4 +1,7 @@
+alembic==1.6.5
 boto3==1.17.84
 fastapi==0.67.0
 logzero==1.7.0
 mangum==0.12.1
+psycopg2-binary==2.9.1
+SQLAlchemy==1.4.22
