@@ -61,5 +61,6 @@ jobs:
       - name: Test
         working-directory: ${{ matrix.package }}
         env:
+          SQLALCHEMY_DATABASE_URI: postgresql://postgres:postgres@postgres/scan-websites
           SQLALCHEMY_DATABASE_TEST_URI: postgresql://postgres:postgres@postgres/scan-websites
         run: make test       
