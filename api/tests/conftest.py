@@ -26,4 +26,4 @@ def setup_db():
 
     yield
 
-    #command.downgrade(alembic_cfg, "base")
+    # command.downgrade(alembic_cfg, "base")
