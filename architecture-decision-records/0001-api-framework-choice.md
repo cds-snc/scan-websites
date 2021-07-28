@@ -8,7 +8,7 @@ Accepted
 
 ## Context
 
-We need to choose an API framework that can run inside a container inside a lambda and has enough out of the box features to make development overly laborious. It should also be performant and provide easy integration with third party tooling to access databases, crawl websites, and dispatch messages into queue infrastructure.
+We need to choose an API framework that can run inside a container inside a lambda and has enough out of the box features to not make development overly laborious. It should also be performant and provide easy integration with third party tooling to access databases, crawl websites, and dispatch messages into queue infrastructure.
 
 ## Decision
 
