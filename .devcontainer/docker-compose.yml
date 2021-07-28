@@ -24,8 +24,8 @@ services:
       - db
       - test-db
     environment: 
-      SQLALCHEMY_DATABASE_URI: postgresql://postgres:chummy@db/scan-websites
-      SQLALCHEMY_DATABASE_TEST_URI: postgresql://postgres:chummy@test-db/scan-websites
+      SQLALCHEMY_DATABASE_URI: postgresql://postgres:postgres@db/scan-websites
+      SQLALCHEMY_DATABASE_TEST_URI: postgresql://postgres:postgres@test-db/scan-websites
 
   db:
     image: postgres:11.2
@@ -38,7 +38,7 @@ services:
       - "listen_addresses=*"
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: chummy
+      POSTGRES_PASSWORD: postgres
       POSTGRES_HOST_AUTH_METHOD: trust
       POSTGRES_DB: scan-websites
     expose:
@@ -57,6 +57,6 @@ services:
       - "listen_addresses=*"
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: chummy
+      POSTGRES_PASSWORD: postgres
       POSTGRES_HOST_AUTH_METHOD: trust
       POSTGRES_DB: scan-websites

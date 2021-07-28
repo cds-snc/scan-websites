@@ -1,5 +1,7 @@
 import pytest
 
+from sqlalchemy.exc import IntegrityError
+
 from models import organisations
 
 
@@ -23,7 +25,7 @@ def test_organisation_model_saved(session):
 def test_organisation_empty_name_fails(session):
     organisation = organisations.Organisation()
     session.add(organisation)
-    with pytest.raises(Exception):
+    with pytest.raises(IntegrityError):
         session.commit()
     session.rollback()
 
@@ -43,7 +45,7 @@ def test_organisation_duplicate_name_fails(session):
 
     session.add(organisation_two)
 
-    with pytest.raises(Exception):
+    with pytest.raises(IntegrityError):
         session.commit()
 
     session.rollback()
