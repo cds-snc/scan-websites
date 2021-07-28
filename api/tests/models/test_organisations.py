@@ -2,16 +2,16 @@ import pytest
 
 from sqlalchemy.exc import IntegrityError
 
-from models import organisations
+from models.organisations import Organisation
 
 
 def test_organisation_model():
-    organisation = organisations.Organisation(name="foo")
+    organisation = Organisation(name="foo")
     assert organisation.name == "foo"
 
 
 def test_organisation_model_saved(assert_new_model_saved, session):
-    organisation = organisations.Organisation(name="foo")
+    organisation = Organisation(name="foo")
     session.add(organisation)
     session.commit()
     assert organisation.name == "foo"
@@ -21,7 +21,7 @@ def test_organisation_model_saved(assert_new_model_saved, session):
 
 
 def test_organisation_empty_name_fails(session):
-    organisation = organisations.Organisation()
+    organisation = Organisation()
     session.add(organisation)
     with pytest.raises(IntegrityError):
         session.commit()
@@ -29,7 +29,7 @@ def test_organisation_empty_name_fails(session):
 
 
 def test_organisation_duplicate_name_fails(assert_new_model_saved, session):
-    organisation = organisations.Organisation(name="foo")
+    organisation = Organisation(name="foo")
 
     session.add(organisation)
     session.commit()
@@ -37,7 +37,7 @@ def test_organisation_duplicate_name_fails(assert_new_model_saved, session):
     assert organisation.name == "foo"
     assert_new_model_saved(organisation)
 
-    organisation_two = organisations.Organisation(name="foo")
+    organisation_two = Organisation(name="foo")
 
     session.add(organisation_two)
 
