@@ -14,7 +14,9 @@ def assert_new_model_saved():
         assert model.id is not None
         assert model.created_at is not None
         assert model.updated_at is None
+
     return f
+
 
 @pytest.fixture(scope="session")
 def session():
