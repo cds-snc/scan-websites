@@ -8,6 +8,14 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 
+@pytest.fixture
+def assert_new_model_saved():
+    def f(model):
+        assert model.id is not None
+        assert model.created_at is not None
+        assert model.updated_at is None
+    return f
+
 @pytest.fixture(scope="session")
 def session():
     db_engine = create_engine(os.environ.get("SQLALCHEMY_DATABASE_TEST_URI"))

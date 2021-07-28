@@ -10,14 +10,12 @@ def test_organisation_model():
     assert organisation.name == "foo"
 
 
-def test_organisation_model_saved(session):
+def test_organisation_model_saved(assert_new_model_saved, session):
     organisation = organisations.Organisation(name="foo")
     session.add(organisation)
     session.commit()
     assert organisation.name == "foo"
-    assert organisation.id is not None
-    assert organisation.created_at is not None
-    assert organisation.updated_at is None
+    assert_new_model_saved(organisation)
     session.delete(organisation)
     session.commit()
 
@@ -30,16 +28,14 @@ def test_organisation_empty_name_fails(session):
     session.rollback()
 
 
-def test_organisation_duplicate_name_fails(session):
+def test_organisation_duplicate_name_fails(assert_new_model_saved, session):
     organisation = organisations.Organisation(name="foo")
 
     session.add(organisation)
     session.commit()
 
     assert organisation.name == "foo"
-    assert organisation.id is not None
-    assert organisation.created_at is not None
-    assert organisation.updated_at is None
+    assert_new_model_saved(organisation)
 
     organisation_two = organisations.Organisation(name="foo")
 
