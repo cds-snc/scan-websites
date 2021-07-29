@@ -23,7 +23,11 @@ RUN apk add --no-cache \
     libexecinfo-dev \
     make \
     cmake \
-    libcurl
+    libcurl \
+    postgresql-dev \
+    gcc \
+    python3-dev \
+    musl-dev
 
 # Include global args in this stage of the build
 ARG FUNCTION_DIR
