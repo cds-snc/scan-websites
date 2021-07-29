@@ -1,7 +1,9 @@
 # .coveragerc to control coverage.py
 [run]
 source = ./
-omit = ./tests/*
+omit = 
+    ./db_migrations/*
+    ./tests/*
 
 [html]
 directory = coverage_html_report
