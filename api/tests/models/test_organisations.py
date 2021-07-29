@@ -2,7 +2,7 @@ import pytest
 
 from sqlalchemy.exc import IntegrityError
 
-from models.organisations import Organisation
+from models.Organisation import Organisation
 
 
 def test_organisation_model():
