@@ -9,7 +9,7 @@ module "vpc" {
 
 resource "aws_security_group" "rds" {
   description = "Security group that is to be attached to RDS"
-  vpc_id      = module.vpc_id
+  vpc_id      = module.vpc.vpc_id
 
   tags = {
     Name = "rds_sec_group"
