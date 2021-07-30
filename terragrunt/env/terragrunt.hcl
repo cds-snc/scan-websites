@@ -4,7 +4,6 @@ locals {
   env          = "production"
   product_name = "scan-websites"
   cost_center_code = "${local.product_name}-${local.env}"
-  billing_code = var.cost_center_code
 }
 
 # DO NOT CHANGE ANYTHING BELOW HERE UNLESS YOU KNOW WHAT YOU ARE DOING
@@ -15,6 +14,7 @@ inputs = {
   env          = local.env
   product_name = local.product_name
   region       = "ca-central-1"
+  billing_code = local.cost_center_code
 }
 
 generate "provider" {
