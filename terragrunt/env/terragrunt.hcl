@@ -4,6 +4,7 @@ locals {
   env          = "production"
   product_name = "scan-websites"
   cost_center_code = "${local.product_name}-${local.env}"
+  billing_code = var.cost_center_code
 }
 
 # DO NOT CHANGE ANYTHING BELOW HERE UNLESS YOU KNOW WHAT YOU ARE DOING
