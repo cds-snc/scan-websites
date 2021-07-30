@@ -47,4 +47,4 @@ jobs:
         if: ${{ steps.filter.outputs.api == 'true' }}
         working-directory: terragrunt/env/api
         run: |
-          terragrunt apply --terragrunt-non-interactive
+          terragrunt apply --terragrunt-non-interactive -auto-approve
