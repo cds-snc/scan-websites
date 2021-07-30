@@ -4,7 +4,7 @@ module "rds" {
   billing_tag_value       = var.billing_code
   database_name           = "scan_websites"
   instances               = 1
-  name                    = "scan_websites"
+  name                    = "scan-websites"
   preferred_backup_window = "07:00-09:00"
   sg_ids                  = [aws_security_group.rds.id]
   subnet_ids              = module.vpc.private_subnet_ids
