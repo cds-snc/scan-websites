@@ -3,6 +3,7 @@ locals {
   domain       = ""
   env          = "production"
   product_name = "scan-websites"
+  cost_center_code = "${local.product_name}-${local.env}"
 }
 
 # DO NOT CHANGE ANYTHING BELOW HERE UNLESS YOU KNOW WHAT YOU ARE DOING
@@ -36,11 +37,11 @@ remote_state {
   }
   config = {
     encrypt             = true
-    bucket              = "${local.product_name}-${local.env}-tf"
+    bucket              = "${local.cost_center_code}-tf"
     dynamodb_table      = "terraform-state-lock-dynamo"
     region              = "ca-central-1"
     key                 = "${path_relative_to_include()}/terraform.tfstate"
-    s3_bucket_tags      = { CostCenter : "${local.product_name}-${local.env}" }
-    dynamodb_table_tags = { CostCenter : "${local.product_name}-${local.env}" }
+    s3_bucket_tags      = { CostCenter : local.cost_center_code }
+    dynamodb_table_tags = { CostCenter : local.cost_center_code }
   }
 }
