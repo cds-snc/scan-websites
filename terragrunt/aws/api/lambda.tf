@@ -10,7 +10,7 @@ resource "aws_lambda_function" "api" {
 
   environment {
     variables = {
-      CONNECTION_STRING = module.rds.proxy_connection_string_value
+      SQLALCHEMY_DATABASE_URI = module.rds.proxy_connection_string_value
     }
   }
 
