@@ -3,7 +3,7 @@ terraform {
 }
 
 
-inputs {
+inputs = {
   rds_username = "admin"
 }
 
