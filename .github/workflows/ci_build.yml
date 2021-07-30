@@ -22,6 +22,7 @@ jobs:
         with:
           filters: |
             api: 'api/**'
+            scanners/axe-core: 'scanners/axe-core/**'
 
   build-push-and-deploy:
     runs-on: ubuntu-latest

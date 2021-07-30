@@ -10,7 +10,9 @@ const USER_AGENT =
   "Mozilla/5.0 (CDS-SNC A11Y Tools; Puppeteer) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36";
 
 export const handler = async (event: SNSEvent | S3Event): Promise<boolean> => {
+  console.log("HELLO")
   const browser = await puppeteer.launch({
+    args: ['--disable-dev-shm-usage', '--no-sandbox'],
     ignoreHTTPSErrors: true,
   });
 
