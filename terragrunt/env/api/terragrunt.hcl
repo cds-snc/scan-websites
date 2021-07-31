@@ -4,7 +4,7 @@ terraform {
 
 
 inputs = {
-  rds_username = "admin"
+  rds_username = "databaseuser"
 }
 
 include {
