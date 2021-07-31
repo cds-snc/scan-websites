@@ -8,6 +8,7 @@ on:
 env:
   TERRAFORM_VERSION: 1.0.3
   TERRAGRUNT_VERSION: v0.31.1
+  TF_VAR_rds_password: ${{ secrets.TF_VARS_RDS_PASSWORD }}
 
 jobs:
   terragrunt-apply:
