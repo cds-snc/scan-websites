@@ -67,5 +67,9 @@ ENV GIT_SHA=$git_sha
 ADD https://github.com/aws/aws-lambda-runtime-interface-emulator/releases/latest/download/aws-lambda-rie /usr/bin/aws-lambda-rie
 COPY bin/entry.sh /
 RUN chmod 755 /usr/bin/aws-lambda-rie /entry.sh
+
+# Add missing library
+RUN apk add --no-cache libpq
+
 ENTRYPOINT [ "/entry.sh" ]
 CMD [ "main.handler" ]
