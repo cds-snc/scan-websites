@@ -17,13 +17,14 @@ def healthcheck_session(sessionmaker):
     session = sessionmaker()
     return session.query(text("1")).from_statement(text("SELECT 1")).all()
 
+
 @app.get("/healthcheck")
 async def healthcheck():
     try:
         healthcheck_session(db_session)
-        db_status = { "able_to_connect": True }
-    except  SQLAlchemyError as err:
+        db_status = {"able_to_connect": True}
+    except SQLAlchemyError as err:
         log.error(err)
-        db_status = { "able_to_connect": False }
+        db_status = {"able_to_connect": False}
 
-    return { "database": db_status }
+    return {"database": db_status}

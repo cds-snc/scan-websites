@@ -1,11 +1,9 @@
-
 from mangum import Mangum
 from api_gateway import api
 from logger import log
 
 
 app = api.app
-
 
 
 def handler(event, context):
