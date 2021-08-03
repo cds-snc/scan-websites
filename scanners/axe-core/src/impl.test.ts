@@ -76,22 +76,7 @@ const storeMock = {
     promise: jest.fn(),
 };
 
-const msgBusMock = {
-    publish: jest.fn().mockReturnThis(),
-    promise: jest.fn(),
-};
-
 describe("Impl", () => {
-    beforeAll(() => {
-        Date.now = jest.fn(() => 1609477200);
-        process.env.REPORT_DATA_BUCKET = "foo";
-        process.env.SCREENSHOT_BUCKET = "bar";
-    });
-
-    afterEach(() => {
-        delete process.env.URL_SCAN_TOPIC;
-    });
-
     describe("is trigged by SQS", () => {
         test("opens the URL in chrome, runs axe, saves a screenshot, writes a compressed report to a bucket, and returns true", async () => {
             const records = [
@@ -107,11 +92,12 @@ describe("Impl", () => {
                 records,
                 browser,
                 storeMock,
-                msgBusMock,
+                "databucketName",
+                "screenshotBucketName"
             );
 
             expect(storeMock.putObject).toHaveBeenCalledWith({
-                Bucket: process.env.SCREENSHOT_BUCKET,
+                Bucket: "screenshotBucketName",
                 Body: Buffer.from("I'm a string!", "utf-8"),
                 ContentType: "image/png",
                 Key: "bar.png",
@@ -119,7 +105,7 @@ describe("Impl", () => {
             });
 
             expect(storeMock.putObject).toHaveBeenCalledWith({
-                Bucket: process.env.REPORT_DATA_BUCKET,
+                Bucket: "databucketName",
                 Body: JSON.stringify({
                     url: "https://example.com/",
                     key: "bar",
@@ -144,10 +130,11 @@ describe("Impl", () => {
             payloads,
             browser,
             storeMock,
-            msgBusMock,
+            "databucketName",
+            "screenshotBucketName"
         );
         expect(storeMock.putObject).toHaveBeenCalledWith({
-            Bucket: process.env.REPORT_DATA_BUCKET,
+            Bucket: "databucketName",
             Body: JSON.stringify({
                 url: "slug",
                 key: "bar",

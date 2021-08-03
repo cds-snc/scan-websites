@@ -1,7 +1,6 @@
 import AxePuppeteer from "@axe-core/puppeteer";
 import { asyncForEach } from "./common/foreach";
 import { BlobStore } from "./common/blobstore";
-import { MessageBus } from "./common/message_bus";
 
 const USER_AGENT =
     "Mozilla/5.0 (CDS-SNC A11Y Tools; Puppeteer) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36";
@@ -12,7 +11,8 @@ export async function Impl(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
     browser: any,
     store: BlobStore,
-    msgBus: MessageBus,
+    report_bucket: string,
+    screenshot_bucket: string,
 ): Promise<boolean> {
     try {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -36,8 +36,8 @@ export async function Impl(
                 await page.setContent(fragment, { waitUntil: "networkidle0" });
             }
 
-            await takeScreenshot(store, payload.key, page);
-            await createReport(store, url, page, payload);
+            await takeScreenshot(store, payload.key, page, screenshot_bucket);
+            await createReport(store, url, page, payload, report_bucket);
         });
     } catch (error) {
         console.log(error);
@@ -50,7 +50,6 @@ export async function Impl(
     return true;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function convertEventToRecords(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
     event: any,
@@ -104,8 +103,9 @@ const createReport = async (
     page: any,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     payload: any,
+    report_bucket: string
 ) => {
-    if (isStringEmptyUndefinedOrNull(process.env.REPORT_DATA_BUCKET)) {
+    if (isStringEmptyUndefinedOrNull(report_bucket)) {
         return;
     }
 
@@ -125,7 +125,7 @@ const createReport = async (
     };
     await store
         .putObject({
-            Bucket: process.env.REPORT_DATA_BUCKET,
+            Bucket: report_bucket,
             Key: `${key}.json`,
             Body: JSON.stringify(object),
             ContentType: "application/json",
@@ -134,8 +134,8 @@ const createReport = async (
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const takeScreenshot = async (store: BlobStore, key: string, page: any) => {
-    if (isStringEmptyUndefinedOrNull(process.env.SCREENSHOT_BUCKET)) {
+const takeScreenshot = async (store: BlobStore, key: string, page: any, screenshot_bucket: string) => {
+    if (isStringEmptyUndefinedOrNull(screenshot_bucket)) {
         return;
     }
 
@@ -144,7 +144,7 @@ const takeScreenshot = async (store: BlobStore, key: string, page: any) => {
     // Save result to bucket
     await store
         .putObject({
-            Bucket: process.env.SCREENSHOT_BUCKET,
+            Bucket: screenshot_bucket,
             Key: `${key}.png`,
             Body: screenshot,
             ContentType: "image/png",
