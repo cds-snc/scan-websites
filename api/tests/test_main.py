@@ -13,7 +13,7 @@ def test_handler_api_gateway_event(mock_mangum):
     mock_asgi_handler.assert_called_once_with({"httpMethod": "GET"}, {})
 
 
-@patch("main.logger")
+@patch("main.log")
 def test_handler_unmatched_event(mock_logger):
     assert main.handler({}, {}) == False
     mock_logger.warning.assert_called_once_with("Handler recieved unrecognised event")
