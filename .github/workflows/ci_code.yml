@@ -1,4 +1,4 @@
-name: Lint, format and test python code
+name: Lint, format and test code
 on:
   workflow_dispatch:
   pull_request:
@@ -14,6 +14,7 @@ jobs:
       with:
         filters: |
           api: 'api/**'
+          scanners/axe-core: 'scanners/axe-core/**'
 
   python-tests:
     runs-on: ubuntu-latest
@@ -42,24 +43,24 @@ jobs:
         with:
           python-version: "3.9"
 
-      - name: Install dev dependencies
-        working-directory: ${{ matrix.package }}
-        run: pip3 install --user -r requirements_dev.txt
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
 
-      - name: Install lambda dependencies
-        working-directory: ${{ matrix.package }}
+      - name: Install dev dependencies
+        run: make install-dev
+
+      - name: Install dependencies
         run: make install
 
-      # - name: Lint
-      #  working-directory: ${{ matrix.package }}
-      #  run: make lint
+      - name: Lint
+        run: make lint
 
       - name: Format
-        working-directory: ${{ matrix.package }}
         run: make ARGS=--check fmt
 
       - name: Test
-        working-directory: ${{ matrix.package }}
         env:
           SQLALCHEMY_DATABASE_URI: postgresql://postgres:postgres@127.0.0.1/scan-websites
           SQLALCHEMY_DATABASE_TEST_URI: postgresql://postgres:postgres@127.0.0.1/scan-websites
