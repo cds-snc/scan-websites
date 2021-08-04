@@ -1,6 +1,5 @@
 from os import environ
 from fastapi import FastAPI
-from sqlalchemy.sql import text
 from sqlalchemy.exc import SQLAlchemyError
 from database.db import db_session
 from logger import log

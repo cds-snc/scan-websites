@@ -15,7 +15,7 @@ install-dev:
 	pip3 install --user -r requirements_dev.txt
 
 lint:
-	#pylint .
+	flake8 .
 
 migrations:
 	cd db_migrations &&\

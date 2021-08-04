@@ -1,7 +1,7 @@
 """create_organisations_table
 
 Revision ID: 06b310a6251e
-Revises: 
+Revises:
 Create Date: 2021-07-27 00:24:48.480009
 
 """
