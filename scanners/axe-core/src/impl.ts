@@ -137,7 +137,7 @@ const takeScreenshot = async (store: BlobStore, key: string, page: Page, screens
         .putObject({
             Bucket: screenshot_bucket,
             Key: `${key}.png`,
-            Body: screenshot,
+            Body: screenshot as Buffer | Uint8Array | string,
             ContentType: "image/png",
             ACL: "public-read",
         })

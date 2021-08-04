@@ -1,9 +1,9 @@
 export type Page = {
-    goto(S: string, O): Promise<void>;
-    screenshot(O): Promise<Buffer>;
-    setBypassCSP(B: boolean): Promise<void>;
-    setContent(S: string, O): Promise<void>;
-    setUserAgent(S: string): Promise<void>;
+    goto(S: string, O: any): Promise<any>;
+    screenshot(O: any): Promise<string | void | Buffer>;
+    setBypassCSP(B: boolean): Promise<any>;
+    setContent(S: string, O: any): Promise<any>;
+    setUserAgent(S: string): Promise<any>;
 }
 
 export interface Browser {
