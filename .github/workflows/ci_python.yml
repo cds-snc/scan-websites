@@ -47,19 +47,15 @@ jobs:
         run: pip3 install --user -r requirements_dev.txt
 
       - name: Install lambda dependencies
-        working-directory: ${{ matrix.package }}
         run: make install
 
       # - name: Lint
-      #  working-directory: ${{ matrix.package }}
       #  run: make lint
 
       - name: Format
-        working-directory: ${{ matrix.package }}
         run: make ARGS=--check fmt
 
       - name: Test
-        working-directory: ${{ matrix.package }}
         env:
           SQLALCHEMY_DATABASE_URI: postgresql://postgres:postgres@127.0.0.1/scan-websites
           SQLALCHEMY_DATABASE_TEST_URI: postgresql://postgres:postgres@127.0.0.1/scan-websites
