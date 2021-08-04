@@ -16,7 +16,7 @@ resource "aws_lambda_function" "api" {
   }
 
   vpc_config {
-    security_group_ids = [aws_security_group.api_lambda.id]
+    security_group_ids = [aws_security_group.rds_lambda.id]
     subnet_ids         = module.vpc.private_subnet_ids
   }
 
