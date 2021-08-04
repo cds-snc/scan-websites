@@ -10,6 +10,7 @@ import {
     SNSEventRecord,
     SNSMessage,
 } from "aws-lambda";
+import { Page, Browser } from "./common/browser";
 
 const mockHTML = ` <!DOCTYPE html>
       <html lang="en">
@@ -33,30 +34,22 @@ const mockReport = {
 };
 
 const mockFileBody = {
-    product: "a",
-    revision: "b",
-    hashedData: "c",
     key: "bar",
-    date: 1609477200,
-    html: { slug: mockHTML },
+    html: { slug: "slug", fragment: mockHTML },
 };
 
-const browser = {
-    close: () => ({}),
-    newPage: () => ({
-        $$eval: () => [
-            "https://example.com/a",
-            "https://example.com/a#foo",
-            "https://example.com/a.png?#foo",
-            "https://example.com/#/foo",
-        ],
-        goto: () => ({}),
-        content: () => mockHTML,
-        screenshot: () => Buffer.from("I'm a string!", "utf-8"),
-        setBypassCSP: () => ({}),
-        setContent: () => mockHTML,
-        setUserAgent: () => ({}),
-    }),
+const page: Page = {
+    goto: async () => (null),
+    screenshot: async () => Buffer.from("I'm a string!", "utf-8"),
+    setBypassCSP: async () => (null),
+    setContent: async () => (null),
+    setUserAgent: async () => (null),
+}
+
+
+const browser: Browser = {
+    close: async () => (null),
+    newPage: async () => (page),
 };
 
 jest.mock("@axe-core/puppeteer", () => ({
@@ -85,6 +78,7 @@ describe("Impl", () => {
                         key: "bar",
                         url: "https://example.com/",
                     },
+                    html: ""
                 },
             ];
 
@@ -182,9 +176,9 @@ describe("convertEventToRecords", () => {
             Key: "bar",
         });
         expect(records.length).toBe(1);
-        expect(records[0].payload.product).toBe("a");
         expect(records[0].html).toStrictEqual({
-            slug: mockHTML,
+            slug: "slug",
+            fragment: mockHTML,
         });
     });
 });

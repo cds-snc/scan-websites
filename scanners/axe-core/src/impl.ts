@@ -1,22 +1,21 @@
 import AxePuppeteer from "@axe-core/puppeteer";
 import { asyncForEach } from "./common/foreach";
 import { BlobStore } from "./common/blobstore";
+import { Page, Browser } from "./common/browser";
+import { Payload, Record } from "./common/record";
 
 const USER_AGENT =
     "Mozilla/5.0 (CDS-SNC A11Y Tools; Puppeteer) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36";
 
 export async function Impl(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    records: any[],
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
-    browser: any,
+    records: Record[],
+    browser: Browser,
     store: BlobStore,
     report_bucket: string,
     screenshot_bucket: string,
 ): Promise<boolean> {
     try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await asyncForEach(records, async (record: any) => {
+        await asyncForEach(records, async (record: Record) => {
             const payload = record.payload;
             let url = payload.url || "";
 
@@ -27,10 +26,8 @@ export async function Impl(
             if (url.trim() !== "") {
                 await page.goto(url, { waitUntil: "networkidle0" });
             } else {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                let fragment: any = null;
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                let slug: any = null;
+                let fragment: string = "";
+                let slug: string = "";
                 [slug, fragment] = Object.entries(html)[0];
                 url = slug;
                 await page.setContent(fragment, { waitUntil: "networkidle0" });
@@ -54,10 +51,8 @@ export async function convertEventToRecords(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
     event: any,
     store: BlobStore,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): Promise<any[]> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const records: any[] = [];
+): Promise<Record[]> {
+    const records: Record[] = [];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await asyncForEach(event.Records, async (record: any) => {
         // Parse the correct message body, SNS or S3
@@ -88,8 +83,7 @@ export async function convertEventToRecords(
 export const isStringEmptyUndefinedOrNull = (str: string): boolean =>
     str === undefined || str === null || str === "";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const createNewPage = async (browser: any) => {
+const createNewPage = async (browser: Browser) => {
     const page = await browser.newPage();
     await page.setBypassCSP(true);
     await page.setUserAgent(USER_AGENT);
@@ -99,10 +93,8 @@ const createNewPage = async (browser: any) => {
 const createReport = async (
     store: BlobStore,
     url: string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    page: any,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    payload: any,
+    page: Page,
+    payload: Payload,
     report_bucket: string
 ) => {
     if (isStringEmptyUndefinedOrNull(report_bucket)) {
@@ -133,8 +125,7 @@ const createReport = async (
         .promise();
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const takeScreenshot = async (store: BlobStore, key: string, page: any, screenshot_bucket: string) => {
+const takeScreenshot = async (store: BlobStore, key: string, page: Page, screenshot_bucket: string) => {
     if (isStringEmptyUndefinedOrNull(screenshot_bucket)) {
         return;
     }
