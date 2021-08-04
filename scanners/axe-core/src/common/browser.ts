@@ -1,10 +1,10 @@
-import { HTTPResponse } from "puppeteer";
+import { HTTPResponse, ScreenshotOptions, WaitForOptions } from "puppeteer";
 
 export type Page = {
-  goto(S: string, O): Promise<HTTPResponse | void>;
-  screenshot(O): Promise<string | void | Buffer>;
+  goto(S: string, O?: WaitForOptions): Promise<HTTPResponse | void>;
+  screenshot(O?: ScreenshotOptions): Promise<string | void | Buffer>;
   setBypassCSP(B: boolean): Promise<void>;
-  setContent(S: string, O): Promise<void>;
+  setContent(S: string, O?: WaitForOptions): Promise<void>;
   setUserAgent(S: string): Promise<void>;
 };
 
