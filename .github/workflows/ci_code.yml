@@ -1,4 +1,4 @@
-name: Lint, format and test python code
+name: Lint, format and test code
 on:
   workflow_dispatch:
   pull_request:
@@ -42,15 +42,19 @@ jobs:
         with:
           python-version: "3.9"
 
-      - name: Install dev dependencies
-        working-directory: ${{ matrix.package }}
-        run: pip3 install --user -r requirements_dev.txt
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
 
-      - name: Install lambda dependencies
+      - name: Install dev dependencies
+        run: make install-dev
+
+      - name: Install dependencies
         run: make install
 
-      # - name: Lint
-      #  run: make lint
+      - name: Lint
+        run: make lint
 
       - name: Format
         run: make ARGS=--check fmt
