@@ -1,10 +1,7 @@
-import pytest
 import os
 
 from fastapi.testclient import TestClient
-from unittest.mock import patch, Mock
-
-import sqlalchemy
+from unittest.mock import patch
 
 from api_gateway import api
 from sqlalchemy.exc import SQLAlchemyError

@@ -12,7 +12,7 @@ install:
 
 .PHONY: lint
 lint:
-	pylint .
+	flake8 .
 
 .PHONY: migrations
 migrations:
