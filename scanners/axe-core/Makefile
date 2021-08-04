@@ -1,19 +1,18 @@
-.PHONY: build
+.PHONY: build fmt install lint test
+
 build:
 	npm run build
 
-.PHONY: fmt
 fmt:
 	npm run --silent fmt
 
-.PHONY: install
 install:
-	npm install
+	npm ci
 
-.PHONY: lint
+install-dev:
+
 lint:
 	npm run --silent lint
 
-.PHONY: test
 test:
 	npx jest
