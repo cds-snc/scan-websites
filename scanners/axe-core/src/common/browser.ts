@@ -1,9 +1,11 @@
+import { HTTPResponse } from "puppeteer"
+
 export type Page = {
-    goto(S: string, O: any): Promise<any>;
+    goto(S: string, O: any): Promise<HTTPResponse | void>;
     screenshot(O: any): Promise<string | void | Buffer>;
-    setBypassCSP(B: boolean): Promise<any>;
-    setContent(S: string, O: any): Promise<any>;
-    setUserAgent(S: string): Promise<any>;
+    setBypassCSP(B: boolean): Promise<void>;
+    setContent(S: string, O: any): Promise<void>;
+    setUserAgent(S: string): Promise<void>;
 }
 
 export interface Browser {
