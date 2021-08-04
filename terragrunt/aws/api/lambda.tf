@@ -4,6 +4,7 @@ resource "aws_lambda_function" "api" {
   package_type = "Image"
   image_uri    = "${aws_ecr_repository.api.repository_url}:latest"
 
+  role    = aws_iam_role.api.arn
   timeout = 60
 
   memory_size = 1024
@@ -14,7 +15,10 @@ resource "aws_lambda_function" "api" {
     }
   }
 
-  role = aws_iam_role.api.arn
+  vpc_config {
+    security_group_ids = [aws_security_group.api_lambda.id]
+    subnet_ids         = module.vpc.private_subnet_ids
+  }
 
   lifecycle {
     ignore_changes = [
