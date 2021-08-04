@@ -17,7 +17,7 @@ resource "aws_lambda_function" "api" {
 
   vpc_config {
     security_group_ids = [aws_security_group.api_lambda.id]
-    subnet_ids         = module.vps.subnet_ids
+    subnet_ids         = module.vpc.private_subnet_ids
   }
 
   lifecycle {
