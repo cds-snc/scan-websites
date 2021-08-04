@@ -5,141 +5,146 @@ import { Page, Browser } from "./common/browser";
 import { Payload, Record } from "./common/record";
 
 const USER_AGENT =
-    "Mozilla/5.0 (CDS-SNC A11Y Tools; Puppeteer) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36";
+  "Mozilla/5.0 (CDS-SNC A11Y Tools; Puppeteer) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36";
 
 export async function Impl(
-    records: Record[],
-    browser: Browser,
-    store: BlobStore,
-    report_bucket: string,
-    screenshot_bucket: string,
+  records: Record[],
+  browser: Browser,
+  store: BlobStore,
+  reportBucket: string,
+  screenshotBucket: string,
 ): Promise<boolean> {
-    try {
-        await asyncForEach(records, async (record: Record) => {
-            const payload = record.payload;
-            let url = payload.url || "";
+  try {
+    await asyncForEach(records, async (record: Record) => {
+      const payload = record.payload;
+      let url = payload.url || "";
 
-            const html = record.html;
-            const page = await createNewPage(browser);
+      const html = record.html;
+      const page = await createNewPage(browser);
 
-            // Run on URL if not empty
-            if (url.trim() !== "") {
-                await page.goto(url, { waitUntil: "networkidle0" });
-            } else {
-                let fragment: string = "";
-                let slug: string = "";
-                [slug, fragment] = Object.entries(html)[0];
-                url = slug;
-                await page.setContent(fragment, { waitUntil: "networkidle0" });
-            }
+      // Run on URL if not empty
+      if (url.trim() !== "") {
+        await page.goto(url, { waitUntil: "networkidle0" });
+      } else {
+        let fragment = "";
+        let slug = "";
+        [slug, fragment] = Object.entries(html)[0];
+        url = slug;
+        await page.setContent(fragment, { waitUntil: "networkidle0" });
+      }
 
-            await takeScreenshot(store, payload.key, page, screenshot_bucket);
-            await createReport(store, url, page, payload, report_bucket);
-        });
-    } catch (error) {
-        console.log(error);
-        return error;
-    } finally {
-        if (browser !== null) {
-            await browser.close();
-        }
+      await takeScreenshot(store, payload.key, page, screenshotBucket);
+      await createReport(store, url, page, payload, reportBucket);
+    });
+  } catch (error) {
+    console.log(error);
+    return error;
+  } finally {
+    if (browser !== null) {
+      await browser.close();
     }
-    return true;
+  }
+  return true;
 }
 
 export async function convertEventToRecords(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
-    event: any,
-    store: BlobStore,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
+  event: any,
+  store: BlobStore,
 ): Promise<Record[]> {
-    const records: Record[] = [];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await asyncForEach(event.Records, async (record: any) => {
-        // Parse the correct message body, SNS or S3
-        // eslint-disable-next-line no-prototype-builtins
-        if (record.hasOwnProperty("s3")) {
-            const object = await store
-                .getObject({
-                    Bucket: record.s3.bucket.name,
-                    Key: record.s3.object.key,
-                })
-                .promise();
+  const records: Record[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await asyncForEach(event.Records, async (record: any) => {
+    // Parse the correct message body, SNS or S3
+    // eslint-disable-next-line no-prototype-builtins
+    if (record.hasOwnProperty("s3")) {
+      const object = await store
+        .getObject({
+          Bucket: record.s3.bucket.name,
+          Key: record.s3.object.key,
+        })
+        .promise();
 
-            const data = JSON.parse(object.Body.toString("utf-8"));
-            records.push({
-                payload: data,
-                html: data.html,
-            });
-        } else {
-            records.push({
-                payload: JSON.parse(record.Sns.Message),
-                html: "",
-            });
-        }
-    });
-    return records;
+      const data = JSON.parse(object.Body.toString("utf-8"));
+      records.push({
+        payload: data,
+        html: data.html,
+      });
+    } else {
+      records.push({
+        payload: JSON.parse(record.Sns.Message),
+        html: "",
+      });
+    }
+  });
+  return records;
 }
 
 export const isStringEmptyUndefinedOrNull = (str: string): boolean =>
-    str === undefined || str === null || str === "";
+  str === undefined || str === null || str === "";
 
 const createNewPage = async (browser: Browser) => {
-    const page = await browser.newPage();
-    await page.setBypassCSP(true);
-    await page.setUserAgent(USER_AGENT);
-    return page;
+  const page = await browser.newPage();
+  await page.setBypassCSP(true);
+  await page.setUserAgent(USER_AGENT);
+  return page;
 };
 
 const createReport = async (
-    store: BlobStore,
-    url: string,
-    page: Page,
-    payload: Payload,
-    report_bucket: string
+  store: BlobStore,
+  url: string,
+  page: Page,
+  payload: Payload,
+  reportBucket: string,
 ) => {
-    if (isStringEmptyUndefinedOrNull(report_bucket)) {
-        return;
-    }
+  if (isStringEmptyUndefinedOrNull(reportBucket)) {
+    return;
+  }
 
-    const key = payload.key;
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore TS2345
-    const results = await new AxePuppeteer(page)
-        .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "best-practice"])
-        .analyze();
-    const report = results;
+  const key = payload.key;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore TS2345
+  const results = await new AxePuppeteer(page)
+    .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "best-practice"])
+    .analyze();
+  const report = results;
 
-    // Save result to bucket
-    const object = {
-        url,
-        key,
-        report
-    };
-    await store
-        .putObject({
-            Bucket: report_bucket,
-            Key: `${key}.json`,
-            Body: JSON.stringify(object),
-            ContentType: "application/json",
-        })
-        .promise();
+  // Save result to bucket
+  const object = {
+    url,
+    key,
+    report,
+  };
+  await store
+    .putObject({
+      Bucket: reportBucket,
+      Key: `${key}.json`,
+      Body: JSON.stringify(object),
+      ContentType: "application/json",
+    })
+    .promise();
 };
 
-const takeScreenshot = async (store: BlobStore, key: string, page: Page, screenshot_bucket: string) => {
-    if (isStringEmptyUndefinedOrNull(screenshot_bucket)) {
-        return;
-    }
+const takeScreenshot = async (
+  store: BlobStore,
+  key: string,
+  page: Page,
+  screenshotBucket: string,
+) => {
+  if (isStringEmptyUndefinedOrNull(screenshotBucket)) {
+    return;
+  }
 
-    const screenshot = await page.screenshot({ fullPage: true });
+  const screenshot = await page.screenshot({ fullPage: true });
 
-    // Save result to bucket
-    await store
-        .putObject({
-            Bucket: screenshot_bucket,
-            Key: `${key}.png`,
-            Body: screenshot as Buffer | Uint8Array | string,
-            ContentType: "image/png",
-            ACL: "public-read",
-        })
-        .promise();
+  // Save result to bucket
+  await store
+    .putObject({
+      Bucket: screenshotBucket,
+      Key: `${key}.png`,
+      Body: screenshot as Buffer | Uint8Array | string,
+      ContentType: "image/png",
+      ACL: "public-read",
+    })
+    .promise();
 };

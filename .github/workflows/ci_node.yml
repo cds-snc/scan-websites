@@ -36,9 +36,9 @@ jobs:
         working-directory: ${{ matrix.package }}
         run: make install
 
-      # - name: Lint
-      #  working-directory: ${{ matrix.package }}
-      #  run: make lint
+      - name: Lint
+        working-directory: ${{ matrix.package }}
+        run: make lint
 
       - name: Test
         working-directory: ${{ matrix.package }}
