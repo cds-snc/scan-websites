@@ -16,7 +16,7 @@ def handler(event, context):
         response = asgi_handler(event, context)
         return response
 
-    elif "migrate" in event:
+    elif event["task"] == "migrate":
         try:
             migrate_head()
             return "Success"
