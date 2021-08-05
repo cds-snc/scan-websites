@@ -20,7 +20,7 @@ ARG TERRAGRUNT_CHECKSUM
 # Install packages
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends awscli ca-certificates curl git gnupg2 jq make openssh-client python3-pip vim xz-utils zsh \
-    && apt-get autoremove -y && apt-get clean -y 
+    && apt-get autoremove -y && apt-get clean -y
 
 # Install Terraform
 RUN curl -Lo terraform.zip "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" \
@@ -36,7 +36,7 @@ RUN curl -Lo terragrunt https://github.com/gruntwork-io/terragrunt/releases/down
     && mv terragrunt /usr/local/bin/
 
 # Install ShellCheck
-RUN curl -Lo shellcheck.tar.xz "https://github.com/koalaman/shellcheck/releases/download/v${SHELLCHECK_VERSION}/shellcheck-v${SHELLCHECK_VERSION}.linux.x86_64.tar.xz" \ 
+RUN curl -Lo shellcheck.tar.xz "https://github.com/koalaman/shellcheck/releases/download/v${SHELLCHECK_VERSION}/shellcheck-v${SHELLCHECK_VERSION}.linux.x86_64.tar.xz" \
     && echo "${SHELLCHECK_CHECKSUM} shellcheck.tar.xz" | sha256sum --check \
     && tar -xf shellcheck.tar.xz \
     && mv "shellcheck-v${SHELLCHECK_VERSION}/shellcheck" /usr/local/bin/ \
@@ -53,7 +53,7 @@ complete -C /usr/local/bin/terraform terraform\n\
 complete -C /usr/local/bin/terraform terragrunt\n\
 alias tf='terraform'\n\
 alias tg='terragrunt'\n\
-alias ll='la -la'" >> /home/"${USERNAME}"/.zshrc
+alias ll='la -la'" >> /home/vscode/.zshrc
 
 # [Optional] If your pip requirements rarely change, uncomment this section to add them to the image.
 # COPY requirements.txt /tmp/pip-tmp/
