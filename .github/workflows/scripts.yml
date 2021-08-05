@@ -10,7 +10,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Shellcheck
-      run: .github/workflows/scripts/run-shellcheck.sh
+      run: .github/workflows/scripts/run_shellcheck.sh
 
   script_test:
     runs-on: ubuntu-latest
