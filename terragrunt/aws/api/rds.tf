@@ -6,7 +6,6 @@ module "rds" {
   instances               = 1
   name                    = "scan-websites"
   preferred_backup_window = "07:00-09:00"
-  sg_ids                  = [aws_security_group.rds_lambda.id]
   subnet_ids              = module.vpc.private_subnet_ids
   username                = var.rds_username
   password                = var.rds_password
