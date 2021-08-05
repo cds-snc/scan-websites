@@ -1,6 +1,7 @@
 from mangum import Mangum
 from api_gateway import api
 from logger import log
+from database.migrate import migrate_head
 
 
 app = api.app
@@ -14,6 +15,14 @@ def handler(event, context):
         asgi_handler = Mangum(app)
         response = asgi_handler(event, context)
         return response
+
+    elif "migrate" in event:
+        try:
+            migrate_head()
+            return "Success"
+        except Exception as err:
+            log.error(err)
+            return "Error: check cloudwatch logs for error."
 
     else:
         log.warning("Handler recieved unrecognised event")
