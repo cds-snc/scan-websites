@@ -1,6 +1,6 @@
 .PHONY: dev fmt install lint migrations test
 
-build: 
+build:
 
 dev:
 	uvicorn main:app --reload --host 0.0.0.0 --port 8000
