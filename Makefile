@@ -1,9 +1,9 @@
-.PHONY: help build dev fmt install lint migrate migrations
-.PHONY: test db-connect
-
 RESOURCES = \
 	api \
 	scanners/axe-core
+
+.PHONY: help build dev format fmt install lint migrate migrations
+.PHONY: test db-connect
 
 help:
 	@echo make [COMMAND]
@@ -12,6 +12,7 @@ help:
 	@echo "  build       -- Run build commands"
 	@echo "  db-connect  -- Create a psql connection to the database"
 	@echo "  dev         -- Run API dev server"
+	@echo "  format      -- Alias for fmt"
 	@echo "  fmt         -- Run formatters"
 	@echo "  install     -- Install needed Python and NPM libraries"
 	@echo "  install-dev -- Installs needed development libraries"
@@ -20,49 +21,57 @@ help:
 	@echo "  migations   -- Run migrations"
 	@echo "  test        -- Run tests"
 
-build:
-	@for item in $(RESOURCES); do \
-		echo "[Building $$item]"; \
-		make -C $$item build; \
-	done;
-
 dev:
-	make -C api dev
-
-fmt:
-	@for item in $(RESOURCES); do \
-		echo "[Formatting $$item]"; \
-		make -C $$item fmt; \
-	done;
-
-install:
-	@for item in $(RESOURCES); do \
-		echo "[Installing $$item]"; \
-		make -C $$item install; \
-	done;
-
-install-dev:
-	@for item in $(RESOURCES); do \
-		echo "[Installing dev dependencies $$item]"; \
-		make -C $$item install-dev; \
-	done;
-
-lint:
-	@for item in $(RESOURCES); do \
-		echo "[Linting $$item]"; \
-		make -C $$item lint; \
-	done;
+	$(MAKE) -C api dev
 
 migrate: migrations
 
 migrations:
-	make -C api migrations
-
-test:
-	@for item in $(RESOURCES); do \
-		echo "[Testing $$item]"; \
-		make -C $$item test; \
-	done;
+	$(MAKE) -C api migrations
 
 db-connect:
 	psql postgresql://postgres:postgres@db/scan-websites
+
+test: $(addsuffix .test,$(RESOURCES))
+
+build: $(addsuffix .build,$(RESOURCES))
+
+format: fmt
+
+fmt: $(addsuffix .fmt,$(RESOURCES))
+
+install: $(addsuffix .install,$(RESOURCES))
+
+install-dev: $(addsuffix .install-dev,$(RESOURCES))
+
+lint: $(addsuffix .lint,$(RESOURCES))
+
+define make-rules
+
+.PHONY: $1.test $1.build $1.fmt $1.install $1.install-dev $1.lint
+
+$1.build:
+	@echo "[Building $1]"
+	$(MAKE) -C $1 build
+
+$1.fmt:
+	@echo "[Formatting $1]"
+	$(MAKE) -C $1 fmt
+
+$1.install:
+	@echo "[Installing $1]"
+	$(MAKE) -C $1 install
+
+$1.install-dev:
+	@echo "[Installing dev dependencies $1]"
+	$(MAKE) -C $1 install-dev
+
+$1.lint:
+	@echo "[Linting $1]"
+	$(MAKE) -C $1 lint
+
+$1.test:
+	@echo "[Testing $1]"
+	$(MAKE) -C $1 test
+endef
+$(foreach component,$(RESOURCES), $(eval $(call make-rules, $(component))))
