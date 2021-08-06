@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# shellcheck source=migrate.sh
+# shellcheck disable=SC1091
 source .github/workflows/scripts/migrate.sh
 
 RETVAL=0
