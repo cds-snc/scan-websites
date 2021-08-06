@@ -19,7 +19,7 @@ jobs:
               - 'scanners/axe-core/**'
 
   python-tests:
-    if: needs.changes.outputs.packages != ${{ null }}
+    if: ${{ fromJSON(needs.changes.outputs.packages) != null }}
     runs-on: ubuntu-latest
     services:
       postgres:
