@@ -13,6 +13,7 @@ function test_migrate_resp {
 function migrate {
   aws lambda invoke \
     --function-name api \
+    --cli-binary-format raw-in-base64-out \
     --payload '{ "task": "migrate" }' \
     --region ca-central-1 \
     response
