@@ -69,3 +69,13 @@ jobs:
           aws lambda update-function-code \
             --function-name ${{ matrix.image }} \
             --image-uri $REGISTRY/${{ matrix.image }}:latest
+
+      - name: Migrate Database
+        if: ${{ matrix.image == 'api' }}
+        run: |
+          aws lambda invoke \
+            --function-name api \
+            --invocation-type Event \
+            --payload '{ "task": "migrate" }' \
+            response.json
+          .github/workflows/scripts/test_migration_resp.sh response.json
