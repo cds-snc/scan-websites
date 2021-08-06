@@ -19,7 +19,7 @@ ARG TERRAGRUNT_CHECKSUM
 
 # Install packages
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends awscli ca-certificates curl git gnupg2 jq make openssh-client python3-pip vim xz-utils zsh \
+    && apt-get -y install --no-install-recommends awscli ca-certificates curl git gstreamer1.0-libav libnss3-tools libatk-bridge2.0-0 libcups2-dev libxkbcommon-x11-0 libxcomposite-dev libxrandr2 libgbm-dev libgtk-3-0 libxshmfence-dev gnupg2 jq make openssh-client python3-pip vim xz-utils zsh \
     && apt-get autoremove -y && apt-get clean -y
 
 # Install Terraform
