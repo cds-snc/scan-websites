@@ -73,9 +73,5 @@ jobs:
       - name: Migrate Database
         if: ${{ matrix.image == 'api' }}
         run: |
-          aws lambda invoke \
-            --function-name api \
-            --invocation-type Event \
-            --payload '{ "task": "migrate" }' \
-            response.json
-          .github/workflows/scripts/test_migration_resp.sh response.json
+          source .github/workflows/scripts/migrate.sh
+          migrate
