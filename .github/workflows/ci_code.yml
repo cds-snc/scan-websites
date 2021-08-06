@@ -9,16 +9,17 @@ jobs:
     outputs:
       packages: ${{ steps.filter.outputs.changes }}
     steps:
-    - uses: dorny/paths-filter@v2
-      id: filter
-      with:
-        filters: |
-          api:
-            - Makefile
-            - 'api/**'
-            - 'scanners/axe-core/**'
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            api:
+              - Makefile
+              - 'api/**'
+              - 'scanners/axe-core/**'
 
   python-tests:
+    if: needs.changes.outputs.packages != ${{ null }}
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -28,7 +29,7 @@ jobs:
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: scan-websites
         ports:
-        - 5432:5432
+          - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     needs: changes
     strategy:
@@ -38,7 +39,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2 
+        uses: actions/checkout@v2
 
       - name: Setup python
         uses: actions/setup-python@v2
@@ -66,4 +67,4 @@ jobs:
         env:
           SQLALCHEMY_DATABASE_URI: postgresql://postgres:postgres@127.0.0.1/scan-websites
           SQLALCHEMY_DATABASE_TEST_URI: postgresql://postgres:postgres@127.0.0.1/scan-websites
-        run: make test       
+        run: make test
