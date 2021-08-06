@@ -16,8 +16,6 @@ jobs:
           api:
             - Makefile
             - 'api/**'
-          scanners/axe-core:
-            - Makefile
             - 'scanners/axe-core/**'
 
   python-tests:
