@@ -13,8 +13,10 @@ jobs:
       id: filter
       with:
         filters: |
-          api: 'api/**'
-          scanners/axe-core: 'scanners/axe-core/**'
+          api:
+            - Makefile
+            - 'api/**'
+            - 'scanners/axe-core/**'
 
   python-tests:
     runs-on: ubuntu-latest
