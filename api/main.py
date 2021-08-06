@@ -16,13 +16,13 @@ def handler(event, context):
         response = asgi_handler(event, context)
         return response
 
-    elif event["task"] == "migrate":
+    elif event.get("task","") == "migrate":
         try:
             migrate_head()
             return "Success"
         except Exception as err:
             log.error(err)
-            return "Error: check cloudwatch logs for error."
+            return "Error"
 
     else:
         log.warning("Handler recieved unrecognised event")

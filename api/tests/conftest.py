@@ -27,11 +27,10 @@ def session():
 
 @pytest.fixture(scope="session", autouse=True)
 def setup_db():
-    os.chdir("./db_migrations")
     os.environ["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
         "SQLALCHEMY_DATABASE_TEST_URI"
     )
-    alembic_cfg = Config("./alembic.ini")
+    alembic_cfg = Config("./db_migrations/alembic.ini")
     command.downgrade(alembic_cfg, "base")
     command.upgrade(alembic_cfg, "head")
 
