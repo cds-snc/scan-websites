@@ -86,7 +86,7 @@ describe("Impl", () => {
         browser,
         storeMock,
         "databucketName",
-        "screenshotBucketName",
+        "screenshotBucketName"
       );
 
       expect(storeMock.putObject).toHaveBeenCalledWith({
@@ -124,7 +124,7 @@ describe("Impl", () => {
       browser,
       storeMock,
       "databucketName",
-      "screenshotBucketName",
+      "screenshotBucketName"
     );
     expect(storeMock.putObject).toHaveBeenCalledWith({
       Bucket: "databucketName",
