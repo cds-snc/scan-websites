@@ -1,51 +1,73 @@
 
 data "aws_caller_identity" "current" {}
 
+data "aws_iam_policy_document" "kms_policies" {
+
+  statement {
+
+    effect = "Allow"
+
+    actions = [
+      "kms:*"
+    ]
+
+    resources = [
+      "*"
+    ]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
+    }
+  }
+  statement {
+
+    effect = "Allow"
+
+    actions = [
+      "kms:Encrypt*",
+      "kms:Decrypt*",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:Describe*"
+    ]
+
+    resources = [
+      "*"
+    ]
+
+    principals {
+      type        = "Service"
+      identifiers = ["logs.ca-central-1.amazonaws.com"]
+    }
+  }
+
+  statement {
+
+    effect = "Allow"
+
+    actions = [
+      "kms:Decrypt*",
+      "kms:GenerateDataKey*",
+    ]
+
+    resources = [
+      "*"
+    ]
+
+    principals {
+      type        = "Service"
+      identifiers = ["cloudwatch.amazonaws.com"]
+    }
+  }
+
+}
+
 resource "aws_kms_key" "scan-websites" {
   description         = "KMS Key"
   enable_key_rotation = true
 
-  policy = <<EOF
-{
-  "Version" : "2012-10-17",
-  "Id" : "key-default-1",
-  "Statement" : [ {
-      "Sid" : "Enable IAM User Permissions",
-      "Effect" : "Allow",
-      "Principal" : {
-        "AWS" : "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
-      },
-      "Action" : "kms:*",
-      "Resource" : "*"
-    },
-    {
-      "Effect": "Allow",
-      "Principal": { "Service": "logs.ca-central-1.amazonaws.com" },
-      "Action": [ 
-        "kms:Encrypt*",
-        "kms:Decrypt*",
-        "kms:ReEncrypt*",
-        "kms:GenerateDataKey*",
-        "kms:Describe*"
-      ],
-      "Resource": "*"
-    },
-    {
-      "Sid": "Allow_CloudWatch_for_CMK",
-      "Effect": "Allow",
-      "Principal": {
-          "Service":[
-              "cloudwatch.amazonaws.com"
-          ]
-      },
-      "Action": [
-          "kms:Decrypt","kms:GenerateDataKey"
-      ],
-      "Resource": "*"
-    }
-  ]
-}
-EOF
+  policy = data.aws_iam_policy_document.kms_policies.json
 
   tags = {
     CostCenter = var.billing_code
