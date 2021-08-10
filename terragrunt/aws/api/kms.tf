@@ -1,4 +1,4 @@
-  
+
 data "aws_caller_identity" "current" {}
 
 resource "aws_kms_key" "scan-websites" {
