@@ -55,6 +55,18 @@ data "aws_iam_policy_document" "api_policies" {
     ]
   }
 
+  statement {
+
+    effect = "Allow"
+
+    actions = [
+      "sns:Publish"
+    ]
+    resources = [
+      aws_sns_topic.axe-core-urls.arn
+    ]
+  }
+
 }
 
 resource "aws_iam_policy" "api" {
