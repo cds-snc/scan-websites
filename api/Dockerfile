@@ -1,63 +1,32 @@
-# Define global args
-ARG FUNCTION_DIR="/home/app/"
-ARG RUNTIME_VERSION="3.9"
-ARG DISTRO_VERSION="3.12"
+# Define function directory
+ARG FUNCTION_DIR="/function"
 
-# Stage 1 - bundle base image + runtime
-# Grab a fresh copy of the image and install GCC
-FROM python:${RUNTIME_VERSION}-alpine${DISTRO_VERSION} AS python-alpine
+FROM python:3.9-slim-buster
 
-# Install GCC (Alpine uses musl but we compile and link dependencies with GCC)
-RUN apk add --no-cache \
-    libstdc++
-
-# Stage 2 - build function and dependencies
-FROM python-alpine AS build-image
-
-# Install aws-lambda-cpp build dependencies
-RUN apk add --no-cache \
-    build-base \
-    libtool \
-    autoconf \
-    automake \
-    libexecinfo-dev \
-    make \
-    cmake \
-    libcurl \
-    postgresql-dev \
-    gcc \
-    python3-dev \
-    musl-dev
-
-# Include global args in this stage of the build
-ARG FUNCTION_DIR
-ARG RUNTIME_VERSION
-
-# Create function directory
-RUN mkdir -p ${FUNCTION_DIR}
-
-# Copy handler function
-COPY . ${FUNCTION_DIR}
-
-# Optional – Install the function's dependencies
-RUN python${RUNTIME_VERSION} -m pip install -r ${FUNCTION_DIR}requirements.txt --target ${FUNCTION_DIR}
-
-# Install Lambda Runtime Interface Client for Python
-RUN python${RUNTIME_VERSION} -m pip install awslambdaric --target ${FUNCTION_DIR}
-
-# Stage 3 - final runtime image
-
-# Grab a fresh copy of the Python image
-FROM python-alpine
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+    && apt-get -y install --no-install-recommends ca-certificates curl git gstreamer1.0-libav libnss3-tools libatk-bridge2.0-0 libcups2-dev libxkbcommon-x11-0 libxcomposite-dev libxrandr2 libgbm-dev libgtk-3-0 libxshmfence-dev gnupg2 postgresql-client openssh-client python3-pip vim xz-utils zsh \
+    && apt-get autoremove -y && apt-get clean -y
 
 # Include global arg in this stage of the build
 ARG FUNCTION_DIR
 
+# Create function directory
+RUN mkdir -p ${FUNCTION_DIR}
+
+# Copy function code
+COPY . ${FUNCTION_DIR}
+
+RUN python3.9 -m pip install -r ${FUNCTION_DIR}/requirements.txt --target ${FUNCTION_DIR}
+
+# Install the runtime interface client
+RUN pip install \
+    --target ${FUNCTION_DIR} \
+    awslambdaric
+
 # Set working directory to function root directory
 WORKDIR ${FUNCTION_DIR}
 
-# Copy in the built dependencies
-COPY --from=build-image ${FUNCTION_DIR} ${FUNCTION_DIR}
+RUN python -m playwright install chromium
 
 # Set build variables
 ARG git_sha 
@@ -67,9 +36,6 @@ ENV GIT_SHA=$git_sha
 ADD https://github.com/aws/aws-lambda-runtime-interface-emulator/releases/latest/download/aws-lambda-rie /usr/bin/aws-lambda-rie
 COPY bin/entry.sh /
 RUN chmod 755 /usr/bin/aws-lambda-rie /entry.sh
-
-# Add missing library
-RUN apk add --no-cache libpq
 
 ENTRYPOINT [ "/entry.sh" ]
 CMD [ "main.handler" ]
