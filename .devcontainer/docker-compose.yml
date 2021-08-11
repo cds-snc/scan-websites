@@ -1,5 +1,9 @@
 version: '3'
 
+x-db-connection-strings: &db-connection-strings
+  SQLALCHEMY_DATABASE_URI: postgresql://postgres:postgres@db/scan-websites
+  SQLALCHEMY_DATABASE_TEST_URI: postgresql://postgres:postgres@test-db/scan-websites
+
 services:
   app:
     build: 
@@ -18,15 +22,13 @@ services:
     volumes:
       - ..:/workspace:cached   
     command: sleep infinity
-    ports: 
-      - 8000:8000
-    links: 
-      - db
-      - test-db
-    environment: 
-      SQLALCHEMY_DATABASE_URI: postgresql://postgres:postgres@db/scan-websites
-      SQLALCHEMY_DATABASE_TEST_URI: postgresql://postgres:postgres@test-db/scan-websites
-
+    environment:
+      <<: *db-connection-strings
+  api:
+    build:
+      context: ../api/
+    environment:
+      <<: *db-connection-strings
   db:
     image: postgres:11.2
     volumes:
