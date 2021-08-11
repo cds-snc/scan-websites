@@ -75,7 +75,7 @@ def test_UrlSpider_parse_calls_dispatch(_mock_extractor, mock_pub_sub):
     next(res)
     mock_pub_sub.dispatch.assert_called_once_with(
         {
-            "id": "id",
+            "parent_id": "id",
             "url": "http://example.com",
             "depth": 1,
             "referer": "http://google.com",

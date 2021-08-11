@@ -12,8 +12,8 @@ def dispatch(payload):
     # Currently only dispatches to axe-core
     AXE_CORE_URLS_TOPIC = os.environ.get("AXE_CORE_URLS_TOPIC", False)
 
-    # Add a key that can be linked back to the ID of the payload
-    payload["key"] = str(uuid.uuid4())
+    # Add a ID that can be linked back to the parent ID of the payload
+    payload["id"] = str(uuid.uuid4())
 
     send(AXE_CORE_URLS_TOPIC, payload)
 

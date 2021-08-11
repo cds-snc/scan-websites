@@ -5,7 +5,7 @@ export type HtmlPayload = {
 
 export type Payload = {
   html?: HtmlPayload;
-  key: string;
+  id: string;
   url?: string;
 };
 

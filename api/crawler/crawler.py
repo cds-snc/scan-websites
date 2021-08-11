@@ -1,3 +1,4 @@
+import os
 from urllib.parse import urlparse
 from multiprocessing.context import Process
 
@@ -11,7 +12,7 @@ from pub_sub import pub_sub
 
 class UrlSpider(Spider):
     name = "url_spider"
-    max_depth = 2
+    max_depth = os.environ.get("API_CRAWLER_DEPTH", 2)
 
     def __init__(self, id, url, *args, **kwargs):
         super(UrlSpider, self).__init__(*args, **kwargs)
@@ -26,7 +27,7 @@ class UrlSpider(Spider):
         curr_depth = response.meta.get("depth", 1)
 
         item = {}
-        item["id"] = self.id
+        item["parent_id"] = self.id
         item["url"] = response.url
         item["depth"] = curr_depth
         item["referer"] = response.meta.get("referer", "")
