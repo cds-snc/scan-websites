@@ -65,8 +65,6 @@ ENV GIT_SHA=$git_sha
 
 # Install lambda runtime interactive environment
 ARG RIE_VERSION=1.1
-# RUN wget https://github.com/aws/aws-lambda-runtime-interface-emulator/releases/latest/download/aws-lambda-rie \
-#     && mv aws-lambda-rie /usr/bin/aws-lambda-rie
 RUN wget -O aws-lambda-rie https://github.com/aws/aws-lambda-runtime-interface-emulator/releases/download/${RIE_VERSION}/aws-lambda-rie \
     && mv aws-lambda-rie /usr/bin/aws-lambda-rie
 COPY bin/entry.sh /
