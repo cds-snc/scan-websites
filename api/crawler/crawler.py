@@ -19,17 +19,25 @@ class UrlSpider(Spider):
 
     def parse(self, response):
 
-        curr_depth = response.meta.get('depth', 1)
+        curr_depth = response.meta.get("depth", 1)
 
         item = {}
         item["url"] = response.url
         item["depth"] = curr_depth
-        item['referer'] = response.meta.get('referer', '')
+        item["referer"] = response.meta.get("referer", "")
         yield item
 
-        for a in LinkExtractor(allow_domains=['canada.ca']).extract_links(response):
+        for a in LinkExtractor(allow_domains=["canada.ca"]).extract_links(response):
             if curr_depth < self.max_depth:
-                yield response.follow(a, callback=self.parse, meta={'depth': curr_depth + 1, 'referer': response.url, "playwright": True})
+                yield response.follow(
+                    a,
+                    callback=self.parse,
+                    meta={
+                        "depth": curr_depth + 1,
+                        "referer": response.url,
+                        "playwright": True,
+                    },
+                )
 
 
 def crawl(url):

@@ -16,13 +16,15 @@ def test_handler_unmatched_event(mock_logger):
     assert main.handler({}, {}) is False
     mock_logger.warning.assert_called_once_with("Handler recieved unrecognised event")
 
+
 @patch("main.migrate_head")
 def test_handler_migrate_event(mock_migrate_head):
-    assert main.handler({ "task" : "migrate"}, {})  == "Success"
+    assert main.handler({"task": "migrate"}, {}) == "Success"
     mock_migrate_head.assert_called_once()
+
 
 @patch("main.migrate_head")
 def test_handler_migrate_event_failed(mock_migrate_head):
     mock_migrate_head.side_effect = Exception()
-    assert main.handler({ "task" : "migrate"}, {})  == "Error"
+    assert main.handler({"task": "migrate"}, {}) == "Error"
     mock_migrate_head.assert_called_once()
