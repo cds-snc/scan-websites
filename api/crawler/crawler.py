@@ -1,34 +1,39 @@
 from urllib.parse import urlparse
+from multiprocessing.context import Process
 
 from scrapy import Request, Spider
 from scrapy.crawler import CrawlerProcess
 from scrapy.linkextractors import LinkExtractor
+
+from logger import log
+from pub_sub import pub_sub
 
 
 class UrlSpider(Spider):
     name = "url_spider"
     max_depth = 2
 
-    def __init__(self, url="", *args, **kwargs):
+    def __init__(self, id, url, *args, **kwargs):
         super(UrlSpider, self).__init__(*args, **kwargs)
         self.allowed_domains = [urlparse(url).netloc]
-        self.url = url  # py36
+        self.id = id
+        self.url = url
 
     def start_requests(self):
         yield Request(self.url, meta={"playwright": True})
 
     def parse(self, response):
-
         curr_depth = response.meta.get("depth", 1)
 
         item = {}
+        item["id"] = self.id
         item["url"] = response.url
         item["depth"] = curr_depth
         item["referer"] = response.meta.get("referer", "")
-        yield item
+        pub_sub.dispatch(item)
 
-        for a in LinkExtractor(allow_domains=["canada.ca"]).extract_links(response):
-            if curr_depth < self.max_depth:
+        if curr_depth < self.max_depth:
+            for a in LinkExtractor(self.allowed_domains).extract_links(response):
                 yield response.follow(
                     a,
                     callback=self.parse,
@@ -38,10 +43,11 @@ class UrlSpider(Spider):
                         "playwright": True,
                     },
                 )
+        yield True
 
 
-def crawl(url):
-    process = CrawlerProcess(
+def runner(id, url):
+    runner = CrawlerProcess(
         settings={
             "TWISTED_REACTOR": "twisted.internet.asyncioreactor.AsyncioSelectorReactor",
             "DOWNLOAD_HANDLERS": {
@@ -50,5 +56,15 @@ def crawl(url):
             },
         }
     )
-    process.crawl(UrlSpider, url=url)
+    runner.crawl(UrlSpider, id, url)
+    runner.start()
+
+
+def crawl(id, url):
+    if not id or not url:
+        log.error(f"id({id}) or url({url}) missing")
+        return
+
+    process = Process(target=runner, args=(id, url))
     process.start()
+    process.join()
