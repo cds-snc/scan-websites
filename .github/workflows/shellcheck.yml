@@ -11,7 +11,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Shellcheck
       run: |
-        .github/workflows/scripts/run-shellcheck.sh
+        .github/workflows/scripts/run_shellcheck.sh
 
 
 
