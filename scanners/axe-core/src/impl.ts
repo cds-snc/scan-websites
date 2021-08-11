@@ -12,7 +12,7 @@ export async function Impl(
   browser: Browser,
   store: BlobStore,
   reportBucket: string,
-  screenshotBucket: string,
+  screenshotBucket: string
 ): Promise<boolean> {
   try {
     await asyncForEach(records, async (record: Record) => {
@@ -50,7 +50,7 @@ export async function Impl(
 export async function convertEventToRecords(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
   event: any,
-  store: BlobStore,
+  store: BlobStore
 ): Promise<Record[]> {
   const records: Record[] = [];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -95,7 +95,7 @@ const createReport = async (
   url: string,
   page: Page,
   payload: Payload,
-  reportBucket: string,
+  reportBucket: string
 ) => {
   if (isStringEmptyUndefinedOrNull(reportBucket)) {
     return;
@@ -129,7 +129,7 @@ const takeScreenshot = async (
   store: BlobStore,
   key: string,
   page: Page,
-  screenshotBucket: string,
+  screenshotBucket: string
 ) => {
   if (isStringEmptyUndefinedOrNull(screenshotBucket)) {
     return;
