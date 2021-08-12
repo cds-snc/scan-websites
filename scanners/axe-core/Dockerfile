@@ -67,7 +67,7 @@ WORKDIR ${FUNCTION_DIR}
 
 # Copy in the built dependencies
 COPY --from=build-image ${FUNCTION_DIR}/node_modules ${FUNCTION_DIR}/node_modules
-COPY --from=build-image ${FUNCTION_DIR}/dist/index.js ${FUNCTION_DIR}
+COPY --from=build-image ${FUNCTION_DIR}/dist ${FUNCTION_DIR}
 
 # Set build variables
 ARG git_sha 
