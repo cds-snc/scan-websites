@@ -14,10 +14,10 @@ class UrlSpider(Spider):
     name = "url_spider"
     max_depth = os.environ.get("API_CRAWLER_DEPTH", 2)
 
-    def __init__(self, id, url, *args, **kwargs):
+    def __init__(self, job_id, url, *args, **kwargs):
         super(UrlSpider, self).__init__(*args, **kwargs)
         self.allowed_domains = [urlparse(url).netloc]
-        self.id = id
+        self.job_id = job_id
         self.url = url
 
     def start_requests(self):
@@ -27,7 +27,7 @@ class UrlSpider(Spider):
         curr_depth = response.meta.get("depth", 1)
 
         item = {}
-        item["parent_id"] = self.id
+        item["job_id"] = self.job_id
         item["url"] = response.url
         item["depth"] = curr_depth
         item["referer"] = response.meta.get("referer", "")
@@ -47,7 +47,7 @@ class UrlSpider(Spider):
         yield True
 
 
-def runner(id, url):
+def runner(job_id, url):
     runner = CrawlerProcess(
         settings={
             "TWISTED_REACTOR": "twisted.internet.asyncioreactor.AsyncioSelectorReactor",
@@ -57,15 +57,15 @@ def runner(id, url):
             },
         }
     )
-    runner.crawl(UrlSpider, id, url)
+    runner.crawl(UrlSpider, job_id, url)
     runner.start()
 
 
-def crawl(id, url):
-    if not id or not url:
-        log.error(f"id({id}) or url({url}) missing")
+def crawl(job_id, url):
+    if not job_id or not url:
+        log.error(f"job_id({job_id}) or url({url}) missing")
         return
 
-    process = Process(target=runner, args=(id, url))
+    process = Process(target=runner, args=(job_id, url))
     process.start()
     process.join()
