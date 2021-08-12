@@ -8,7 +8,7 @@ resource "aws_sns_topic" "axe-core-urls" {
 }
 
 resource "aws_sns_topic" "critical" {
-  name = "critical-alert-scan"
+  name              = "critical-alert-scan"
   kms_master_key_id = aws_kms_key.scan-websites.arn
 
   tags = {
@@ -17,7 +17,7 @@ resource "aws_sns_topic" "critical" {
 }
 
 resource "aws_sns_topic" "warning" {
-  name = "warning-alert-scan"
+  name              = "warning-alert-scan"
   kms_master_key_id = aws_kms_key.scan-websites.arn
 
   tags = {
