@@ -1,3 +1,4 @@
 .PHONY: fmt
 fmt:
-	terraform fmt -recursive aws
+	terraform fmt -recursive aws &&\
+	terragrunt hclfmt
