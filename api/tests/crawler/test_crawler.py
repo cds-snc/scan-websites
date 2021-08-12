@@ -22,7 +22,9 @@ def test_crawl_spawns_process(mock_runner, mock_process_class):
 
     crawler.crawl("job_id", "url")
 
-    mock_process_class.assert_called_once_with(target=mock_runner, args=("job_id", "url"))
+    mock_process_class.assert_called_once_with(
+        target=mock_runner, args=("job_id", "url")
+    )
     mock_process.start.assert_called_once()
     mock_process.join.assert_called_once()
 
