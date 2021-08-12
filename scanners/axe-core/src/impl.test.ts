@@ -34,7 +34,7 @@ const mockReport = {
 };
 
 const mockFileBody = {
-  key: "bar",
+  id: "bar",
   html: { slug: "slug", fragment: mockHTML },
 };
 
@@ -74,7 +74,7 @@ describe("Impl", () => {
       const records = [
         {
           payload: {
-            key: "bar",
+            id: "bar",
             url: "https://example.com/",
           },
           html: "",
@@ -101,7 +101,7 @@ describe("Impl", () => {
         Bucket: "databucketName",
         Body: JSON.stringify({
           url: "https://example.com/",
-          key: "bar",
+          id: "bar",
           report: mockReport,
         }),
         ContentType: "application/json",
@@ -130,7 +130,7 @@ describe("Impl", () => {
       Bucket: "databucketName",
       Body: JSON.stringify({
         url: "slug",
-        key: "bar",
+        id: "bar",
         report: mockReport,
       }),
       ContentType: "application/json",
@@ -143,7 +143,7 @@ describe("Impl", () => {
 describe("convertEventToRecords", () => {
   it("handles sqs", async () => {
     const payload = JSON.stringify({
-      key: "bar",
+      id: "bar",
       url: "https://example.com/",
     });
 

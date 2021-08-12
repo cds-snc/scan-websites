@@ -5,7 +5,6 @@
 	"dockerComposeFile": "docker-compose.yml",
 	"service": "app",
 	"workspaceFolder": "/workspace",
-
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
 		"python.pythonPath": "/usr/local/bin/python",
@@ -21,10 +20,8 @@
 		"python.linting.pycodestylePath": "/usr/local/py-utils/bin/pycodestyle",
 		"python.linting.pydocstylePath": "/usr/local/py-utils/bin/pydocstyle",
 		"python.linting.pylintPath": "/usr/local/py-utils/bin/pylint",
-
 		"terminal.integrated.shell.linux": "/bin/zsh"
 	},
-
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
 		"ms-python.python",
@@ -32,12 +29,9 @@
 		"redhat.vscode-yaml",
 		"timonwong.shellcheck"
 	],
-
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
-
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "pip3 install --user -r api/requirements.txt && pip3 install --user -r api/requirements_dev.txt",
-
+	"postCreateCommand": "pip3 install --user -r api/requirements.txt && pip3 install --user -r api/requirements_dev.txt && python -m playwright install chromium",
 	"remoteUser": "vscode"
 }

@@ -33,7 +33,7 @@ export async function Impl(
         await page.setContent(fragment, { waitUntil: "networkidle0" });
       }
 
-      await takeScreenshot(store, payload.key, page, screenshotBucket);
+      await takeScreenshot(store, payload.id, page, screenshotBucket);
       await createReport(store, url, page, payload, reportBucket);
     });
   } catch (error) {
@@ -101,7 +101,7 @@ const createReport = async (
     return;
   }
 
-  const key = payload.key;
+  const id = payload.id;
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore TS2345
   const results = await new AxePuppeteer(page)
@@ -112,13 +112,13 @@ const createReport = async (
   // Save result to bucket
   const object = {
     url,
-    key,
+    id,
     report,
   };
   await store
     .putObject({
       Bucket: reportBucket,
-      Key: `${key}.json`,
+      Key: `${id}.json`,
       Body: JSON.stringify(object),
       ContentType: "application/json",
     })
@@ -127,7 +127,7 @@ const createReport = async (
 
 const takeScreenshot = async (
   store: BlobStore,
-  key: string,
+  id: string,
   page: Page,
   screenshotBucket: string
 ) => {
@@ -141,7 +141,7 @@ const takeScreenshot = async (
   await store
     .putObject({
       Bucket: screenshotBucket,
-      Key: `${key}.png`,
+      Key: `${id}.png`,
       Body: screenshot as Buffer | Uint8Array | string,
       ContentType: "image/png",
       ACL: "public-read",
