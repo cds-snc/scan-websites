@@ -12,3 +12,19 @@ resource "aws_s3_bucket" "axe-core-report-data" {
     CostCenter = var.billing_code
   }
 }
+
+resource "aws_s3_bucket" "axe-core-screenshots" {
+  bucket = "${var.product_name}-${var.env}-axe-core-screenshots"
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+
+  tags = {
+    CostCenter = var.billing_code
+  }
+}
+
