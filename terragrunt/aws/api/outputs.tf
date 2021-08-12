@@ -9,3 +9,11 @@ output "axe_core_screenshots_bucket_id" {
 output "axe_core_urls_topic_arn" {
   value = aws_sns_topic.axe-core-urls.arn
 }
+
+output "vpc_id" {
+  value = module.vpc.vpc_id
+}
+
+output "private_subnet_ids" {
+  value = module.vpc.private_subnet_ids
+}
