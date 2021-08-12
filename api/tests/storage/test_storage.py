@@ -1,4 +1,3 @@
-import pytest
 from storage import storage
 from unittest.mock import MagicMock, patch
 
@@ -13,7 +12,7 @@ def test_get_object(mock_boto, mock_log):
     mock_client = MagicMock()
     mock_boto.resource.return_value = mock_client
 
-    storage.get_object(mock_record)
+    assert storage.get_object(mock_record) is True
     mock_client.Object.assert_called_once_with("bucket_name", "key")
     mock_client.Object().get().__getitem__.assert_called_once_with("Body")
     mock_log.info.assert_called_once_with(
@@ -36,5 +35,5 @@ def test_get_object_catch_exception(mock_boto, mock_log):
 
     mock_boto.resource.return_value = mock_client
 
-    storage.get_object(mock_record)
+    assert storage.get_object(mock_record) is False
     mock_log.error.assert_called_once_with("Error downloading key from bucket_name")
