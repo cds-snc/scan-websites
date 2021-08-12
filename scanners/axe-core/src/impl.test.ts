@@ -39,10 +39,12 @@ const mockFileBody = {
 };
 
 const page: Page = {
+  evaluate: async () => null,
   goto: async () => null,
   screenshot: async () => Buffer.from("I'm a string!", "utf-8"),
   setBypassCSP: async () => null,
   setContent: async () => null,
+  setViewport: async () => null,
   setUserAgent: async () => null,
 };
 

@@ -134,7 +134,8 @@ const takeScreenshot = async (
   if (isStringEmptyUndefinedOrNull(screenshotBucket)) {
     return;
   }
-
+  const bodyHeight = await page.evaluate(() => document.body.scrollHeight);
+  await page.setViewport({ width: 1920, height: bodyHeight });
   const screenshot = await page.screenshot({ fullPage: true });
 
   // Save result to bucket
