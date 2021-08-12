@@ -1,5 +1,5 @@
 terraform {
-  source = "../../aws//scanners/axe-core"
+  source = "../../../aws//scanners/axe-core"
 }
 
 dependencies {
