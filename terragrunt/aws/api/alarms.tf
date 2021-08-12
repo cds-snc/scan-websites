@@ -1,5 +1,5 @@
 module "ops_alarms" {
-  source                = "github.com/cds-snc/terraform_modules?ref=v0.0.21//user_login_alarm"
+  source                = "github.com/cds-snc/terraform-modules?ref=v0.0.21//user_login_alarm"
   account_names         = ["ops1", "ops2"]
   namespace             = "ops_alarms"
   log_group_name        = "CloudTrail/Landing-Zone-Logs"
