@@ -5,9 +5,12 @@ from database.migrate import migrate_head
 import os
 
 app = api.app
+
+
 def print_env_variables():
     rapi = os.getenv("AWS_LAMBDA_RUNTIME_API", "NOT_FOUND")
     log.info(f"AWS_LAMBDA_RUNTIME_API: {rapi}")
+
 
 def handler(event, context):
     print_env_variables()
