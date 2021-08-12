@@ -28,3 +28,15 @@ def test_handler_migrate_event_failed(mock_migrate_head):
     mock_migrate_head.side_effect = Exception()
     assert main.handler({"task": "migrate"}, {}) == "Error"
     mock_migrate_head.assert_called_once()
+
+
+@patch("main.storage")
+def test_handler_record_event_no_s3(mock_storage):
+    assert main.handler({"Records": []}, {}) == "Success"
+    mock_storage.get_object.assert_not_called()
+
+
+@patch("main.storage")
+def test_handler_record_event_contains_s3(mock_storage):
+    assert main.handler({"Records": [{"s3": {}}]}, {}) == "Success"
+    mock_storage.get_object.assert_called_once_with({"s3": {}})

@@ -2,6 +2,7 @@ from mangum import Mangum
 from api_gateway import api
 from logger import log
 from database.migrate import migrate_head
+from storage import storage
 import os
 
 app = api.app
@@ -21,6 +22,12 @@ def handler(event, context):
         asgi_handler = Mangum(app)
         response = asgi_handler(event, context)
         return response
+
+    elif "Records" in event:
+        for record in event.get("Records", []):
+            if "s3" in record:
+                storage.get_object(record)
+        return "Success"
 
     elif event.get("task", "") == "migrate":
         try:
