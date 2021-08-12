@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker run --rm -v "$PWD:/mnt" koalaman/shellcheck:v0.7.1 -P ./bin/ -x ./.github/workflows/scripts/*.sh
+docker run --rm -v "$PWD:/mnt" koalaman/shellcheck:v0.7.2 -P ./bin/ -x ./.github/workflows/scripts/*.sh
