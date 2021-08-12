@@ -35,7 +35,6 @@ jobs:
           chmod +x bin/terragrunt
           echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
 
-
       - uses: dorny/paths-filter@v2.2.1
         id: filter
         with:
@@ -43,9 +42,18 @@ jobs:
             api:
               - 'terragrunt/aws/api/**'
               - 'terragrunt/env/api/**'
+            scanners-axe-core:
+              - 'terragrunt/aws/scanners/axe-core/**'
+              - 'terragrunt/env/scanners/axe-core/**'
 
       - name: Apply api
         if: ${{ steps.filter.outputs.api == 'true' }}
         working-directory: terragrunt/env/api
+        run: |
+          terragrunt apply --terragrunt-non-interactive -auto-approve
+
+      - name: Apply scanners/axe-core
+        if: ${{ steps.filter.outputs.scanners-axe-core == 'true' }}
+        working-directory: terragrunt/env/scanners/axe-core
         run: |
           terragrunt apply --terragrunt-non-interactive -auto-approve

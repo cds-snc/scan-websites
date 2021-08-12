@@ -4,7 +4,7 @@ on:
   pull_request:
     paths:
       - "terragrunt/**"
-      - ".github/workflows/**"  
+      - ".github/workflows/**"
 env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -20,6 +20,7 @@ jobs:
       matrix:
         include:
           - module: api
+          - module: scanners/axe-core
 
     runs-on: ubuntu-latest
     steps:
@@ -38,7 +39,7 @@ jobs:
           wget -O bin/terragrunt https://github.com/gruntwork-io/terragrunt/releases/download/$TERRAGRUNT_VERSION/terragrunt_linux_amd64
           chmod +x bin/*
           echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
-      
+
       - name: Terraform plan
         uses: cds-snc/terraform-plan@v1
         with:

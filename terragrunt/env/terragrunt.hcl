@@ -1,8 +1,8 @@
 locals {
-  account_id   = "507252742351"
-  domain       = ""
-  env          = "production"
-  product_name = "scan-websites"
+  account_id       = "507252742351"
+  domain           = ""
+  env              = "production"
+  product_name     = "scan-websites"
   cost_center_code = "${local.product_name}-${local.env}"
 }
 
