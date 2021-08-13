@@ -51,6 +51,7 @@ fmt: $(addsuffix .fmt,$(LAMBDA_RESOURCES)) $(addsuffix .fmt,$(TERRAGRUNT_RESOURC
 install: $(addsuffix .install,$(LAMBDA_RESOURCES))
 
 install-dev: $(addsuffix .install-dev,$(LAMBDA_RESOURCES))
+	$(MAKE) -C terragrunt install-dev
 
 lint: $(addsuffix .lint,$(LAMBDA_RESOURCES))
 	@echo "[Linting terragrunt]"
