@@ -3,11 +3,10 @@ import uuid
 
 from sqlalchemy import DateTime, Column, String
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import validates
+from sqlalchemy.orm import relationship, validates
 
 
-Base = declarative_base()
+from models import Base
 
 
 class Organisation(Base):
@@ -30,7 +29,9 @@ class Organisation(Base):
         onupdate=datetime.datetime.utcnow,
     )
 
+    users = relationship("User")
+
     @validates("name")
-    def validate_name(self, key, value):
+    def validate_name(self, _key, value):
         assert value != ""
         return value
