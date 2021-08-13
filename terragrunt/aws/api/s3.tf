@@ -34,6 +34,7 @@ resource "aws_s3_bucket_public_access_block" "axe-core-report-data" {
 
 resource "aws_s3_bucket" "axe-core-screenshots" {
   bucket = "${var.product_name}-${var.env}-axe-core-screenshots"
+  acl    = "private"
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
