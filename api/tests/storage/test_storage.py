@@ -10,13 +10,15 @@ def test_get_object(mock_boto, mock_log):
     mock_record.s3.object.key = "key"
 
     mock_client = MagicMock()
+    mock_client.Object.return_value.get.return_value.__getitem__.return_value.read.return_value = "body"
+
     mock_boto.resource.return_value = mock_client
 
-    assert storage.get_object(mock_record) is True
+    assert storage.get_object(mock_record) == "body"
     mock_client.Object.assert_called_once_with("bucket_name", "key")
     mock_client.Object().get().__getitem__.assert_called_once_with("Body")
     mock_log.info.assert_called_once_with(
-        "Downloaded key from bucket_name with length 0"
+        "Downloaded key from bucket_name with length 4"
     )
 
 
