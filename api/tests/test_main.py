@@ -31,7 +31,7 @@ def test_handler_migrate_event_failed(mock_migrate_head):
 
 
 @patch("main.storage")
-def test_handler_record_event_no_s3(mock_storage):
+def test_handler_record_event_no_records(mock_storage):
     assert main.handler({"Records": []}, {}) == "Success"
     mock_storage.get_object.assert_not_called()
 
@@ -40,3 +40,11 @@ def test_handler_record_event_no_s3(mock_storage):
 def test_handler_record_event_contains_s3(mock_storage):
     assert main.handler({"Records": [{"s3": {}}]}, {}) == "Success"
     mock_storage.get_object.assert_called_once_with({"s3": {}})
+
+
+@patch("main.log")
+@patch("main.storage")
+def test_handler_record_event_contains_unrecognised_event(mock_storage, mock_logger):
+    assert main.handler({"Records": [{"sns": {}}]}, {}) == "Success"
+    mock_storage.get_object.assert_not_called()
+    mock_logger.warning.assert_called_once_with("Handler recieved unrecognised record: {'sns': {}}")
