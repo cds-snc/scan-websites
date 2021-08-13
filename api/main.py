@@ -28,7 +28,7 @@ def handler(event, context):
             if "s3" in record:
                 storage.get_object(record)
             else:
-                log.warning(f"Handler recieved unrecognised record: {record}")
+                log.warning(f"Handler received unrecognised record: {record}")
         return "Success"
 
     elif event.get("task", "") == "migrate":
@@ -40,6 +40,6 @@ def handler(event, context):
             return "Error"
 
     else:
-        log.warning("Handler recieved unrecognised event")
+        log.warning("Handler received unrecognised event")
 
     return False

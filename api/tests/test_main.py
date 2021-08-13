@@ -14,7 +14,7 @@ def test_handler_api_gateway_event(mock_mangum):
 @patch("main.log")
 def test_handler_unmatched_event(mock_logger):
     assert main.handler({}, {}) is False
-    mock_logger.warning.assert_called_once_with("Handler recieved unrecognised event")
+    mock_logger.warning.assert_called_once_with("Handler received unrecognised event")
 
 
 @patch("main.migrate_head")
@@ -48,5 +48,5 @@ def test_handler_record_event_contains_unrecognised_event(mock_storage, mock_log
     assert main.handler({"Records": [{"sns": {}}]}, {}) == "Success"
     mock_storage.get_object.assert_not_called()
     mock_logger.warning.assert_called_once_with(
-        "Handler recieved unrecognised record: {'sns': {}}"
+        "Handler received unrecognised record: {'sns': {}}"
     )
