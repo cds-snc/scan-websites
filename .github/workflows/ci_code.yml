@@ -7,6 +7,9 @@ on:
       - scanners/axe-core/**
       - scanners/owasp-zap/**
 
+env:
+  TERRAGRUNT_VERSION: v0.31.1
+
 jobs:
 
   tests:
