@@ -1,0 +1,92 @@
+[
+	{
+		"cpu": 0,
+		"environment": [
+			{
+				"name": "S3_BUCKET",
+				"value": "${s3_name}"
+			},
+			{
+				"name": "ZAP_PORT",
+				"value": "8080"
+			}
+		],
+		"essential": true,
+		"image": "${image}",
+		"linuxParameters": {
+			"capabilities": {
+				"drop": null,
+				"add": [
+					"SYS_PTRACE"
+				]
+			}
+		},
+		"logConfiguration": {
+			"logDriver": "awslogs",
+			"options": {
+				"awslogs-group": "${awslogs-group}",
+				"awslogs-region": "${awslogs-region}",
+				"awslogs-stream-prefix": "${awslogs-stream-prefix}"
+			}
+		},
+		"mountPoints": [],
+		"name": "${name}",
+		"portMappings": [
+			{
+				"hostPort": 8001,
+				"protocol": "tcp",
+				"containerPort": 8001
+			}
+		],
+		"volumesFrom": []
+	},
+	{
+		"command": [
+			"zap.sh",
+			"-daemon",
+			"-host",
+			"0.0.0.0",
+			"-port",
+			"8080",
+			"-config",
+			"api.disablekey=true",
+			"-config",
+			"api.addrs.addr.name=.*",
+			"-config",
+			"api.addrs.addr.regex=true"
+		],
+		"cpu": 1024,
+		"environment": [],
+		"essential": true,
+		"image": "owasp/zap2docker-stable",
+		"linuxParameters": {
+			"capabilities": {
+				"drop": ["ALL"]
+			}
+		},
+		"logConfiguration": {
+			"logDriver": "awslogs",
+			"options": {
+				"awslogs-group": "${awslogs-group}",
+				"awslogs-region": "${awslogs-region}",
+				"awslogs-stream-prefix": "${awslogs-stream-prefix}"
+			}
+		},
+		"memory": 3072,
+		"mountPoints": [],
+		"name": "zap2docker",
+		"portMappings": [
+			{
+				"hostPort": 8080,
+				"protocol": "tcp",
+				"containerPort": 8080
+			},
+			{
+				"hostPort": 8090,
+				"protocol": "tcp",
+				"containerPort": 8090
+			}
+		],
+		"volumesFrom": []
+	}
+]
