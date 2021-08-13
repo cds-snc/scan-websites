@@ -1,5 +1,5 @@
 resource "aws_security_group" "security_tools_web_scanning" {
-  name        = "web-security-scanners-sg "
+  name        = "web-security-scanners-sg"
   description = "Web access for Security Scanners"
   vpc_id      = var.vpc_id
 
