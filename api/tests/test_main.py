@@ -47,4 +47,6 @@ def test_handler_record_event_contains_s3(mock_storage):
 def test_handler_record_event_contains_unrecognised_event(mock_storage, mock_logger):
     assert main.handler({"Records": [{"sns": {}}]}, {}) == "Success"
     mock_storage.get_object.assert_not_called()
-    mock_logger.warning.assert_called_once_with("Handler recieved unrecognised record: {'sns': {}}")
+    mock_logger.warning.assert_called_once_with(
+        "Handler recieved unrecognised record: {'sns': {}}"
+    )

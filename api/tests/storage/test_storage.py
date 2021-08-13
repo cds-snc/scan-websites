@@ -10,7 +10,9 @@ def test_get_object(mock_boto, mock_log):
     mock_record.s3.object.key = "key"
 
     mock_client = MagicMock()
-    mock_client.Object.return_value.get.return_value.__getitem__.return_value.read.return_value = "body"
+    mock_client.Object.return_value.get.return_value.__getitem__.return_value.read.return_value = (
+        "body"
+    )
 
     mock_boto.resource.return_value = mock_client
 
