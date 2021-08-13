@@ -1,4 +1,5 @@
 RESOURCES = \
+	terragrunt \
 	api \
 	scanners/axe-core \
 	scanners/owasp-zap \

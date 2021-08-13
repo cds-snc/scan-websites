@@ -1,21 +1,26 @@
-.PHONY: fmt checkov install lint test fmt-ci lint-ci build install-dev
+.PHONY: build test fmt lint install-dev install fmt-ci lint-ci
+
+build:
+
+test:
+
+fmt-ci: fmt
+
 fmt:
-	terraform fmt -recursive aws &&\
+	terraform fmt -recursive aws && \
 	terragrunt hclfmt
 
-checkov:
+build:
+
+install:
+
+install-dev:
+	pip3 install --upgrade requests setuptools && \
+	pip3 install --upgrade botocore checkov
+
+lint:
 	checkov --directory=aws
 
-build: ;
+lint-ci: lint
 
-install: ;
-
-install-dev: ;
-
-lint: ;
-
-lint-ci: ;
-
-test: ;
-
-fmt-ci: ;
+test:
