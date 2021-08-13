@@ -37,8 +37,8 @@ data "template_file" "scanning_tools" {
     awslogs-region        = "ca-central-1"
     awslogs-stream-prefix = "ecs-zap-runner"
     s3_name               = aws_s3_bucket.owasp-zap-report-data.bucket
-    awslogs-group = aws_cloudwatch_log_group.log.name
-    name          = "zap_runner"
+    awslogs-group         = aws_cloudwatch_log_group.log.name
+    name                  = "zap_runner"
   }
 }
 

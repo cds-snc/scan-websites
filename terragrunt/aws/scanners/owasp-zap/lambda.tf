@@ -11,11 +11,11 @@ resource "aws_lambda_function" "scanners-owasp-zap" {
 
   environment {
     variables = {
-      REPORT_DATA_BUCKET      = aws_s3_bucket.owasp-zap-report-data.bucket
-      CLUSTER                 = aws_ecs_cluster.scanning_tools.arn
-      TASK_DEF_ARN            = aws_ecs_task_definition.zap_runner.arn
-      PRIVATE_SUBNETS         = join(",", var.private_subnet_ids)
-      SECURITY_GROUP          = aws_security_group.security_tools_web_scanning.id
+      REPORT_DATA_BUCKET = aws_s3_bucket.owasp-zap-report-data.bucket
+      CLUSTER            = aws_ecs_cluster.scanning_tools.arn
+      TASK_DEF_ARN       = aws_ecs_task_definition.zap_runner.arn
+      PRIVATE_SUBNETS    = join(",", var.private_subnet_ids)
+      SECURITY_GROUP     = aws_security_group.security_tools_web_scanning.id
     }
   }
 
