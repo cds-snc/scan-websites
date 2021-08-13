@@ -49,20 +49,7 @@ jobs:
               - 'terragrunt/aws/scanners/owasp-zap/**'
               - 'terragrunt/env/scanners/owasp-zap/**'
 
-      - name: Apply api
+      - name: Apply Terragrunt
         if: ${{ steps.filter.outputs.api == 'true' }}
-        working-directory: terragrunt/env/api
         run: |
-          terragrunt apply --terragrunt-non-interactive -auto-approve
-
-      - name: Apply scanners/axe-core
-        if: ${{ steps.filter.outputs.scanners-axe-core == 'true' }}
-        working-directory: terragrunt/env/scanners/axe-core
-        run: |
-          terragrunt apply --terragrunt-non-interactive -auto-approve
-
-      - name: Apply scanners/owasp-zap
-        if: ${{ steps.filter.outputs.scanners-owasp-zap == 'true' }}
-        working-directory: terragrunt/env/scanners/owasp-zap
-        run: |
-          terragrunt apply --terragrunt-non-interactive -auto-approve          
+          make terragrunt-apply

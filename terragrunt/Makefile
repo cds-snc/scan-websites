@@ -1,7 +1,6 @@
-.PHONY: fmt
+.PHONY: fmt lint
 fmt:
-	terraform fmt -recursive aws &&\
-	terragrunt hclfmt
+	terraform fmt -recursive .
 
-checkov:
+lint:
 	checkov --directory=aws
