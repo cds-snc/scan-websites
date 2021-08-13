@@ -36,9 +36,10 @@ data "aws_iam_policy_document" "zap_runner_policies" {
       "logs:CreateLogStream",
       "logs:PutLogEvents"
     ]
-
+    
     resources = [
-      "*"
+      aws_cloudwatch_log_group.log.arn,
+      "${aws_cloudwatch_log_group.log.arn}:log-stream:*"
     ]
   }
 

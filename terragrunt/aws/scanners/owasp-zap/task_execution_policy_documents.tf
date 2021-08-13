@@ -22,8 +22,7 @@ data "aws_iam_policy_document" "zap_runner_container_policies" {
       "ecr:BatchCheckLayerAvailability",
       "ecr:GetDownloadUrlForLayer",
       "ecr:BatchGetImage",
-      "logs:CreateLogStream",
-      "logs:PutLogEvents"
+
     ]
     resources = [
       "*"
