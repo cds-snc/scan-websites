@@ -10,7 +10,6 @@ dependency "api" {
   config_path = "../../api"
 
   mock_outputs_allowed_terraform_commands = ["validate", "plan"]
-  skip_outputs = true
   mock_outputs = {
     vpc_id             = ""
     private_subnet_ids = ""
@@ -19,7 +18,7 @@ dependency "api" {
 
 inputs = {
   vpc_id             = dependency.api.outputs.vpc_id
-  private_subnet_ids = [dependency.api.outputs.private_subnet_ids]
+  private_subnet_ids = dependency.api.outputs.private_subnet_ids
 }
 
 include {
