@@ -20,7 +20,7 @@ install:
 install-dev:
 	pip3 install --upgrade requests setuptools && \
 	pip3 install --upgrade botocore checkov && \
-	curl -Lo terragrunt "https://github.com/gruntwork-io/terragrunt/releases/download/v$(TERRAGRUNT_VERSION)/terragrunt_linux_$(dpkg --print-architecture)" && \
+	echo curl -Lo terragrunt "https://github.com/gruntwork-io/terragrunt/releases/download/v$(TERRAGRUNT_VERSION)/terragrunt_linux_$(dpkg --print-architecture)" && \
     echo "$(TERRAGRUNT_CHECKSUM) terragrunt" | sha256sum --check && \
     chmod +x terragrunt && \
     mv terragrunt /usr/local/bin/
