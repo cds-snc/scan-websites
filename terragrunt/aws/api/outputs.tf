@@ -17,3 +17,7 @@ output "vpc_id" {
 output "private_subnet_ids" {
   value = module.vpc.private_subnet_ids
 }
+
+output "scan_websites_kms_key_arn" {
+  value = aws_kms_key.scan-websites.arn
+}
