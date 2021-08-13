@@ -34,18 +34,6 @@ data "aws_iam_policy_document" "zap_runner_container_policies" {
     effect = "Allow"
 
     actions = [
-      "secretsmanager:GetSecretValue"
-    ]
-
-    resources = [
-      "*"
-    ]
-  }
-
-  statement {
-    effect = "Allow"
-
-    actions = [
       "lambda:InvokeFunction"
     ]
 
@@ -106,7 +94,7 @@ data "aws_iam_policy_document" "zap_runner_container_policies" {
       "s3:PutObject",
       "s3:PutObjectAcl",
     ]
-    resources = ["arn:aws:s3:::*/*"]
+    resources = [aws_s3_bucket.owasp-zap-report-data.arn]
 
   }
 
