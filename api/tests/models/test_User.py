@@ -106,7 +106,9 @@ def test_user_empty_organisation_fails(session):
     session.rollback()
 
 
-def test_user_duplicate_email_fails(assert_new_model_saved, organisation_fixture, session):
+def test_user_duplicate_email_fails(
+    assert_new_model_saved, organisation_fixture, session
+):
     user = User(
         name="name",
         email_address="email",
