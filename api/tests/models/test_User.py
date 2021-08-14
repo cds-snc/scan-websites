@@ -104,3 +104,34 @@ def test_user_empty_organisation_fails(session):
     with pytest.raises(IntegrityError):
         session.commit()
     session.rollback()
+
+
+def test_user_duplicate_email_fails(assert_new_model_saved, organisation_fixture, session):
+    user = User(
+        name="name",
+        email_address="email",
+        password="password",
+        organisation=organisation_fixture,
+    )
+
+    session.add(user)
+    session.commit()
+
+    assert user.name == "name"
+    assert_new_model_saved(user)
+
+    user_two = User(
+        name="name_two",
+        email_address="email",
+        password="password",
+        organisation=organisation_fixture,
+    )
+
+    session.add(user_two)
+
+    with pytest.raises(IntegrityError):
+        session.commit()
+
+    session.rollback()
+    session.delete(user)
+    session.commit()
