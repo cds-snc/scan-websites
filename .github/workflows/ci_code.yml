@@ -18,7 +18,7 @@ jobs:
               - 'api/**'
               - 'scanners/axe-core/**'
 
-  python-tests:
+  tests:
     if: ${{ needs.changes.outputs.packages != '[]' }}
     runs-on: ubuntu-latest
     services:
