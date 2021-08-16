@@ -1,3 +1,4 @@
+import { SNSEvent, SNSEventRecord } from "aws-lambda"
 import { asyncForEach } from "./common/foreach";
 import { Record } from "./common/record";
 import { Runner } from "./common/runner";
@@ -26,13 +27,11 @@ export async function Impl(
 }
 
 export async function convertEventToRecords(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
-  event: any,
+  event: SNSEvent,
 ): Promise<Record[]> {
   const records: Record[] = [];
-  // Parse SNS
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await asyncForEach(event.Records, async (record: any) => {
+  await asyncForEach(event.Records, async (record: SNSEventRecord) => {
+    // Parse the SNS
     // eslint-disable-next-line no-prototype-builtins
     records.push({
       payload: JSON.parse(record.Sns.Message),
