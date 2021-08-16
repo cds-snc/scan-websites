@@ -17,6 +17,7 @@ jobs:
               - Makefile
               - 'api/**'
               - 'scanners/axe-core/**'
+              - 'scanners/owasp-zap/**'
 
   tests:
     if: ${{ needs.changes.outputs.packages != '[]' }}
