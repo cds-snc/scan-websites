@@ -19,7 +19,7 @@ ARG TERRAGRUNT_CHECKSUM
 
 # Install packages
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends awscli ca-certificates curl git gstreamer1.0-libav libnss3-tools libatk-bridge2.0-0 libcups2-dev libxkbcommon-x11-0 libxcomposite-dev libxrandr2 libgbm-dev libgtk-3-0 libxshmfence-dev gnupg2 jq make openssh-client python3-pip vim xz-utils zsh \
+    && apt-get -y install --no-install-recommends ca-certificates curl git gstreamer1.0-libav libnss3-tools libatk-bridge2.0-0 libcups2-dev libxkbcommon-x11-0 libxcomposite-dev libxrandr2 libgbm-dev libgtk-3-0 libxshmfence-dev gnupg2 jq make openssh-client python3-pip vim xz-utils zsh \
     && apt-get autoremove -y && apt-get clean -y
 
 # Install Terraform
@@ -45,6 +45,16 @@ RUN curl -Lo shellcheck.tar.xz "https://github.com/koalaman/shellcheck/releases/
 # Install Checkov
 RUN pip3 install --upgrade requests setuptools \
     && pip3 install --upgrade botocore checkov
+
+# Install AWS CLI
+ARG AWS_CLI_VERSION
+COPY .devcontainer/aws_cli.asc ./
+RUN curl -Lo awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWS_CLI_VERSION}.zip" \
+    && curl -Lo awscliv2.sig "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWS_CLI_VERSION}.zip.sig" \
+    && gpg --import ./aws_cli.asc \
+    && gpg --verify awscliv2.sig awscliv2.zip \
+    && unzip awscliv2.zip \
+    && ./aws/install -i /usr/local/aws-cli -b /usr/local/bin
 
 # Setup aliases and autocomplete
 RUN echo "\n\
