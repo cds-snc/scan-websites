@@ -1,11 +1,10 @@
-import { ECS } from "aws-sdk";
 import { asyncForEach } from "./common/foreach";
 import { Record } from "./common/record";
-
-const ecs = new ECS({ region: "ca-central-1" });
+import { Runner } from "./common/runner";
 
 export async function Impl(
   records: Record[],
+  runner: Runner,
 ): Promise<boolean> {
   try {
     await asyncForEach(records, async (record: Record) => {
@@ -17,7 +16,7 @@ export async function Impl(
         networkConfiguration: { awsvpcConfiguration: {securityGroups: [process.env.SECURITY_GROUP],subnets: process.env.PRIVATE_SUBNETS.split(',')}},
       };
       
-      await ecs.runTask(params).promise();
+      await runner.runTask(params).promise();
     });
   } catch (error) {
     console.log(error);
@@ -31,9 +30,9 @@ export async function convertEventToRecords(
   event: any,
 ): Promise<Record[]> {
   const records: Record[] = [];
+  // Parse SNS
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   await asyncForEach(event.Records, async (record: any) => {
-    // Parse the correct message body, SNS or S3
     // eslint-disable-next-line no-prototype-builtins
     records.push({
       payload: JSON.parse(record.Sns.Message),
@@ -42,6 +41,3 @@ export async function convertEventToRecords(
   });
   return records;
 }
-
-export const isStringEmptyUndefinedOrNull = (str: string): boolean =>
-  str === undefined || str === null || str === "";

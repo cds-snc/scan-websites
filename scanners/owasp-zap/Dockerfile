@@ -43,9 +43,6 @@ COPY . ${FUNCTION_DIR}
 
 WORKDIR ${FUNCTION_DIR}
 
-# Optional – Install the function's dependencies
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-
 RUN npm install
 RUN npm install -g typescript
 RUN make build

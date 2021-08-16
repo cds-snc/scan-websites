@@ -1,7 +1,6 @@
 import {
   Impl,
   convertEventToRecords,
-  isStringEmptyUndefinedOrNull,
 } from "./impl";
 import {
   SNSEvent,
@@ -55,6 +54,7 @@ describe("Impl", () => {
 
       const response = await Impl(
         records,
+        ecs,
       );
 
       expect(ecs.runTask).toHaveBeenCalledWith({
@@ -82,23 +82,5 @@ describe("convertEventToRecords", () => {
 
     const records = await convertEventToRecords(event);
     expect(records.length).toBe(1);
-  });
-});
-
-describe("isStringEmpty", () => {
-  it("handles undefined", () => {
-    expect(isStringEmptyUndefinedOrNull(undefined)).toBe(true);
-  });
-
-  it("handles null", () => {
-    expect(isStringEmptyUndefinedOrNull(null)).toBe(true);
-  });
-
-  it("handles empty string", () => {
-    expect(isStringEmptyUndefinedOrNull("")).toBe(true);
-  });
-
-  it("handles non-empty strings", () => {
-    expect(isStringEmptyUndefinedOrNull("foo")).toBe(false);
   });
 });
