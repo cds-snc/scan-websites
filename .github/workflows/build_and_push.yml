@@ -14,6 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       images: ${{ steps.filter.outputs.changes }}
+      ecs-images: ${{ steps.filter-ecs.outputs.changes }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -25,6 +26,7 @@ jobs:
             api: 'api/**'
             scanners/axe-core: 'scanners/axe-core/**'
             scanners/owasp-zap: 'scanners/owasp-zap/**'
+            runners-owasp-zap: 'task-runners/owasp-zap/**'
 
   build-push-and-deploy:
     if: ${{ needs.changes.outputs.images != '[]' }}
@@ -68,6 +70,7 @@ jobs:
         run: docker logout ${{ steps.login-ecr.outputs.registry }}
 
       - name: Deploy lambda
+        if: ${{ matrix.image == 'api' }} || ${{ contains(matrix.image, 'scanners' }}
         run: |
           FNAME = $(sed 's/\//-/g' <<< "${{ matrix.image }}")
           aws lambda update-function-code \

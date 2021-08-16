@@ -8,8 +8,8 @@ resource "aws_ecs_cluster" "scanning_tools" {
 
 }
 
-resource "aws_ecs_task_definition" "zap_runner" {
-  family       = "zap_runner"
+resource "aws_ecs_task_definition" "runners-owasp-zap" {
+  family       = "runners-owasp-zap"
   cpu          = 2048
   memory       = 16384
   network_mode = "awsvpc"
@@ -26,19 +26,19 @@ resource "aws_ecs_task_definition" "zap_runner" {
 
 resource "aws_cloudwatch_log_group" "log" {
   # checkov:skip=CKV_AWS_158:Encryption using default CloudWatch service key is acceptable
-  name              = "/aws/ecs/zap_runner_ecs"
+  name              = "/aws/ecs/runners_owasp_zap_ecs"
   retention_in_days = 14
 }
 
 data "template_file" "scanning_tools" {
   template = file("container-definitions/zap_runner.json")
   vars = {
-    image                 = "${aws_ecr_repository.scanners-owasp-zap.repository_url}:latest"
+    image                 = "${aws_ecr_repository.runners-owasp-zap.repository_url}:latest"
     awslogs-region        = "ca-central-1"
-    awslogs-stream-prefix = "ecs-zap-runner"
+    awslogs-stream-prefix = "ecs-runners-owasp-zap"
     s3_name               = aws_s3_bucket.owasp-zap-report-data.bucket
     awslogs-group         = aws_cloudwatch_log_group.log.name
-    name                  = "zap_runner"
+    name                  = "runners-owasp-zap"
   }
 }
 
