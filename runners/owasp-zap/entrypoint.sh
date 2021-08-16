@@ -45,7 +45,7 @@ else
   IMPORTVULTOSECURITYHUB=true
 fi
 
-jq "{ \"messageType\": \"ScanReport\", \"reportType\": \"OWASP-Zap\", \"createdAt\": $(date +\"%Y-%m-%dT%H:%M:%S\"),\"import_to_securityhub\": \"$IMPORTVULTOSECURITYHUB\",\"scan_url\": \"$SCAN_URL\",\"s3bucket\": \"${S3_BUCKET}\",\"key\": \"Reports/$FILENAME.xml\", \"report\": . }" zap-scan-results.json > payload.json
+jq "{ \"messageType\": \"ScanReport\", \"reportType\": \"OWASP-Zap\", \"createdAt\": $(date +\"%Y-%m-%dT%H:%M:%S\"),\"importToSecurityhub\": \"$IMPORTVULTOSECURITYHUB\",\"scanUrl\": \"$SCAN_URL\",\"s3Bucket\": \"${S3_BUCKET}\",\"key\": \"Reports/$FILENAME.xml\", \"report\": . }" zap-scan-results.json > payload.json
 
 aws s3 cp payload.json s3://"${S3_BUCKET}"/Reports/"$FILENAME".json
 

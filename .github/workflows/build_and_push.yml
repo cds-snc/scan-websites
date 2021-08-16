@@ -26,7 +26,7 @@ jobs:
             api: 'api/**'
             scanners/axe-core: 'scanners/axe-core/**'
             scanners/owasp-zap: 'scanners/owasp-zap/**'
-            runners-owasp-zap: 'task-runners/owasp-zap/**'
+            runners/owasp-zap: 'runners/owasp-zap/**'
 
   build-push-and-deploy:
     if: ${{ needs.changes.outputs.images != '[]' }}
