@@ -14,7 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       images: ${{ steps.filter.outputs.changes }}
-      ecs-images: ${{ steps.filter-ecs.outputs.changes }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
