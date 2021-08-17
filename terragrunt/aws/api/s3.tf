@@ -1,4 +1,4 @@
-locals = {
+locals {
   name_prefix = "${var.product_name}-${var.env}"
   axe_core_report_data_name = "${local.name_prefix}-axe-core-report-data"
   axe_core_screenshots_name = "${local.name_prefix}-axe-core-screenshots"
