@@ -31,7 +31,7 @@ fDate=$(echo "$date" | sed -e 's/[^A-Za-z0-9._-]/_/g')
 # Convert URL into a valid filename for the report
 FILENAME=$(echo "$SCAN_URL" | sed -e 's/[^A-Za-z0-9._-]/_/g')-$fDate
 
-zap-cli --port "${ZAP_PORT}" --zap-url "http://$HOST_IP" exclude "^.*(logout|log-out|signout|sign-out|deconnecter).*$"
+zap-cli --port "${ZAP_PORT}" --zap-url "http://$HOST_IP" exclude "^.*/(logout|log-out|signout|sign-out|deconnecter)/?$"
 zap-cli --port "${ZAP_PORT}" --zap-url "http://$HOST_IP" exclude "^.*\.(css|gif|jpe?g|tiff|png|webp|bmp|ico|svg|js|jsx|pdf)$"
 zap-cli --port "${ZAP_PORT}" --zap-url "http://$HOST_IP" open-url "${SCAN_URL}"
 zap-cli --port "${ZAP_PORT}" --zap-url "http://$HOST_IP" spider "${SCAN_URL}"
