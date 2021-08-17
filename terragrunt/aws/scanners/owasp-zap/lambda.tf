@@ -33,6 +33,12 @@ resource "aws_lambda_function" "scanners-owasp-zap" {
   }
 }
 
+resource "aws_sns_topic_subscription" "scanners-owasp-zap-lambda-subscription" {
+  topic_arn = aws_sns_topic.owasp-zap-urls.arn
+  protocol  = "lambda"
+  endpoint  = aws_lambda_function.scanners-owasp-zap.arn
+}
+
 resource "aws_lambda_permission" "scanners-owasp-zap" {
   statement_id  = "AllowZapRunnerSNSInvoke"
   function_name = aws_lambda_function.scanners-owasp-zap.function_name

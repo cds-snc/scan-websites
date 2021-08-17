@@ -71,7 +71,7 @@ jobs:
       - name: Deploy lambda
         if: ${{ matrix.image == 'api' }} || ${{ contains(matrix.image, 'scanners') }}
         run: |
-          FNAME = $(sed 's/\//-/g' <<< "${{ matrix.image }}")
+          FNAME=$(sed 's/\//-/g' <<< "${{ matrix.image }}")
           aws lambda update-function-code \
             --function-name "$FNAME" \
             --image-uri $REGISTRY/${{ matrix.image }}:latest
