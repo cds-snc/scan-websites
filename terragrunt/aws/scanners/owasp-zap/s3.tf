@@ -3,7 +3,7 @@ locals {
 }
 
 module "owasp-zap-report-data" {
-  source = "github.com/cds-snc/terraform-modules?ref=0.0.28//S3"
+  source = "github.com/cds-snc/terraform-modules?ref=v0.0.28//S3"
   bucket_name = local.owasp_zap_report_data_name
 
   versioning = {

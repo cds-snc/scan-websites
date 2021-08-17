@@ -5,7 +5,7 @@ locals {
 }
 
 module "axe-core-report-data" {
-  source = "github.com/cds-snc/terraform-modules?ref=0.0.28//S3"
+  source = "github.com/cds-snc/terraform-modules?ref=v0.0.28//S3"
   bucket_name = local.axe_core_report_data_name
   lifecycle_rule = {
     "id" = "expire"
@@ -22,7 +22,7 @@ module "axe-core-report-data" {
 }
 
 module "axe-core-screenshots" {
-  source = "github.com/cds-snc/terraform-modules?ref=0.0.28//S3"
+  source = "github.com/cds-snc/terraform-modules?ref=v0.0.28//S3"
   bucket_name = local.axe_core_screenshots_name
   lifecycle_rule = {
     "id" = "expire"
@@ -40,7 +40,7 @@ module "axe-core-screenshots" {
 }
 
 module "log_bucket" {
-  source = "github.com/cds-snc/terraform-modules?ref=0.0.28//S3_log_bucket"
+  source = "github.com/cds-snc/terraform-modules?ref=v0.0.28//S3_log_bucket"
   bucket_name = "${var.product_name}-${var.env}-logs"
   billing_tag_value = var.billing_code 
 
