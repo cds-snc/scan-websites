@@ -12,10 +12,17 @@ fi
 echo "Host ip: $HOST_IP and Port:${ZAP_PORT}"
 
 # Wait for ZAP proxy to init
+CHECKS=0
 while ! eval "$(curl -sSf "$HOST_IP":"${ZAP_PORT}" > /dev/null 2>&1)"
 do
 	echo "Waiting for proxy to start..."
 	sleep 3
+  CHECKS=$((CHECKS+1))
+  if [ $CHECKS -gt 100 ]
+  then
+    echo "Proxy failed to start within 5 minutes, exiting"
+    exit 1
+  fi
 done
 sleep 3
 
