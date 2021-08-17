@@ -1,9 +1,9 @@
 output "axe_core_report_data_bucket_id" {
-  value = aws_s3_bucket.axe-core-report-data.id
+  value = module.axe-core-report-data.s3_bucket_id
 }
 
 output "axe_core_screenshots_bucket_id" {
-  value = aws_s3_bucket.axe-core-screenshots.id
+  value = module.axe-core-screenshots.s3_bucket_id
 }
 
 output "axe_core_urls_topic_arn" {
