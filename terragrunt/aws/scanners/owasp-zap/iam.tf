@@ -66,7 +66,7 @@ data "aws_iam_policy_document" "zap_runner_policies" {
     ]
 
     resources = [
-      aws_ecs_task_definition.zap_runner.arn
+      aws_ecs_task_definition.runners-owasp-zap.arn
     ]
   }
 

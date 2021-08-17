@@ -25,6 +25,7 @@ jobs:
             api: 'api/**'
             scanners/axe-core: 'scanners/axe-core/**'
             scanners/owasp-zap: 'scanners/owasp-zap/**'
+            runners/owasp-zap: 'runners/owasp-zap/**'
 
   build-push-and-deploy:
     if: ${{ needs.changes.outputs.images != '[]' }}
@@ -68,6 +69,7 @@ jobs:
         run: docker logout ${{ steps.login-ecr.outputs.registry }}
 
       - name: Deploy lambda
+        if: ${{ matrix.image == 'api' }} || ${{ contains(matrix.image, 'scanners' }}
         run: |
           FNAME = $(sed 's/\//-/g' <<< "${{ matrix.image }}")
           aws lambda update-function-code \
