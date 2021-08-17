@@ -69,7 +69,7 @@ jobs:
         run: docker logout ${{ steps.login-ecr.outputs.registry }}
 
       - name: Deploy lambda
-        if: ${{ matrix.image == 'api' }} || ${{ contains(matrix.image, 'scanners' }}
+        if: ${{ matrix.image == 'api' }} || ${{ contains(matrix.image, 'scanners') }}
         run: |
           FNAME = $(sed 's/\//-/g' <<< "${{ matrix.image }}")
           aws lambda update-function-code \
