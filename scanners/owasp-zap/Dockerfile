@@ -70,7 +70,9 @@ ARG git_sha
 ENV GIT_SHA=$git_sha
 
 # (Optional) Add Lambda Runtime Interface Emulator and use a script in the ENTRYPOINT for simpler local runs
-ADD https://github.com/aws/aws-lambda-runtime-interface-emulator/releases/latest/download/aws-lambda-rie /usr/bin/aws-lambda-rie
+ARG RIE_VERSION=1.1
+RUN wget -O aws-lambda-rie https://github.com/aws/aws-lambda-runtime-interface-emulator/releases/download/${RIE_VERSION}/aws-lambda-rie \
+    && mv aws-lambda-rie /usr/bin/aws-lambda-rie
 COPY bin/entry.sh /
 RUN chmod 755 /usr/bin/aws-lambda-rie /entry.sh
 
