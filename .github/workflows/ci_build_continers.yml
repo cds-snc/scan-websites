@@ -27,7 +27,7 @@ jobs:
             runners/owasp-zap: 'runners/owasp-zap/**'
 
   build:
-    if: ${{ needs.changes.outputs.images != '[]' }}
+    if: needs.changes.outputs.images != '[]'
     runs-on: ubuntu-latest
     needs: changes
     strategy:
