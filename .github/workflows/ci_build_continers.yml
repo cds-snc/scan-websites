@@ -47,7 +47,7 @@ jobs:
           --build-arg git_sha=$GITHUB_SHA \
           -t $REGISTRY/${{ matrix.image }}:latest .
 
-      - name: Build container
+      - name: Build container -- axe-core
         if: ${{ matrix.image == 'scanners/axe-core' }}
         working-directory: ./${{ matrix.image }}/../..
         run: |
@@ -59,7 +59,7 @@ jobs:
           -t $REGISTRY/${{ matrix.image }}:latest \
           .
 
-      - name: Build container
+      - name: Build container -- owasp-zap
         if: ${{ matrix.image == 'scanners/owasp-zap' }}
         working-directory: ./${{ matrix.image }}/../..
         run: |
