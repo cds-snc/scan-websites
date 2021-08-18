@@ -41,11 +41,11 @@ resource "aws_lambda_permission" "api-permission-s3" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.api.function_name
   principal     = "s3.amazonaws.com"
-  source_arn    = aws_s3_bucket.axe-core-report-data.arn
+  source_arn    = module.axe-core-report-data.s3_bucket_arn
 }
 
 resource "aws_s3_bucket_notification" "api-notification" {
-  bucket = aws_s3_bucket.axe-core-report-data.id
+  bucket = module.axe-core-report-data.s3_bucket_id
 
   lambda_function {
     lambda_function_arn = aws_lambda_function.api.arn
