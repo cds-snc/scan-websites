@@ -50,7 +50,7 @@ jobs:
 
       - name: Lint
         working-directory: ${{ matrix.folder }}
-        run: make lint
+        run: make lint-ci
 
       - name: Format
         working-directory: ${{ matrix.folder }}
