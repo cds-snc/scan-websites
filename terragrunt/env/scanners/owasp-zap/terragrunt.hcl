@@ -21,6 +21,7 @@ inputs = {
   vpc_id                    = dependency.api.outputs.vpc_id
   private_subnet_ids        = dependency.api.outputs.private_subnet_ids
   scan_websites_kms_key_arn = dependency.api.outputs.scan_websites_kms_key_arn
+  log_bucket_id             = dependency.api.outputs.log_bucket_id
 }
 
 include {

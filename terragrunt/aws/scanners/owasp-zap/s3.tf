@@ -1,28 +1,17 @@
-resource "aws_s3_bucket" "owasp-zap-report-data" {
-  bucket = "${var.product_name}-owasp-zap-report-data"
-  acl    = "private"
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
-
-  versioning {
-    enabled = true
-  }
-
-  tags = {
-    CostCenter = var.product_name
-  }
+locals {
+  owasp_zap_report_data_name = "${var.product_name}-${var.env}owasp-zap-report-data"
 }
 
-resource "aws_s3_bucket_public_access_block" "owasp-zap-report-data" {
-  bucket = aws_s3_bucket.owasp-zap-report-data.id
 
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
+module "owasp_zap_report_data" {
+  source      = "github.com/cds-snc/terraform-modules?ref=v0.0.28//S3"
+  bucket_name = local.owasp_zap_report_data_name
+  versioning = {
+    enabled = true
+  }
+  billing_tag_value = var.billing_code
+  logging = {
+    "target_bucket" = var.log_bucket_id
+    "target_prefix" = local.owasp_zap_report_data_name
+  }
 }

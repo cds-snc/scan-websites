@@ -1,6 +1,8 @@
 RESOURCES = \
 	api \
-	scanners/axe-core
+	scanners/axe-core \
+	scanners/owasp-zap \
+	terragrunt
 
 .PHONY: help build dev format fmt install lint migrate migrations
 .PHONY: test db-connect
