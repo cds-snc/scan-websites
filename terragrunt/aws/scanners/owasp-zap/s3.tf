@@ -1,5 +1,5 @@
 locals {
-  owasp_zap_report_data_name = "${var.product_name}-${var.env}owasp-zap-report-data"
+  owasp_zap_report_data_name = "${var.product_name}-${var.env}-owasp-zap-report-data"
 }
 
 
