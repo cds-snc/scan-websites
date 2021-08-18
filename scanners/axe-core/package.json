@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "fmt": "prettier --write .",
-    "fmt:ci": "prettier --loglevel debug --check .",
+    "fmt:ci": "prettier --check .",
     "lint": "eslint . --ext .js,.ts --fix --max-warnings 0",
     "test": "jest",
     "tsc-watch": "tsc -w"
