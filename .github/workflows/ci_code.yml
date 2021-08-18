@@ -54,9 +54,7 @@ jobs:
 
       - name: Format
         working-directory: ${{ matrix.folder }}
-        run: | 
-          make fmt
-          git diff
+        run: make fmt-ci
 
       - name: Test
         working-directory: ${{ matrix.folder }}
