@@ -40,10 +40,8 @@ jobs:
         with:
           node-version: "14"
 
-      - name: Navigate to folder 
-        run: cd ${{ matrix.folder }}
-
       - name: Install dev dependencies
+        working-directory: ${{ matrix.package }}
         run: make install-dev
 
       - name: Install dependencies
@@ -56,7 +54,7 @@ jobs:
 
       - name: Format
         working-directory: ${{ matrix.package }}
-        run: make fmt
+        run: make fmt-ci
 
       - name: Test
         working-directory: ${{ matrix.package }}
