@@ -40,33 +40,6 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build container
-        if: matrix.image == 'api' || contains(matrix.image, 'runners')
         working-directory: ./${{ matrix.image }}
         run: |
-          docker build \
-          --build-arg git_sha=$GITHUB_SHA \
-          -t $REGISTRY/${{ matrix.image }}:latest \
-          .
-
-      - name: Build container -- axe-core
-        if: matrix.image == 'scanners/axe-core'
-        working-directory: ./${{ matrix.image }}/../..
-        run: |
-          docker build \
-          -f scanners/Dockerfile \
-          --build-arg git_sha=$GITHUB_SHA \
-          --build-arg CHROMIUM="with-chromium" \
-          --build-arg SCANNER_NAME="${{ matrix.image }}" \
-          -t $REGISTRY/${{ matrix.image }}:latest \
-          .
-
-      - name: Build container -- owasp-zap
-        if: matrix.image == 'scanners/owasp-zap'
-        working-directory: ./${{ matrix.image }}/../..
-        run: |
-          docker build \
-          -f scanners/Dockerfile \
-          --build-arg git_sha=$GITHUB_SHA \
-          --build-arg SCANNER_NAME="${{ matrix.image }}" \
-          -t $REGISTRY/${{ matrix.image }}:latest \
-          .
+          ./scripts/build_containers.sh $GITHUB_SHA $REGISTRY ${{ matrix.image }}
