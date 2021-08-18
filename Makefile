@@ -4,7 +4,7 @@ RESOURCES = \
 	scanners/owasp-zap \
 	terragrunt
 
-.PHONY: help build dev format fmt install lint migrate migrations
+.PHONY: help build dev format fmt install lint migrate migrations fmt-ci
 .PHONY: test db-connect
 
 help:
@@ -16,6 +16,7 @@ help:
 	@echo "  dev         -- Run API dev server"
 	@echo "  format      -- Alias for fmt"
 	@echo "  fmt         -- Run formatters"
+	@echo "  fmt-ci      -- Run formatters in check mode for CI"
 	@echo "  install     -- Install needed Python and NPM libraries"
 	@echo "  install-dev -- Installs needed development libraries"
 	@echo "  lint        -- Run linters"
