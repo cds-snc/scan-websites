@@ -76,6 +76,9 @@ WORKDIR ${FUNCTION_DIR}/${SCANNER_NAME}
 
 # Copy in the built dependencies
 COPY --from=build-image ${FUNCTION_DIR}/${SCANNER_NAME}/node_modules ${FUNCTION_DIR}/${SCANNER_NAME}/node_modules
+# Work around docker bug where if the first copy doesn't copy anything the second copy
+# will fail even if it copies something.
+RUN true
 COPY --from=build-image ${FUNCTION_DIR}/${SCANNER_NAME}/dist ${FUNCTION_DIR}/${SCANNER_NAME}
 
 # Set build variables
