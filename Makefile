@@ -42,7 +42,7 @@ format: fmt
 
 fmt: $(addsuffix .fmt,$(RESOURCES))
 
-fmt-ci: $(addsuffix .fmt,$(RESOURCES))
+fmt-ci: $(addsuffix .fmt-ci,$(RESOURCES))
 
 install: $(addsuffix .install,$(RESOURCES))
 
