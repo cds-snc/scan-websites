@@ -40,27 +40,24 @@ jobs:
         with:
           node-version: "14"
 
-      - name: test
-        run: echo "${{ matrix.package }}"
-
       - name: Install dev dependencies
-        working-directory: ${{ matrix.package }}
+        working-directory: ${{ matrix.folder }}
         run: make install-dev
 
       - name: Install dependencies
-        working-directory: ${{ matrix.package }}
+        working-directory: ${{ matrix.folder }}
         run: make install
 
       - name: Lint
-        working-directory: ${{ matrix.package }}
+        working-directory: ${{ matrix.folder }}
         run: make lint
 
       - name: Format
-        working-directory: ${{ matrix.package }}
+        working-directory: ${{ matrix.folder }}
         run: make fmt-ci
 
       - name: Test
-        working-directory: ${{ matrix.package }}
+        working-directory: ${{ matrix.folder }}
         env:
           SQLALCHEMY_DATABASE_URI: postgresql://postgres:postgres@127.0.0.1/scan-websites
           SQLALCHEMY_DATABASE_TEST_URI: postgresql://postgres:postgres@127.0.0.1/scan-websites
