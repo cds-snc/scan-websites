@@ -13,7 +13,7 @@ export async function Impl(
         launchType: "FARGATE",
         cluster: process.env.CLUSTER,
         taskDefinition: process.env.TASK_DEF_ARN,
-        overrides: {containerOverrides: [{name: "owasp_zap",environment: [{name: "SCAN_URL", value: record.payload.url}]}]},
+        overrides: {containerOverrides: [{name: "runners-owasp-zap",environment: [{name: "SCAN_URL", value: record.payload.url}]}]},
         networkConfiguration: { awsvpcConfiguration: {securityGroups: [process.env.SECURITY_GROUP],subnets: process.env.PRIVATE_SUBNETS.split(',')}},
       };
       

@@ -2,19 +2,38 @@ FROM python:3.8-alpine
 
 WORKDIR /scan
 
+ENV GLIBC_VER=2.31-r0
+ARG AWS_CLI_VERSION="2.2.29"
+
+# install glibc compatibility for alpine (Needed for awscliv2)
 RUN apk update \
     && apk upgrade \
-    && apk add --update curl bash jq
+    && apk add --update curl binutils bash jq \
+    && curl -sL https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub -o /etc/apk/keys/sgerrand.rsa.pub \
+    && curl -sLO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VER}/glibc-${GLIBC_VER}.apk \
+    && curl -sLO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VER}/glibc-bin-${GLIBC_VER}.apk \
+    && apk add --no-cache \
+        glibc-${GLIBC_VER}.apk \
+        glibc-bin-${GLIBC_VER}.apk \
+    && curl -sL https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWS_CLI_VERSION}.zip -o awscliv2.zip \
+    && unzip awscliv2.zip \
+    && aws/install \
+    && rm -rf \
+        awscliv2.zip \
+        aws \
+        /usr/local/aws-cli/v2/*/dist/aws_completer \
+        /usr/local/aws-cli/v2/*/dist/awscli/data/ac.index \
+        /usr/local/aws-cli/v2/*/dist/awscli/examples \
+    && apk --no-cache del \
+        binutils \
+    && rm glibc-${GLIBC_VER}.apk \
+    && rm glibc-bin-${GLIBC_VER}.apk \
+    && rm -rf /var/cache/apk/*
 
 RUN pip install --upgrade zapcli
-
-# Install AWS CLI
-ARG AWS_CLI_VERSION="2.2.29"
-RUN curl -Lo awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWS_CLI_VERSION}.zip" \
-    && unzip awscliv2.zip \
-    && ./aws/install -i /usr/local/aws-cli -b /usr/local/bin
 
 COPY entrypoint.sh /entrypoint.sh
 
 # Launch OWASP scan
 ENTRYPOINT ["/entrypoint.sh"]
+# ENTRYPOINT ["tail", "-f", "/dev/null"]

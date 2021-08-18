@@ -93,7 +93,10 @@ data "aws_iam_policy_document" "zap_runner_container_policies" {
       "s3:PutObject",
       "s3:PutObjectAcl",
     ]
-    resources = [aws_s3_bucket.owasp-zap-report-data.arn]
+    resources = [
+      aws_s3_bucket.owasp-zap-report-data.arn,
+      "${aws_s3_bucket.owasp-zap-report-data.arn}/*"
+      ]
 
   }
 
