@@ -4,7 +4,7 @@ RESOURCES = \
 	scanners/owasp-zap \
 	terragrunt
 
-.PHONY: help build dev format fmt install lint migrate migrations fmt-ci
+.PHONY: help build dev format fmt install lint migrate migrations fmt-ci lint-ci
 .PHONY: test db-connect
 
 help:
@@ -51,6 +51,8 @@ install-dev: $(addsuffix .install-dev,$(RESOURCES))
 
 lint: $(addsuffix .lint,$(RESOURCES))
 
+lint-ci: $(addsuffix .lint-ci,$(RESOURCES))
+
 define make-rules
 
 .PHONY: $1.test $1.build $1.fmt $1.install $1.install-dev $1.lint
@@ -78,6 +80,10 @@ $1.install-dev:
 $1.lint:
 	@echo "[Linting $1]"
 	$(MAKE) -C $1 lint
+
+$1.lint-ci:
+	@echo "[Linting $1]"
+	$(MAKE) -C $1 lint-ci
 
 $1.test:
 	@echo "[Testing $1]"

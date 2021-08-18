@@ -1,4 +1,4 @@
-.PHONY: fmt checkov install lint test fmt-ci
+.PHONY: fmt checkov install lint test fmt-ci lint-ci
 fmt:
 	terraform fmt -recursive aws &&\
 	terragrunt hclfmt
@@ -13,6 +13,8 @@ install: ;
 install-dev: ;
 
 lint: ;
+
+lint-ci: ;
 
 test: ;
 

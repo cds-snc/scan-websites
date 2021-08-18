@@ -17,6 +17,9 @@ install-dev:
 lint:
 	flake8 .
 
+lint-ci:
+	flake8 .
+
 migrations:
 	cd db_migrations &&\
 	alembic upgrade head
