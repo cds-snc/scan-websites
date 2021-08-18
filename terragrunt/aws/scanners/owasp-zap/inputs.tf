@@ -9,7 +9,3 @@ variable "private_subnet_ids" {
 variable "scan_websites_kms_key_arn" {
   type = string
 }
-
-variable "log_bucket_id" {
-  type = string
-}
