@@ -1,67 +1,47 @@
-resource "aws_s3_bucket" "axe-core-report-data" {
-  bucket = "${var.product_name}-${var.env}-axe-core-report-data"
-  acl    = "private"
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
+locals {
+  name_prefix               = "${var.product_name}-${var.env}"
+  axe_core_report_data_name = "${local.name_prefix}-axe-core-report-data"
+  axe_core_screenshots_name = "${local.name_prefix}-axe-core-screenshots"
+}
 
-  lifecycle_rule {
+module "axe-core-report-data" {
+  source      = "github.com/cds-snc/terraform-modules?ref=v0.0.28//S3"
+  bucket_name = local.axe_core_report_data_name
+  lifecycle_rule = [{
     id      = "expire"
     enabled = true
-
-    expiration {
+    expiration = {
       days = 30
     }
-  }
-
-  tags = {
-    CostCenter = var.billing_code
+  }]
+  billing_tag_value = var.billing_code
+  logging = {
+    "target_bucket" = module.log_bucket.s3_bucket_id
+    "target_prefix" = local.axe_core_report_data_name
   }
 }
 
-resource "aws_s3_bucket_public_access_block" "axe-core-report-data" {
-  bucket = aws_s3_bucket.axe-core-report-data.id
-
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
-}
-
-resource "aws_s3_bucket" "axe-core-screenshots" {
-  bucket = "${var.product_name}-${var.env}-axe-core-screenshots"
-  acl    = "private"
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
-
-  lifecycle_rule {
+module "axe-core-screenshots" {
+  source      = "github.com/cds-snc/terraform-modules?ref=v0.0.28//S3"
+  bucket_name = local.axe_core_screenshots_name
+  lifecycle_rule = [{
     id      = "expire"
     enabled = true
-
-    expiration {
+    expiration = {
       days = 30
     }
-  }
+  }]
+  billing_tag_value = var.billing_code
 
-  tags = {
-    CostCenter = var.billing_code
+  logging = {
+    "target_bucket" = module.log_bucket.s3_bucket_id
+    "target_prefix" = local.axe_core_screenshots_name
   }
 }
 
-resource "aws_s3_bucket_public_access_block" "axe-core-screenshots" {
-  bucket = aws_s3_bucket.axe-core-screenshots.id
+module "log_bucket" {
+  source            = "github.com/cds-snc/terraform-modules?ref=v0.0.28//S3_log_bucket"
+  bucket_name       = "${var.product_name}-${var.env}-logs"
+  billing_tag_value = var.billing_code
 
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
 }
