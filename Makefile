@@ -42,6 +42,8 @@ format: fmt
 
 fmt: $(addsuffix .fmt,$(RESOURCES))
 
+fmt-ci: $(addsuffix .fmt,$(RESOURCES))
+
 install: $(addsuffix .install,$(RESOURCES))
 
 install-dev: $(addsuffix .install-dev,$(RESOURCES))
@@ -59,6 +61,10 @@ $1.build:
 $1.fmt:
 	@echo "[Formatting $1]"
 	$(MAKE) -C $1 fmt
+
+$1.fmt-ci:
+	@echo "[Formatting $1]"
+	$(MAKE) -C $1 fmt-ci
 
 $1.install:
 	@echo "[Installing $1]"

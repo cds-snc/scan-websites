@@ -1,4 +1,4 @@
-.PHONY: build fmt install lint test
+.PHONY: build fmt install lint test fmt-ci
 
 build:
 	npm run build
@@ -16,3 +16,6 @@ lint:
 
 test:
 	npx jest
+
+fmt-ci:
+	npm run fmt:ci

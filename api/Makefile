@@ -1,4 +1,4 @@
-.PHONY: dev fmt install lint migrations test
+.PHONY: dev fmt install lint migrations test fmt-ci
 
 build:
 
@@ -24,3 +24,6 @@ migrations:
 test:
 	coverage run -m pytest -s -vv tests &&\
 	coverage report -m
+
+fmt-ci:
+	black --check .
