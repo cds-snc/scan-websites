@@ -54,7 +54,9 @@ jobs:
 
       - name: Format
         working-directory: ${{ matrix.folder }}
-        run: make fmt-ci
+        run: |
+          make fmt-ci
+          cat ./src/index.ts
 
       - name: Test
         working-directory: ${{ matrix.folder }}
