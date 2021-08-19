@@ -1,4 +1,6 @@
 #!/bin/bash
+set -euo pipefail
+IFS=$'\n\t'
 
 GITHUB_SHA=$1
 REGISTRY=$2
