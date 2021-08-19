@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -x
-
 GITHUB_SHA=$1
 REGISTRY=$2
 IMAGE=$3
@@ -12,11 +10,12 @@ then
   EXTRA_ARGS+=(--build-arg CHROMIUM=with-chromium)
 fi
 
-DOCKER_FILE=Dockerfile
+DOCKER_FILE="Dockerfile"
 if [[ $IMAGE == scanners/* ]];
 then
-  cd ../..
   DOCKER_FILE=scanners/Dockerfile
+else
+  cd "${IMAGE}" || exit 3
 fi
 
 docker --debug build \
