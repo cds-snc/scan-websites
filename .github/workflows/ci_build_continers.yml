@@ -41,4 +41,4 @@ jobs:
 
       - name: Build container
         run: |
-          .github/workflows/scripts/build_containers.sh $GITHUB_SHA $REGISTRY ${{ matrix.image }}
+          .github/workflows/scripts/build_container.sh $GITHUB_SHA $REGISTRY ${{ matrix.image }}
