@@ -56,7 +56,7 @@ describe("Impl", () => {
         overrides: {
           containerOverrides: [
             {
-              name: "owasp_zap",
+              name: "runners-owasp-zap",
               environment: [
                 { name: "SCAN_URL", value: "https://example.com/" },
               ],
