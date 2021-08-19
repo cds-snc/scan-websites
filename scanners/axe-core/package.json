@@ -4,7 +4,7 @@
   "description": "aXe core scanner",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --build",
     "fmt": "prettier --write .",
     "fmt:ci": "prettier --check .",
     "lint": "eslint . --ext .js,.ts --fix --max-warnings 0",
