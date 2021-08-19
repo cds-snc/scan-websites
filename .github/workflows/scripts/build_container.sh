@@ -22,7 +22,7 @@ fi
 docker --debug build \
     -f $DOCKER_FILE \
     -t "${REGISTRY}/${IMAGE}:latest" \
-    --build-arg IMAGE_NAME=${IMAGE} \
-    --build-arg git_sha=${GITHUB_SHA} \
-    $EXTRA_ARGS \
+    --build-arg IMAGE_NAME="${IMAGE}" \
+    --build-arg git_sha="${GITHUB_SHA}" \
+    ${EXTRA_ARGS} \
     .
