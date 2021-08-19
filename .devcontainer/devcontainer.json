@@ -33,6 +33,6 @@
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "pip3 install --user -r api/requirements.txt && pip3 install --user -r api/requirements_dev.txt && python -m playwright install chromium",
+	"postCreateCommand": "",
 	"remoteUser": "vscode"
 }

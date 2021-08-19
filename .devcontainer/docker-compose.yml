@@ -28,6 +28,8 @@ services:
   api:
     build:
       context: ../api/
+    volumes:
+      - ../api:/function
     environment:
       <<: *db-connection-strings
   db:

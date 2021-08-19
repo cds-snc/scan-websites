@@ -10,23 +10,30 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 # Include global arg in this stage of the build
 ARG FUNCTION_DIR
 
-# Create function directory
-RUN mkdir -p ${FUNCTION_DIR}
+WORKDIR ${FUNCTION_DIR}
+
+RUN mkdir -p /pymodules
+ENV PYTHONPATH=/pymodules
+
+COPY ./requirements_playwright.txt ${FUNCTION_DIR}
+
+RUN python3.9 -m pip install -r ${FUNCTION_DIR}/requirements_playwright.txt 
+
+RUN playwright install chromium
+
+COPY ./requirements.txt ${FUNCTION_DIR}
+
+
+RUN python3.9 -m pip install -r ${FUNCTION_DIR}/requirements.txt --target /pymodules
+
+RUN apt-get install entr
+# Install the runtime interface client
+RUN pip install \
+    --target /pymodules \
+    awslambdaric
 
 # Copy function code
 COPY . ${FUNCTION_DIR}
-
-RUN python3.9 -m pip install -r ${FUNCTION_DIR}/requirements.txt --target ${FUNCTION_DIR}
-
-# Install the runtime interface client
-RUN pip install \
-    --target ${FUNCTION_DIR} \
-    awslambdaric
-
-# Set working directory to function root directory
-WORKDIR ${FUNCTION_DIR}
-
-RUN python -m playwright install chromium
 
 # Set build variables
 ARG git_sha 
