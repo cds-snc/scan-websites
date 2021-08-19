@@ -41,12 +41,8 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build container
-        working-directory: ./${{ matrix.image }}
         run: |
-          docker build \
-          --build-arg git_sha=$GITHUB_SHA \
-          -t $REGISTRY/${{ matrix.image }}:$GITHUB_SHA \
-          -t $REGISTRY/${{ matrix.image }}:latest .
+          .github/workflows/scripts/build_container.sh $GITHUB_SHA $REGISTRY ${{ matrix.image }}
 
       - name: Configure AWS credentials
         id: aws-creds
