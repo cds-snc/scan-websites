@@ -43,7 +43,7 @@ jobs:
       - name: Build container
         working-directory: ./${{ matrix.image }}
         run: |
-          ./scripts/build_containers.sh $GITHUB_SHA $REGISTRY ${{ matrix.image }}
+          .github/workflows/scripts/build_containers.sh $GITHUB_SHA $REGISTRY ${{ matrix.image }}
 
       - name: Configure AWS credentials
         id: aws-creds

@@ -6,10 +6,10 @@ GITHUB_SHA=$1
 REGISTRY=$2
 IMAGE=$3
 
-EXTRA_ARGS=""
+EXTRA_ARGS=()
 if [[ "$IMAGE" == "scanners/axe-core" ]];
 then
-  EXTRA_ARGS="${EXTRA_ARGS} --build-arg CHROMIUM=with-chromium"
+  EXTRA_ARGS+=(--build-arg CHROMIUM=with-chromium)
 fi
 
 DOCKER_FILE=Dockerfile
@@ -24,5 +24,5 @@ docker --debug build \
     -t "${REGISTRY}/${IMAGE}:latest" \
     --build-arg IMAGE_NAME="${IMAGE}" \
     --build-arg git_sha="${GITHUB_SHA}" \
-    ${EXTRA_ARGS} \
+    "${EXTRA_ARGS[@]}" \
     .
