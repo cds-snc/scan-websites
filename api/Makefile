@@ -1,4 +1,4 @@
-.PHONY: dev fmt install lint migrations test fmt-ci
+.PHONY: dev fmt install lint migrations test fmt-ci lint-ci
 
 build:
 
