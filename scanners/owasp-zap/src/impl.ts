@@ -1,22 +1,34 @@
-import { SNSEvent, SNSEventRecord } from "aws-lambda"
+import { SNSEvent, SNSEventRecord } from "aws-lambda";
 import { asyncForEach } from "./common/foreach";
 import { Record } from "./common/record";
 import { Runner } from "./common/runner";
 
 export async function Impl(
   records: Record[],
-  runner: Runner,
+  runner: Runner
 ): Promise<boolean> {
   try {
     await asyncForEach(records, async (record: Record) => {
-       const params = {
+      const params = {
         launchType: "FARGATE",
         cluster: process.env.CLUSTER,
         taskDefinition: process.env.TASK_DEF_ARN,
-        overrides: {containerOverrides: [{name: "runners-owasp-zap",environment: [{name: "SCAN_URL", value: record.payload.url}]}]},
-        networkConfiguration: { awsvpcConfiguration: {securityGroups: [process.env.SECURITY_GROUP],subnets: process.env.PRIVATE_SUBNETS.split(',')}},
+        overrides: {
+          containerOverrides: [
+            {
+              name: "runners-owasp-zap",
+              environment: [{ name: "SCAN_URL", value: record.payload.url }],
+            },
+          ],
+        },
+        networkConfiguration: {
+          awsvpcConfiguration: {
+            securityGroups: [process.env.SECURITY_GROUP],
+            subnets: process.env.PRIVATE_SUBNETS.split(","),
+          },
+        },
       };
-      
+
       await runner.runTask(params).promise();
     });
   } catch (error) {
@@ -27,7 +39,7 @@ export async function Impl(
 }
 
 export async function convertEventToRecords(
-  event: SNSEvent,
+  event: SNSEvent
 ): Promise<Record[]> {
   const records: Record[] = [];
   await asyncForEach(event.Records, async (record: SNSEventRecord) => {
