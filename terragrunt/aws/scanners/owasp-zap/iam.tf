@@ -39,7 +39,7 @@ data "aws_iam_policy_document" "zap_runner_policies" {
 
     resources = [
       aws_cloudwatch_log_group.log.arn,
-      "${aws_cloudwatch_log_group.log.arn}:log-stream:*"
+      "${aws_cloudwatch_log_group.log.arn}:log-group:${aws_cloudwatch_log_group.log.name}:log-stream:*"
     ]
   }
 

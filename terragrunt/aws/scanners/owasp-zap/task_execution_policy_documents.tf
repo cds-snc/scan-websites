@@ -30,18 +30,6 @@ data "aws_iam_policy_document" "zap_runner_container_policies" {
   }
 
   statement {
-    effect = "Allow"
-
-    actions = [
-      "lambda:InvokeFunction"
-    ]
-
-    resources = [
-      "arn:aws:lambda:${var.region}:${var.account_id}:function:${var.product_name}*"
-    ]
-  }
-
-  statement {
 
     effect = "Allow"
 
@@ -53,7 +41,7 @@ data "aws_iam_policy_document" "zap_runner_container_policies" {
 
     resources = [
       aws_cloudwatch_log_group.log.arn,
-      "${aws_cloudwatch_log_group.log.arn}:log-stream:*"
+      "${aws_cloudwatch_log_group.log.arn}:log-group:${aws_cloudwatch_log_group.log.name}:log-stream:*"
     ]
   }
 
@@ -67,7 +55,8 @@ data "aws_iam_policy_document" "zap_runner_container_policies" {
     ]
 
     resources = [
-      "arn:aws:ec2:${var.region}:${var.account_id}:network-interface/*"
+      "arn:aws:ec2:${var.region}:${var.account_id}:network-interface/*",
+      "arn:aws:ec2:${var.region}:${var.account_id}:subnet/*"
     ]
 
   }
