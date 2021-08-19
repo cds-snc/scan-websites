@@ -1,27 +1,22 @@
-import {
-  Impl,
-  convertEventToRecords,
-} from "./impl";
-import {
-  SNSEvent,
-  SNSEventRecord,
-  SNSMessage,
-} from "aws-lambda";
+import { Impl, convertEventToRecords } from "./impl";
+import { SNSEvent, SNSEventRecord, SNSMessage } from "aws-lambda";
 import AWS = require("aws-sdk");
 
 const mockResponse = {
   failures: [{}],
-  tasks:[{
-    clusterArn: "12345",
-  }],
-}
+  tasks: [
+    {
+      clusterArn: "12345",
+    },
+  ],
+};
 
-jest.mock('aws-sdk', () => {
+jest.mock("aws-sdk", () => {
   const mockECS = {
     runTask: jest.fn().mockReturnThis(),
     promise: jest.fn(() => {
-      return {Body: JSON.stringify(mockResponse)}
-  }),
+      return { Body: JSON.stringify(mockResponse) };
+    }),
   };
   return {
     __esModule: true,
@@ -29,19 +24,19 @@ jest.mock('aws-sdk', () => {
   };
 });
 
-
 describe("Impl", () => {
   const OLD_ENV = process.env;
   beforeEach(() => {
-    jest.resetModules() // Most important - it clears the cache
+    jest.resetModules(); // Most important - it clears the cache
     process.env = { ...OLD_ENV }; // Make a copy
   });
   describe("is trigged by SNS", () => {
     const ecs = new AWS.ECS();
     test("Launches ecs task and returns true", async () => {
       process.env.PRIVATE_SUBNETS = "10.0.0.0/16,10.0.0.0/16";
-      process.env.TASK_DEF_ARN = "arn:aws:ecs:us-west-2:123456789012:task-definition/TaskDefinitionFamily:1"
-      process.env.CLUSTER = "zap"
+      process.env.TASK_DEF_ARN =
+        "arn:aws:ecs:us-west-2:123456789012:task-definition/TaskDefinitionFamily:1";
+      process.env.CLUSTER = "zap";
       const records = [
         {
           payload: {
@@ -52,16 +47,22 @@ describe("Impl", () => {
         },
       ];
 
-      const response = await Impl(
-        records,
-        ecs,
-      );
+      const response = await Impl(records, ecs);
 
       expect(ecs.runTask).toHaveBeenCalledWith({
         launchType: "FARGATE",
         cluster: process.env.CLUSTER,
         taskDefinition: process.env.TASK_DEF_ARN,
-        overrides: {containerOverrides: [{name: "owasp_zap",environment: [{name: "SCAN_URL", value: "https://example.com/"}]}]},
+        overrides: {
+          containerOverrides: [
+            {
+              name: "owasp_zap",
+              environment: [
+                { name: "SCAN_URL", value: "https://example.com/" },
+              ],
+            },
+          ],
+        },
         networkConfiguration: expect.any(Object),
       });
       expect(response).toBe(true);

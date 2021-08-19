@@ -14,7 +14,6 @@ module.exports = {
     "prettier",
   ],
   rules: {
-    "comma-dangle": ["error", "always-multiline"],
     "import/no-unresolved": "off",
     "security/detect-non-literal-fs-filename": "off",
     "@typescript-eslint/no-empty-interface": "off",

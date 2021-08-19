@@ -1,8 +1,10 @@
 RESOURCES = \
 	api \
-	scanners/axe-core
+	scanners/axe-core \
+	scanners/owasp-zap \
+	terragrunt
 
-.PHONY: help build dev format fmt install lint migrate migrations
+.PHONY: help build dev format fmt install lint migrate migrations fmt-ci lint-ci
 .PHONY: test db-connect
 
 help:
@@ -14,6 +16,7 @@ help:
 	@echo "  dev         -- Run API dev server"
 	@echo "  format      -- Alias for fmt"
 	@echo "  fmt         -- Run formatters"
+	@echo "  fmt-ci      -- Run formatters in check mode for CI"
 	@echo "  install     -- Install needed Python and NPM libraries"
 	@echo "  install-dev -- Installs needed development libraries"
 	@echo "  lint        -- Run linters"
@@ -40,11 +43,15 @@ format: fmt
 
 fmt: $(addsuffix .fmt,$(RESOURCES))
 
+fmt-ci: $(addsuffix .fmt-ci,$(RESOURCES))
+
 install: $(addsuffix .install,$(RESOURCES))
 
 install-dev: $(addsuffix .install-dev,$(RESOURCES))
 
 lint: $(addsuffix .lint,$(RESOURCES))
+
+lint-ci: $(addsuffix .lint-ci,$(RESOURCES))
 
 define make-rules
 
@@ -58,6 +65,10 @@ $1.fmt:
 	@echo "[Formatting $1]"
 	$(MAKE) -C $1 fmt
 
+$1.fmt-ci:
+	@echo "[Formatting $1]"
+	$(MAKE) -C $1 fmt-ci
+
 $1.install:
 	@echo "[Installing $1]"
 	$(MAKE) -C $1 install
@@ -69,6 +80,10 @@ $1.install-dev:
 $1.lint:
 	@echo "[Linting $1]"
 	$(MAKE) -C $1 lint
+
+$1.lint-ci:
+	@echo "[Linting $1]"
+	$(MAKE) -C $1 lint-ci
 
 $1.test:
 	@echo "[Testing $1]"

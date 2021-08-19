@@ -1,4 +1,10 @@
-import { EvaluateFn, HTTPResponse, ScreenshotOptions, Viewport, WaitForOptions } from "puppeteer";
+import {
+  EvaluateFn,
+  HTTPResponse,
+  ScreenshotOptions,
+  Viewport,
+  WaitForOptions,
+} from "puppeteer";
 
 export type Page = {
   evaluate(F: EvaluateFn): Promise<number>;

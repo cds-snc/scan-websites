@@ -2,25 +2,14 @@ name: Lint, format and test code
 on:
   workflow_dispatch:
   pull_request:
+    paths:
+      - api/**
+      - scanners/axe-core/**
+      - scanners/owasp-zap/**
 
 jobs:
-  changes:
-    runs-on: ubuntu-latest
-    outputs:
-      packages: ${{ steps.filter.outputs.changes }}
-    steps:
-      - uses: dorny/paths-filter@v2
-        id: filter
-        with:
-          filters: |
-            api:
-              - Makefile
-              - 'api/**'
-              - 'scanners/axe-core/**'
-              - 'scanners/owasp-zap/**'
 
   tests:
-    if: ${{ needs.changes.outputs.packages != '[]' }}
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -32,11 +21,10 @@ jobs:
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-    needs: changes
     strategy:
       fail-fast: false
       matrix:
-        package: ${{ fromJSON(needs.changes.outputs.packages) }}
+          folder: ["api", "scanners/axe-core", "scanners/owasp-zap"] 
 
     steps:
       - name: Checkout
@@ -53,18 +41,23 @@ jobs:
           node-version: "14"
 
       - name: Install dev dependencies
+        working-directory: ${{ matrix.folder }}
         run: make install-dev
 
       - name: Install dependencies
+        working-directory: ${{ matrix.folder }}
         run: make install
 
       - name: Lint
-        run: make lint
+        working-directory: ${{ matrix.folder }}
+        run: make lint-ci
 
       - name: Format
-        run: make ARGS=--check fmt
+        working-directory: ${{ matrix.folder }}
+        run: make fmt-ci
 
       - name: Test
+        working-directory: ${{ matrix.folder }}
         env:
           SQLALCHEMY_DATABASE_URI: postgresql://postgres:postgres@127.0.0.1/scan-websites
           SQLALCHEMY_DATABASE_TEST_URI: postgresql://postgres:postgres@127.0.0.1/scan-websites
