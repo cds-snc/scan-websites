@@ -1,4 +1,6 @@
 #!/bin/bash
+set -euo pipefail
+IFS=$'\n\t'
 
 # shellcheck disable=SC1091
 source .github/workflows/scripts/migrate.sh

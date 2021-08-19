@@ -1,4 +1,6 @@
 #!/bin/bash
+set -euo pipefail
+IFS=$'\n\t'
 
 echo "Sourcing migrate.sh"
 function test_migrate_resp {
