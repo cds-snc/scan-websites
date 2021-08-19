@@ -85,7 +85,7 @@ data "aws_iam_policy_document" "zap_runner_container_policies" {
     resources = [
       module.owasp_zap_report_data.s3_bucket_arn,
       "${module.owasp_zap_report_data.s3_bucket_arn}/*"
-      ]
+    ]
 
   }
 

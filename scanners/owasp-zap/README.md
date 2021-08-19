@@ -2,7 +2,7 @@
 
 ## Running locally
 
-Requires that the container defined in *runners/owasp-zap* to be deployed to a ECS cluster using the container definition from *terragrunt/env/owasp-zap/container-definitions*
+Requires that the container defined in _runners/owasp-zap_ to be deployed to a ECS cluster using the container definition from _terragrunt/env/owasp-zap/container-definitions_
 
 ### Launch Lambda container
 
