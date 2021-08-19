@@ -13,7 +13,7 @@ echo "Host ip: $HOST_IP and Port:${ZAP_PORT}"
 
 # Wait for ZAP proxy to init
 CHECKS=0
-while ! eval "$(curl -sSf "$HOST_IP":"${ZAP_PORT}" > /dev/null 2>&1)"
+while ! curl -sSf "$HOST_IP":"${ZAP_PORT}" > /dev/null 2>&1
 do
 	echo "Waiting for proxy to start..."
 	sleep 3

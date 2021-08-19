@@ -20,6 +20,7 @@ help:
 	@echo "  install     -- Install needed Python and NPM libraries"
 	@echo "  install-dev -- Installs needed development libraries"
 	@echo "  lint        -- Run linters"
+	@echo "  lint-ci     -- Run linters in check mode for CI"
 	@echo "  migrate     -- Alias for migrations"
 	@echo "  migations   -- Run migrations"
 	@echo "  test        -- Run tests"
