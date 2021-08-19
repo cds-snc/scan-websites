@@ -31,4 +31,3 @@ COPY entrypoint.sh /entrypoint.sh
 
 # Launch OWASP scan
 ENTRYPOINT ["/entrypoint.sh"]
-# ENTRYPOINT ["tail", "-f", "/dev/null"]
