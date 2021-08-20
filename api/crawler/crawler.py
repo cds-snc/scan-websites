@@ -31,6 +31,7 @@ class UrlSpider(Spider):
         item["url"] = response.url
         item["depth"] = curr_depth
         item["referer"] = response.meta.get("referer", "")
+        log.debug(item)
         pub_sub.dispatch(item)
 
         if curr_depth < self.max_depth:

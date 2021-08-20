@@ -3,6 +3,10 @@ from fastapi import FastAPI
 from sqlalchemy.exc import SQLAlchemyError
 from database.db import db_session
 from logger import log
+import crawler.crawler as c
+import uuid
+from pydantic import BaseModel
+
 
 app = FastAPI()
 
@@ -30,3 +34,11 @@ async def healthcheck():
         db_status = {"able_to_connect": False}
 
     return {"database": db_status}
+
+class CrawlUrl(BaseModel):
+    url: str
+
+@app.post("/crawl")
+async def crawl(url: CrawlUrl):
+    log.info(f"Crawling {url}...")
+    c.crawl(uuid.uuid4, url)

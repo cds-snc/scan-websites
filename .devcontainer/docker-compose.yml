@@ -25,6 +25,7 @@ services:
     command: sleep infinity
     environment:
       <<: *db-connection-strings
+
   api:
     build:
       context: ../api/
@@ -32,6 +33,9 @@ services:
       - ../api:/function
     environment:
       <<: *db-connection-strings
+      AWS_LOCALSTACK: "True"
+      AXE_CORE_URLS_TOPIC: "arn:aws:sns:us-east-1:000000000000:axe-core-urls-topic"
+ 
   db:
     image: postgres:11.2
     volumes:
@@ -50,7 +54,7 @@ services:
       - "5433" 
     ports:
       - "5433:5432"
-
+  
   test-db:
     image: postgres:11.2
     volumes:
@@ -65,3 +69,19 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_HOST_AUTH_METHOD: trust
       POSTGRES_DB: scan-websites
+  
+  localstack:
+    image: localstack/localstack
+    hostname: localstack
+    volumes:
+      - "./data:/tmp/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./scripts/init_localstack:/docker-entrypoint-initaws.d"
+    ports:
+      - 4566:4566 
+      - 4571:4571
+    environment:
+      - SERVICES=s3,sns
+      - DATA_DIR=/tmp/localstack/data
+      - DOCKER_HOST=unix:///var/run/docker.sock`
+      - DEBUG=1

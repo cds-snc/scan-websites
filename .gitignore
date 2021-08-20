@@ -197,3 +197,6 @@ typings/
 
 # Compiled CSS and files
 dist
+
+# Ignore local stack data file
+.devcontainer/data

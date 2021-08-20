@@ -15,10 +15,10 @@ def print_env_variables():
 
 def handler(event, context):
     print_env_variables()
+    log.debug(event)
     # TODO: handle different events other than https
     if "httpMethod" in event:
         # Assume it is an API Gateway event
-
         asgi_handler = Mangum(app)
         response = asgi_handler(event, context)
         return response
