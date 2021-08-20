@@ -1,6 +1,6 @@
 #!/bin/bash
-set -euo pipefail
-IFS=$'\n\t'
+# Note, this script doesn't use the strict bash settings. As a test script we want
+# to be able to handle certain error codes and use the $? variable.
 
 # shellcheck disable=SC1091
 source .github/workflows/scripts/migrate.sh
