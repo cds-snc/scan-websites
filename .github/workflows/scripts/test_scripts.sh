@@ -1,4 +1,6 @@
 #!/bin/bash
+# Note, this script doesn't use the strict bash settings. As a test script we want
+# to be able to handle certain error codes and use the $? variable.
 
 # shellcheck disable=SC1091
 source .github/workflows/scripts/migrate.sh
@@ -21,6 +23,7 @@ test_migrate_resp .github/workflows/scripts/test/response
 t $?
 
 echo "Testing Failure Response"
+# shellcheck disable=SC2251
 ! test_migrate_resp .github/workflows/scripts/test/failed_response
 t $?
 
