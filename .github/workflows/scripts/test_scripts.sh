@@ -23,6 +23,7 @@ test_migrate_resp .github/workflows/scripts/test/response
 t $?
 
 echo "Testing Failure Response"
+# shellcheck disable=SC2251
 ! test_migrate_resp .github/workflows/scripts/test/failed_response
 t $?
 
