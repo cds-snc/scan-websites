@@ -35,8 +35,10 @@ async def healthcheck():
 
     return {"database": db_status}
 
+
 class CrawlUrl(BaseModel):
     url: str
+
 
 @app.post("/crawl")
 async def crawl_endpoint(crawl_url: CrawlUrl):

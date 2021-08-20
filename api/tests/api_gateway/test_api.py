@@ -41,6 +41,7 @@ def test_healthcheck_failure(mock_log, mock_get_db_version):
     assert response.json() == expected_val
     # assert mock_log.error.assert_called_once_with(SQLAlchemyError())
 
+
 @patch("api_gateway.api.c")
 @patch("api_gateway.api.log")
 @patch("api_gateway.api.uuid")
@@ -53,5 +54,5 @@ def test_crawl(mock_uuid, mock_log, mock_c):
     response = client.post(url="/crawl", json={"url": fake_url})
 
     assert response.status_code == 200
-    mock_c.assert_called_once_with(fake_uuid, fake_url )
+    mock_c.assert_called_once_with(fake_uuid, fake_url)
     mock_log.info.assert_called_once_with(ANY)

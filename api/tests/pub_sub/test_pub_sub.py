@@ -22,7 +22,6 @@ def test_send_publishes_to_a_sns_topic(mock_get_session):
     mock_client = MagicMock()
     mock_get_session.return_value.client.return_value = mock_client
 
-
     payload = {"id": "abcd"}
     pub_sub.send("topic", payload)
     mock_client.publish.assert_called_once_with(
