@@ -31,6 +31,7 @@ def setup_db():
         "SQLALCHEMY_DATABASE_TEST_URI"
     )
     alembic_cfg = Config("./db_migrations/alembic.ini")
+    alembic_cfg.set_main_option("script_location", "./db_migrations")
     command.downgrade(alembic_cfg, "base")
     command.upgrade(alembic_cfg, "head")
 
