@@ -13,6 +13,7 @@ from pydantic import BaseModel
 
 from models.Organisation import Organisation
 from schemas.Organization import OrganizationBase
+
 app = FastAPI()
 
 templates = Jinja2Templates(directory="api_gateway/templates")
@@ -53,26 +54,28 @@ class CrawlUrl(BaseModel):
 #    crawl(uuid.uuid4(), crawl_url.url)
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
-    data = {
-        "page": "Home page"
-    }
+    data = {"page": "Home page"}
     return templates.TemplateResponse("page.html", {"request": request, "data": data})
+
 
 @app.post("/organization", response_class=HTMLResponse)
 async def create_organization(organization: OrganizationBase):
     session = db_session()
     try:
-      new_organization = Organisation(name=organization.name)
-      session.add(new_organization)
-      session.commit() 
+        new_organization = Organisation(name=organization.name)
+        session.add(new_organization)
+        session.commit()
     except Exception as e:
-      raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.get("/dashboard", response_class=HTMLResponse)
 async def dashboard(request: Request):
     session = db_session()
     try:
-      result = session.query(Organisation).all()
+        result = session.query(Organisation).all()
     except Exception as e:
-      raise HTTPException(status_code=500, detail=str(e))
-    return templates.TemplateResponse("dashboard.html", {"request": request, "organisations": result})
+        raise HTTPException(status_code=500, detail=str(e))
+    return templates.TemplateResponse(
+        "dashboard.html", {"request": request, "organisations": result}
+    )
