@@ -6,9 +6,10 @@ from storage import storage
 import os
 
 # Import so that the application is aware of these Models
-from models.Organisation import Organisation
-from models.Template import Template
-from models.User import User
+# Required so that models are initialized before they're referened
+from models.Organisation import Organisation # noqa: F401
+from models.Template import Template # noqa: F401
+from models.User import User # noqa: F401
 
 app = api.app
 
