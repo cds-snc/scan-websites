@@ -6,12 +6,11 @@ from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import relationship, validates
 
 from models import Base
-from models.ScanType import ScanType
-from models.Template import Template
+from models.TemplateScan import TemplateScan
 
 
-class TemplateScan(Base):
-    __tablename__ = "template_scans"
+class TemplateScanTrigger(Base):
+    __tablename__ = "template_scan_triggers"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     data = Column(JSONB, nullable=False)
@@ -29,16 +28,12 @@ class TemplateScan(Base):
         nullable=True,
         onupdate=datetime.datetime.utcnow,
     )
-    template_id = Column(
-        UUID(as_uuid=True), ForeignKey(Template.id), index=True, nullable=False
+    template_scan_id = Column(
+        UUID(as_uuid=True), ForeignKey(TemplateScan.id), index=True, nullable=False
     )
-    template = relationship("Template", back_populates="template_scans")
-    scan_type_id = Column(
-        UUID(as_uuid=True), ForeignKey(ScanType.id), index=True, nullable=False
+    template_scan = relationship(
+        "TemplateScan", back_populates="template_scan_triggers"
     )
-    scan_type = relationship("ScanType", back_populates="template_scans")
-
-    template_scan_triggers = relationship("TemplateScanTrigger")
 
     @validates("data")
     def validate_name(self, _key, value):
