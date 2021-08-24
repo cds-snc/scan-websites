@@ -41,3 +41,5 @@ class Scan(Base):
         UUID(as_uuid=True), ForeignKey(ScanType.id), index=True, nullable=False
     )
     scan_type = relationship("ScanType", back_populates="scans")
+
+    a11y_reports = relationship("A11yReport")

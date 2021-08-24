@@ -5,6 +5,7 @@ from alembic.config import Config
 from alembic import command
 
 from models.Organisation import Organisation
+from models.Scan import Scan
 from models.ScanType import ScanType
 from models.Template import Template
 from models.TemplateScan import TemplateScan
@@ -49,6 +50,17 @@ def setup_db():
     command.upgrade(alembic_cfg, "head")
 
     yield
+
+
+@pytest.fixture(scope="session")
+def scan_fixture(scan_type_fixture, template_fixture, organisation_fixture, session):
+    scan = Scan(
+        organisation=organisation_fixture,
+        scan_type=scan_type_fixture,
+        template=template_fixture,
+    )
+    session.add(scan)
+    return scan
 
 
 @pytest.fixture(scope="session")
