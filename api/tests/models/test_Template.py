@@ -12,7 +12,7 @@ def test_template_belongs_to_an_organisation(organisation_fixture, session):
     )
     session.add(template)
     session.commit()
-    assert organisation_fixture.templates[0].id == template.id
+    assert organisation_fixture.templates[-1].id == template.id
     session.delete(template)
     session.commit()
 

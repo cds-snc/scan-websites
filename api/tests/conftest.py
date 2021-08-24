@@ -26,7 +26,7 @@ def assert_new_model_saved():
 
 @pytest.fixture(scope="session")
 def organisation_fixture(session):
-    organisation = Organisation(name="name")
+    organisation = Organisation(name="fixture_name")
     session.add(organisation)
     return organisation
 
@@ -53,14 +53,14 @@ def setup_db():
 
 @pytest.fixture(scope="session")
 def scan_type_fixture(session):
-    scan_type = ScanType(name="name")
+    scan_type = ScanType(name="fixture_name")
     session.add(scan_type)
     return scan_type
 
 
 @pytest.fixture(scope="session")
 def template_fixture(session, organisation_fixture):
-    template = Template(name="name", organisation=organisation_fixture)
+    template = Template(name="fixture_name", organisation=organisation_fixture)
     session.add(template)
     return template
 
