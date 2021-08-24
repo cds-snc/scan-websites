@@ -21,8 +21,8 @@ def upgrade():
         "template_scan_triggers",
         sa.Column("id", postgresql.UUID(as_uuid=True), primary_key=True),
         sa.Column("template_scan_id", postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column("data", postgresql.JSONB(), nullable=False),
-        sa.Column("created_at", sa.DateTime, default=sa.func.now()),
+        sa.Column("callback", postgresql.JSONB(), nullable=False),
+        sa.Column("created_at", sa.DateTime, default=sa.func.utc_timestamp()),
         sa.Column("updated_at", sa.DateTime, onupdate=sa.func.utc_timestamp()),
         sa.ForeignKeyConstraint(
             ["template_scan_id"],

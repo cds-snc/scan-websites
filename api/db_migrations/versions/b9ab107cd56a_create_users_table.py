@@ -28,7 +28,7 @@ def upgrade():
         sa.Column(
             "access_token", postgresql.UUID(as_uuid=True), nullable=False, unique=True
         ),
-        sa.Column("created_at", sa.DateTime, default=sa.func.now()),
+        sa.Column("created_at", sa.DateTime, default=sa.func.utc_timestamp()),
         sa.Column("updated_at", sa.DateTime, onupdate=sa.func.utc_timestamp()),
         sa.ForeignKeyConstraint(
             ["organisation_id"],

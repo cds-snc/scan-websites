@@ -13,7 +13,7 @@ class TemplateScanTrigger(Base):
     __tablename__ = "template_scan_triggers"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    data = Column(JSONB, nullable=False)
+    callback = Column(JSONB, nullable=False)
     created_at = Column(
         DateTime,
         index=False,
@@ -35,7 +35,7 @@ class TemplateScanTrigger(Base):
         "TemplateScan", back_populates="template_scan_triggers"
     )
 
-    @validates("data")
-    def validate_name(self, _key, value):
+    @validates("callback")
+    def validate_callback(self, _key, value):
         assert value != ""
         return value
