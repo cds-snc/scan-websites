@@ -4,6 +4,10 @@ from logger import log
 from database.migrate import migrate_head
 from storage import storage
 import os
+# Import so that the application is aware of these Models
+from models.Organisation import Organisation
+from models.Template import Template
+from models.User import User
 
 app = api.app
 
