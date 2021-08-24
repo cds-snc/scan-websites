@@ -38,7 +38,9 @@ class TemplateScan(Base):
     )
     scan_type = relationship("ScanType", back_populates="template_scans")
 
+    template_scan_triggers = relationship("TemplateScanTrigger")
+
     @validates("data")
-    def validate_name(self, _key, value):
+    def validate_data(self, _key, value):
         assert value != ""
         return value

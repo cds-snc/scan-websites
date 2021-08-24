@@ -23,7 +23,7 @@ def upgrade():
         sa.Column("template_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column("scan_type_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column("data", postgresql.JSONB(), nullable=False),
-        sa.Column("created_at", sa.DateTime, default=sa.func.now()),
+        sa.Column("created_at", sa.DateTime, default=sa.func.utc_timestamp()),
         sa.Column("updated_at", sa.DateTime, onupdate=sa.func.utc_timestamp()),
         sa.ForeignKeyConstraint(
             ["template_id"],

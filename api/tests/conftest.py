@@ -7,6 +7,7 @@ from alembic import command
 from models.Organisation import Organisation
 from models.ScanType import ScanType
 from models.Template import Template
+from models.TemplateScan import TemplateScan
 
 
 from sqlalchemy import create_engine
@@ -62,3 +63,14 @@ def template_fixture(session, organisation_fixture):
     template = Template(name="name", organisation=organisation_fixture)
     session.add(template)
     return template
+
+
+@pytest.fixture(scope="session")
+def template_scan_fixture(scan_type_fixture, template_fixture, session):
+    template_scan = TemplateScan(
+        data={"jsonb": "data"},
+        scan_type=scan_type_fixture,
+        template=template_fixture,
+    )
+    session.add(template_scan)
+    return template_scan
