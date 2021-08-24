@@ -34,6 +34,8 @@ class Template(Base):
     )
     organisation = relationship("Organisation", back_populates="templates")
 
+    template_scans = relationship("TemplateScan")
+
     @validates("name")
     def validate_name(self, _key, value):
         assert value != ""
