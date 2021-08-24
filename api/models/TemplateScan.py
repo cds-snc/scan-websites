@@ -42,5 +42,5 @@ class TemplateScan(Base):
 
     @validates("data")
     def validate_data(self, _key, value):
-        assert value != ""
+        assert value is not None
         return value

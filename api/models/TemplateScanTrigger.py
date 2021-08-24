@@ -37,5 +37,5 @@ class TemplateScanTrigger(Base):
 
     @validates("callback")
     def validate_callback(self, _key, value):
-        assert value != ""
+        assert value is not None
         return value
