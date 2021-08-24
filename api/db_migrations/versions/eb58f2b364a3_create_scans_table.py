@@ -26,6 +26,10 @@ def upgrade():
         sa.Column("created_at", sa.DateTime, default=sa.func.utc_timestamp()),
         sa.Column("updated_at", sa.DateTime, onupdate=sa.func.utc_timestamp()),
         sa.ForeignKeyConstraint(
+            ["organisation_id"],
+            ["organisations.id"],
+        ),
+        sa.ForeignKeyConstraint(
             ["template_id"],
             ["templates.id"],
         ),
