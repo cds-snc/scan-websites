@@ -29,6 +29,7 @@ class Organisation(Base):
         onupdate=datetime.datetime.utcnow,
     )
 
+    scans = relationship("Scan")
     templates = relationship("Template")
     users = relationship("User")
 

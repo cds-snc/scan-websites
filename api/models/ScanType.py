@@ -29,6 +29,7 @@ class ScanType(Base):
         onupdate=datetime.datetime.utcnow,
     )
 
+    scans = relationship("Scan")
     template_scans = relationship("TemplateScan")
 
     @validates("name")

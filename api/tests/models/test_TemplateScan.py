@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from models.TemplateScan import TemplateScan
 
 
-def test_template_scan_belongs_to_an_template(
+def test_template_scan_belongs_to_a_template_and_a_scan_type(
     scan_type_fixture, template_fixture, session
 ):
     template_scan = TemplateScan(
@@ -15,7 +15,8 @@ def test_template_scan_belongs_to_an_template(
     )
     session.add(template_scan)
     session.commit()
-    assert template_fixture.template_scans[0].id == template_scan.id
+    assert template_fixture.template_scans[-1].id == template_scan.id
+    assert scan_type_fixture.template_scans[-1].id == template_scan.id
     session.delete(template_scan)
     session.commit()
 
@@ -27,6 +28,7 @@ def test_template_scan_model(scan_type_fixture, template_fixture):
         template=template_fixture,
     )
     assert template_scan.data == {"jsonb": "data"}
+    assert template_scan.scan_type is not None
     assert template_scan.template is not None
 
 

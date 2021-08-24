@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from models.TemplateScanTrigger import TemplateScanTrigger
 
 
-def test_template_scan_trigger_belongs_to_an_template_scan(
+def test_template_scan_trigger_belongs_to_a_template_scan(
     template_scan_fixture, session
 ):
     template_scan_trigger = TemplateScanTrigger(

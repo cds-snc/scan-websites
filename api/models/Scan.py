@@ -1,20 +1,20 @@
 import datetime
 import uuid
 
-from sqlalchemy import DateTime, Column, ForeignKey, String
+from sqlalchemy import DateTime, Column, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import relationship, validates
+from sqlalchemy.orm import relationship
 
 from models import Base
 from models.Organisation import Organisation
+from models.ScanType import ScanType
+from models.Template import Template
 
 
-class Template(Base):
-    __tablename__ = "templates"
+class Scan(Base):
+    __tablename__ = "scans"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    token = Column(UUID(as_uuid=True), default=uuid.uuid4)
-    name = Column(String, nullable=False)
     created_at = Column(
         DateTime,
         index=False,
@@ -32,12 +32,12 @@ class Template(Base):
     organisation_id = Column(
         UUID(as_uuid=True), ForeignKey(Organisation.id), index=True, nullable=False
     )
-    organisation = relationship("Organisation", back_populates="templates")
-
-    scans = relationship("Scan")
-    template_scans = relationship("TemplateScan")
-
-    @validates("name")
-    def validate_name(self, _key, value):
-        assert value != ""
-        return value
+    organisation = relationship("Organisation", back_populates="scans")
+    template_id = Column(
+        UUID(as_uuid=True), ForeignKey(Template.id), index=True, nullable=False
+    )
+    template = relationship("Template", back_populates="scans")
+    scan_type_id = Column(
+        UUID(as_uuid=True), ForeignKey(ScanType.id), index=True, nullable=False
+    )
+    scan_type = relationship("ScanType", back_populates="scans")

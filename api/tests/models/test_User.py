@@ -15,7 +15,7 @@ def test_user_belongs_to_an_organisation(organisation_fixture, session):
     )
     session.add(user)
     session.commit()
-    assert organisation_fixture.users[0].id == user.id
+    assert organisation_fixture.users[-1].id == user.id
     session.delete(user)
     session.commit()
 
