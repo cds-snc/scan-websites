@@ -3,7 +3,7 @@ import uuid
 
 from sqlalchemy import DateTime, Column, String
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import validates
+from sqlalchemy.orm import relationship, validates
 
 
 from models import Base
@@ -28,6 +28,8 @@ class ScanType(Base):
         nullable=True,
         onupdate=datetime.datetime.utcnow,
     )
+
+    template_scans = relationship("TemplateScan")
 
     @validates("name")
     def validate_name(self, _key, value):

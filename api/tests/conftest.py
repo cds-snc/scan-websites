@@ -5,6 +5,9 @@ from alembic.config import Config
 from alembic import command
 
 from models.Organisation import Organisation
+from models.ScanType import ScanType
+from models.Template import Template
+
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -45,3 +48,17 @@ def setup_db():
     command.upgrade(alembic_cfg, "head")
 
     yield
+
+
+@pytest.fixture(scope="session")
+def scan_type_fixture(session):
+    scan_type = ScanType(name="name")
+    session.add(scan_type)
+    return scan_type
+
+
+@pytest.fixture(scope="session")
+def template_fixture(session, organisation_fixture):
+    template = Template(name="name", organisation=organisation_fixture)
+    session.add(template)
+    return template
