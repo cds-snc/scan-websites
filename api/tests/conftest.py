@@ -4,6 +4,8 @@ import pytest
 from alembic.config import Config
 from alembic import command
 
+from models.Organisation import Organisation
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -16,6 +18,13 @@ def assert_new_model_saved():
         assert model.updated_at is None
 
     return f
+
+
+@pytest.fixture(scope="session")
+def organisation_fixture(session):
+    organisation = Organisation(name="name")
+    session.add(organisation)
+    return organisation
 
 
 @pytest.fixture(scope="session")

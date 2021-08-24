@@ -2,15 +2,8 @@ import pytest
 
 from sqlalchemy.exc import IntegrityError
 
-from models.Organisation import Organisation
+
 from models.User import User
-
-
-@pytest.fixture(scope="session")
-def organisation_fixture(session):
-    organisation = Organisation(name="name")
-    session.add(organisation)
-    return organisation
 
 
 def test_user_belongs_to_an_organisation(organisation_fixture, session):
