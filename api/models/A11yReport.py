@@ -49,6 +49,5 @@ class A11yReport(Base):
 
     @validates("summary")
     def validate_summary(self, _key, value):
-        assert value is not None
         assert value != ""
         return value
