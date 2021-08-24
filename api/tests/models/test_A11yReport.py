@@ -58,7 +58,7 @@ def test_a11y_report_model_saved(assert_new_model_saved, scan_fixture, session):
     session.commit()
 
 
-def test_a11y_report_empty_productfails(scan_fixture, session):
+def test_a11y_report_empty_product_fails(scan_fixture, session):
     a11y_report = A11yReport(
         revision="revision",
         url="url",
