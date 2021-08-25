@@ -1,4 +1,6 @@
 #!/bin/bash
+# Note, this file isn't executed, it's sourced. So, skip strict bash commands in here
+# as they'll terminate the shell.
 
 echo "Sourcing migrate.sh"
 function test_migrate_resp {

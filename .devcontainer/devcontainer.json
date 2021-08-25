@@ -20,12 +20,26 @@
 		"python.linting.pycodestylePath": "/usr/local/py-utils/bin/pycodestyle",
 		"python.linting.pydocstylePath": "/usr/local/py-utils/bin/pydocstyle",
 		"python.linting.pylintPath": "/usr/local/py-utils/bin/pylint",
+		"sqltools.connections": [
+			{
+				"name": "Container database",
+				"driver": "PostgreSQL",
+				"previewLimit": 50,
+				"server": "db",
+				"port": 5432,
+				"database": "scan-websites",
+				"username": "postgres",
+				"password": "postgres"
+			}
+		],
 		"terminal.integrated.shell.linux": "/bin/zsh"
 	},
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
 		"ms-python.python",
 		"ms-python.vscode-pylance",
+		"mtxr.sqltools",
+		"mtxr.sqltools-driver-pg",
 		"redhat.vscode-yaml",
 		"timonwong.shellcheck",
 		"hashicorp.terraform"

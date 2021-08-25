@@ -1,33 +1,28 @@
-"""create_users_table
+"""create templates table
 
-Revision ID: b9ab107cd56a
-Revises: 06b310a6251e
-Create Date: 2021-08-13 16:10:56.221141
+Revision ID: bf6d44121dce
+Revises: da6527f6cd76
+Create Date: 2021-08-24 13:14:26.089149
 
 """
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
-
 # revision identifiers, used by Alembic.
-revision = "b9ab107cd56a"
-down_revision = "06b310a6251e"
+revision = "bf6d44121dce"
+down_revision = "da6527f6cd76"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
     op.create_table(
-        "users",
+        "templates",
         sa.Column("id", postgresql.UUID(as_uuid=True), primary_key=True),
         sa.Column("organisation_id", postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column("token", postgresql.UUID(as_uuid=True), nullable=False, unique=True),
         sa.Column("name", sa.String(), nullable=False),
-        sa.Column("email_address", sa.String(length=255), nullable=False, unique=True),
-        sa.Column("password_hash", sa.String(length=255), nullable=False),
-        sa.Column(
-            "access_token", postgresql.UUID(as_uuid=True), nullable=False, unique=True
-        ),
         sa.Column("created_at", sa.DateTime, default=sa.func.utc_timestamp()),
         sa.Column("updated_at", sa.DateTime, onupdate=sa.func.utc_timestamp()),
         sa.ForeignKeyConstraint(
@@ -38,4 +33,4 @@ def upgrade():
 
 
 def downgrade():
-    op.drop_table("users")
+    op.drop_table("templates")

@@ -1,41 +1,44 @@
-"""create_users_table
+"""create scans table
 
-Revision ID: b9ab107cd56a
-Revises: 06b310a6251e
-Create Date: 2021-08-13 16:10:56.221141
+Revision ID: eb58f2b364a3
+Revises: db98eafe1333
+Create Date: 2021-08-24 18:35:42.224567
 
 """
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
-
 # revision identifiers, used by Alembic.
-revision = "b9ab107cd56a"
-down_revision = "06b310a6251e"
+revision = "eb58f2b364a3"
+down_revision = "db98eafe1333"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
     op.create_table(
-        "users",
+        "scans",
         sa.Column("id", postgresql.UUID(as_uuid=True), primary_key=True),
         sa.Column("organisation_id", postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column("name", sa.String(), nullable=False),
-        sa.Column("email_address", sa.String(length=255), nullable=False, unique=True),
-        sa.Column("password_hash", sa.String(length=255), nullable=False),
-        sa.Column(
-            "access_token", postgresql.UUID(as_uuid=True), nullable=False, unique=True
-        ),
+        sa.Column("template_id", postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column("scan_type_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column("created_at", sa.DateTime, default=sa.func.utc_timestamp()),
         sa.Column("updated_at", sa.DateTime, onupdate=sa.func.utc_timestamp()),
         sa.ForeignKeyConstraint(
             ["organisation_id"],
             ["organisations.id"],
         ),
+        sa.ForeignKeyConstraint(
+            ["template_id"],
+            ["templates.id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["scan_type_id"],
+            ["scan_types.id"],
+        ),
     )
 
 
 def downgrade():
-    op.drop_table("users")
+    op.drop_table("scans")

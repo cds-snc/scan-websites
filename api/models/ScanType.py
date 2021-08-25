@@ -9,8 +9,8 @@ from sqlalchemy.orm import relationship, validates
 from models import Base
 
 
-class Organisation(Base):
-    __tablename__ = "organisations"
+class ScanType(Base):
+    __tablename__ = "scan_types"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String, nullable=False, index=False, unique=True)
@@ -30,8 +30,7 @@ class Organisation(Base):
     )
 
     scans = relationship("Scan")
-    templates = relationship("Template")
-    users = relationship("User")
+    template_scans = relationship("TemplateScan")
 
     @validates("name")
     def validate_name(self, _key, value):
