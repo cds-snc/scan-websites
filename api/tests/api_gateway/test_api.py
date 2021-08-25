@@ -10,14 +10,14 @@ client = TestClient(api.app)
 
 
 def test_version_with_no_GIT_SHA():
-    response = client.get("/version")
+    response = client.get("/api/v1/version")
     assert response.status_code == 200
     assert response.json() == {"version": "unknown"}
 
 
 @patch.dict(os.environ, {"GIT_SHA": "foo"}, clear=True)
 def test_version_with_GIT_SHA():
-    response = client.get("/version")
+    response = client.get("/api/v1/version")
     assert response.status_code == 200
     assert response.json() == {"version": "foo"}
 
@@ -25,7 +25,7 @@ def test_version_with_GIT_SHA():
 @patch("api_gateway.api.get_db_version")
 def test_healthcheck_success(mock_get_db_version):
     mock_get_db_version.return_value = "foo"
-    response = client.get("/healthcheck")
+    response = client.get("/api/v1/healthcheck")
     assert response.status_code == 200
     expected_val = {"database": {"able_to_connect": True, "db_version": "foo"}}
     assert response.json() == expected_val
@@ -35,7 +35,7 @@ def test_healthcheck_success(mock_get_db_version):
 @patch("api_gateway.api.log")
 def test_healthcheck_failure(mock_log, mock_get_db_version):
     mock_get_db_version.side_effect = SQLAlchemyError()
-    response = client.get("/healthcheck")
+    response = client.get("/api/v1/healthcheck")
     assert response.status_code == 200
     expected_val = {"database": {"able_to_connect": False}}
     assert response.json() == expected_val

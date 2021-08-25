@@ -1,17 +1,19 @@
 from mangum import Mangum
-from api_gateway import api
+from api_gateway.v1 import api
+from front_end import view
 from logger import log
 from database.migrate import migrate_head
 from storage import storage
 import os
 
 # Import so that the application is aware of these Models
-# Required so that models are initialized before they're referened
+# Required so that models are initialized before they're referenced
 from models.Organisation import Organisation # noqa: F401
 from models.Template import Template # noqa: F401
 from models.User import User # noqa: F401
 
-app = api.app
+api_v1 = api.app
+app = view.app
 
 
 def print_env_variables():
@@ -25,8 +27,15 @@ def handler(event, context):
     # TODO: handle different events other than https
     if "httpMethod" in event:
         # Assume it is an API Gateway event
-        asgi_handler = Mangum(app)
-        response = asgi_handler(event, context)
+        if 'path' in event:
+          if event['path'].lower().startswith('/api/v1'):
+            asgi_handler = Mangum(api_v1)
+          else:
+            asgi_handler = Mangum(app)
+          response = asgi_handler(event, context)
+        else:
+          response = "Unsupported request, Please use AWS API Gateway"
+
         return response
 
     elif "Records" in event:
