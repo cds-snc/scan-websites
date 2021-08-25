@@ -1,9 +1,9 @@
 from pydantic import BaseModel
 
 
-class OrganizationBase(BaseModel):
+class OrganisationFilter(BaseModel):
     name: str
 
 
-class OrganizationCreate(OrganizationBase):
+class OrganizationCreate(OrganisationFilter):
     pass
