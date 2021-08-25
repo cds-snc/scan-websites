@@ -28,6 +28,7 @@ for lang in language_list:
     with open(lang, "r", encoding="utf8") as file:
         languages[lang_code] = json.load(file)
 
+
 # custom filters for Jinja2
 def plural_formatting(key_value, input, locale):
     key = ""
