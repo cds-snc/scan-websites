@@ -4,6 +4,7 @@ import pytest
 from alembic.config import Config
 from alembic import command
 
+from models.A11yReport import A11yReport
 from models.Organisation import Organisation
 from models.Scan import Scan
 from models.ScanType import ScanType
@@ -13,6 +14,20 @@ from models.TemplateScan import TemplateScan
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
+
+@pytest.fixture(scope="session")
+def a11y_report_fixture(session, scan_fixture):
+    a11y_report = A11yReport(
+        product="product",
+        revision="revision",
+        url="url",
+        summary={"jsonb": "data"},
+        scan=scan_fixture,
+    )
+    session.add(a11y_report)
+    session.commit()
+    return a11y_report
 
 
 @pytest.fixture
