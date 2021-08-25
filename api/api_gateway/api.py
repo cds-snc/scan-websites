@@ -3,8 +3,8 @@ from fastapi import FastAPI
 from sqlalchemy.exc import SQLAlchemyError
 from database.db import db_session
 from logger import log
-from crawler.crawler import crawl as c
-import uuid
+# from crawler.crawler import crawl
+# import uuid
 from pydantic import BaseModel
 
 
@@ -40,7 +40,7 @@ class CrawlUrl(BaseModel):
     url: str
 
 
-@app.post("/crawl")
-async def crawl_endpoint(crawl_url: CrawlUrl):
-    log.info(f"Crawling {crawl_url}...")
-    c(uuid.uuid4(), crawl_url.url)
+# @app.post("/crawl")
+# async def crawl_endpoint(crawl_url: CrawlUrl):
+#   log.info(f"Crawling {crawl_url}")
+#    crawl(uuid.uuid4(), crawl_url.url)
