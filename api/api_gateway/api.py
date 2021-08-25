@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from sqlalchemy.exc import SQLAlchemyError
 from database.db import db_session
 from logger import log
+
 # from crawler.crawler import crawl
 # import uuid
 from pydantic import BaseModel
