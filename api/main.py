@@ -30,10 +30,10 @@ def handler(event, context):
     if "httpMethod" in event:
         # Assume it is an API Gateway event
         asgi_handler = Mangum(app)
-        
+
         if "path" in event:
             if event["path"].lower().startswith("/api/v1"):
-                asgi_handler = Mangum(api_v1)               
+                asgi_handler = Mangum(api_v1)
 
         response = asgi_handler(event, context)
 
