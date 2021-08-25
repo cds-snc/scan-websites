@@ -19,7 +19,7 @@ ARG TERRAGRUNT_CHECKSUM
 
 # Install packages
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends ca-certificates curl git gstreamer1.0-libav libnss3-tools libatk-bridge2.0-0 libcups2-dev libxkbcommon-x11-0 libxcomposite-dev libxrandr2 libgbm-dev libgtk-3-0 libxshmfence-dev gnupg2 jq make openssh-client python3-pip vim xz-utils zsh \
+    && apt-get -y install --no-install-recommends \
     && apt-get autoremove -y && apt-get clean -y
 
 # Install Terraform
@@ -56,6 +56,10 @@ RUN curl -Lo awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-
     && unzip awscliv2.zip \
     && ./aws/install -i /usr/local/aws-cli -b /usr/local/bin
 
+COPY .devcontainer/apt-packages.txt ./
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+    && xargs apt-get -y install --no-install-recommends <apt-packages.txt
+
 # Setup aliases and autocomplete
 RUN echo "\n\
 complete -C /usr/bin/aws_completer aws\n\
@@ -63,14 +67,28 @@ complete -C /usr/local/bin/terraform terraform\n\
 complete -C /usr/local/bin/terraform terragrunt\n\
 alias tf='terraform'\n\
 alias tg='terragrunt'\n\
-alias ll='la -la'" >> /home/vscode/.zshrc
+alias ll='la -la' \n\
+alias laws='aws --endpoint-url=http://localstack:4566 --region=ca-central-1'" >> /home/vscode/.zshrc
+
+# Setup AWS Credentials
+RUN mkdir -p /home/vscode/.aws 
+
+RUN echo "\n\
+[default]\n\
+aws_access_key_id=foo\n\
+aws_secret_access_key=bar\n\
+" >> /home/vscode/.aws/credentials
+
+RUN echo "\n\
+[default]\n\
+region=ca-central-1\n\
+output=json\n\
+" >> /home/vscode/.aws/config
 
 # [Optional] If your pip requirements rarely change, uncomment this section to add them to the image.
 # COPY requirements.txt /tmp/pip-tmp/
 # RUN pip3 --disable-pip-version-check --no-cache-dir install -r /tmp/pip-tmp/requirements.txt \
 #    && rm -rf /tmp/pip-tmp
 
-RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends postgresql-client
 
 RUN su vscode -c "source /usr/local/share/nvm/nvm.sh && npm install -g typescript" 2>&1

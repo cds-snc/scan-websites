@@ -3,8 +3,8 @@ from unittest.mock import MagicMock, patch
 
 
 @patch("storage.storage.log")
-@patch("storage.storage.boto3")
-def test_get_object(mock_boto, mock_log):
+@patch("storage.storage.get_session")
+def test_get_object(mock_get_session, mock_log):
     mock_record = MagicMock()
     mock_record.s3.bucket.name = "bucket_name"
     mock_record.s3.object.key = "key"
@@ -14,7 +14,7 @@ def test_get_object(mock_boto, mock_log):
         "body"
     )
 
-    mock_boto.resource.return_value = mock_client
+    mock_get_session.return_value.resource.return_value = mock_client
 
     assert storage.get_object(mock_record) == "body"
     mock_client.Object.assert_called_once_with("bucket_name", "key")
@@ -25,8 +25,8 @@ def test_get_object(mock_boto, mock_log):
 
 
 @patch("storage.storage.log")
-@patch("storage.storage.boto3")
-def test_get_object_catch_exception(mock_boto, mock_log):
+@patch("storage.storage.get_session")
+def test_get_object_catch_exception(mock_get_session, mock_log):
     mock_record = MagicMock()
     mock_record.s3.bucket.name = "bucket_name"
     mock_record.s3.object.key = "key"
@@ -37,7 +37,7 @@ def test_get_object_catch_exception(mock_boto, mock_log):
     mock_client = MagicMock()
     mock_client.Object.return_value = mock_object
 
-    mock_boto.resource.return_value = mock_client
+    mock_get_session.return_value.resource.return_value = mock_client
 
     assert storage.get_object(mock_record) is False
     mock_log.error.assert_called_once_with("Error downloading key from bucket_name")

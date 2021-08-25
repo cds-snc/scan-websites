@@ -1,7 +1,7 @@
-import boto3
 import json
 import os
 import uuid
+from boto3wrapper.wrapper import get_session
 
 
 from logger import log
@@ -20,7 +20,7 @@ def dispatch(payload):
 
 def send(topic_arn, payload):
     if topic_arn:
-        client = boto3.client("sns", region_name="ca-central-1")
+        client = get_session().client("sns")
         client.publish(
             TargetArn=topic_arn,
             Message=json.dumps({"default": json.dumps(payload)}),

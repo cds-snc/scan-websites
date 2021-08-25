@@ -1,9 +1,9 @@
-import boto3
 from logger import log
+from boto3wrapper.wrapper import get_session
 
 
 def get_object(record):
-    client = boto3.resource("s3")
+    client = get_session().resource("s3")
     obj = client.Object(record.s3.bucket.name, record.s3.object.key)
     try:
         body = obj.get()["Body"].read()

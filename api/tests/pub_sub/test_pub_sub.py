@@ -17,10 +17,10 @@ def test_send_logs_error_if_no_topic_arn_is_found(mock_logger):
     mock_logger.error.assert_called_once_with("Topic ARN is not defined")
 
 
-@patch("pub_sub.pub_sub.boto3")
-def test_send_publishes_to_a_sns_topic(mock_boto):
+@patch("pub_sub.pub_sub.get_session")
+def test_send_publishes_to_a_sns_topic(mock_get_session):
     mock_client = MagicMock()
-    mock_boto.client.return_value = mock_client
+    mock_get_session.return_value.client.return_value = mock_client
 
     payload = {"id": "abcd"}
     pub_sub.send("topic", payload)
