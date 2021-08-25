@@ -12,6 +12,7 @@ from pydantic import BaseModel
 
 app = FastAPI()
 
+
 @app.get("/api/v1/version")
 async def version():
     return {"version": environ.get("GIT_SHA", "unknown")}

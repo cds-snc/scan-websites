@@ -12,6 +12,6 @@ curl "http://api:8080/2015-03-31/functions/function/invocations" -d '{
     "multiValueQueryStringParameters": null,
     "pathParameters": null,
     "stageVariables": null,
-    "body": "{\"name\": \"cheese\"}",
+    "body": "{\"name\": \"Canadian Digital Services\"}",
     "isBase64Encoded": false
 }' |jq
