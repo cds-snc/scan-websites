@@ -22,6 +22,7 @@ lint-ci:
 
 migrations:
 	cd db_migrations &&\
+	alembic stamp base &&\
 	alembic upgrade head
 
 test:

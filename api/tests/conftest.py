@@ -5,11 +5,14 @@ from alembic.config import Config
 from alembic import command
 
 from models.A11yReport import A11yReport
+from models.A11yViolation import A11yViolation
 from models.Organisation import Organisation
 from models.Scan import Scan
 from models.ScanType import ScanType
 from models.Template import Template
 from models.TemplateScan import TemplateScan
+from models.TemplateScanTrigger import TemplateScanTrigger
+from models.User import User
 
 
 from sqlalchemy import create_engine
@@ -44,6 +47,7 @@ def assert_new_model_saved():
 def organisation_fixture(session):
     organisation = Organisation(name="fixture_name")
     session.add(organisation)
+
     return organisation
 
 
@@ -59,6 +63,7 @@ def setup_db():
     os.environ["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
         "SQLALCHEMY_DATABASE_TEST_URI"
     )
+
     alembic_cfg = Config("./db_migrations/alembic.ini")
     alembic_cfg.set_main_option("script_location", "./db_migrations")
     command.downgrade(alembic_cfg, "base")
@@ -101,3 +106,10 @@ def template_scan_fixture(scan_type_fixture, template_fixture, session):
     )
     session.add(template_scan)
     return template_scan
+
+
+@pytest.fixture(scope="session")
+def user_fixture(session):
+    user = User(name="fixture_name")
+    session.add(user)
+    return user

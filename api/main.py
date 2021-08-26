@@ -9,8 +9,13 @@ import os
 
 # Import so that the application is aware of these Models
 # Required so that models are initialized before they're referenced
+from models.A11yReport import A11yReport  # noqa: F401
+from models.A11yViolation import A11yViolation  # noqa: F401
 from models.Organisation import Organisation  # noqa: F401
+from models.Scan import Scan  # noqa: F401
 from models.Template import Template  # noqa: F401
+from models.TemplateScan import TemplateScan  # noqa: F401
+from models.TemplateScanTrigger import TemplateScanTrigger  # noqa: F401
 from models.User import User  # noqa: F401
 
 
