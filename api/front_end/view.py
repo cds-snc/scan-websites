@@ -67,6 +67,7 @@ async def home(request: Request, locale: str):
         result.update(languages[locale])
         return templates.TemplateResponse("index.html", result)
     except Exception as e:
+        log.error(e)
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -81,6 +82,7 @@ async def create_organization(organization: OrganizationCreate):
         session.commit()
         return RedirectResponse("/dashboard")
     except Exception as e:
+        log.error(e)
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -92,6 +94,7 @@ async def dashboard(request: Request):
     try:
         result = session.query(Organisation).all()
     except Exception as e:
+        log.error(e)
         raise HTTPException(status_code=500, detail=str(e))
     return templates.TemplateResponse(
         "dashboard.html", {"request": request, "organisations": result}

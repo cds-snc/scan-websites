@@ -1,7 +1,5 @@
 from os import environ
-from fastapi import FastAPI, Request, HTTPException
-from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
+from fastapi import FastAPI
 from sqlalchemy.exc import SQLAlchemyError
 from database.db import db_session
 from logger import log
