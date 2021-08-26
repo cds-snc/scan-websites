@@ -5,13 +5,11 @@ from alembic.config import Config
 from alembic import command
 
 from models.A11yReport import A11yReport
-from models.A11yViolation import A11yViolation
 from models.Organisation import Organisation
 from models.Scan import Scan
 from models.ScanType import ScanType
 from models.Template import Template
 from models.TemplateScan import TemplateScan
-from models.TemplateScanTrigger import TemplateScanTrigger
 from models.User import User
 
 
