@@ -17,8 +17,8 @@
               <a class="text-gray-900 text-base no-underline font-bold xl:text-xl hover:no-underline" href="/{{ lang }}" aria-label="{{ goc }}">
                 <img class="h-6 inline-block pr-10" src="{{ goc_banner }}" alt="{{ goc }}" />
               </a>
-              <span class="leading-none lg:ml-4 mr-5 lg:pl-5 font-semibold inline-block top-0 text-brand pb-0">Scan Websites</span>
-              <span class="bg-blue-200 py-1 px-2 rounded-lg text-small">ALPHA</span>
+              <span class="leading-none lg:ml-4 mr-5 lg:pl-5 font-semibold inline-block top-0 text-brand pb-0">{{ webpage_title }}</span>
+              <span class="bg-blue-200 py-1 px-2 rounded-lg text-small">{{ alpha }}</span>
             </div>
             <div class="pl-2 pb-4 w-1/2 md:pl-0 text-right">
               <a class="text-base no-underline hover:no-underline" href="/{{other_lang}}" aria-label="{{ goc }}">
@@ -35,23 +35,15 @@
               </main>
             </div> 
           </div>
+          <div class="footer">
+            {% block footer %}
+              <br>
+              <br>
+            {% endblock %}
+          </div>  
         </div>
       </div>
     </div>
-
-
-    <div class="container">
-      <h2>TODO: HEADER</h2>
-      <br>
-      {% block content %}{% endblock %}
-      <br>
-      <div class="footer">
-        {% block footer %}
-          TODO: Footer goes here
-          <br>
-          <br>
-        {% endblock %}
-      </div>
-    </div>
+     
   </body>
 </html>

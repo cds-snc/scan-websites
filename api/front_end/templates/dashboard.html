@@ -1,9 +1,10 @@
 {% extends "base.html" %}
-{% block content %}
-  Organizations
+{% block body %}
+  {{ organisations_locale }}
   <ul>
-  {% for organization in organisations %}
-    <li>{{organization.name}}</li>
+  <br>
+  {% for organisation in organisations %}
+    <li>{{ organisation.name }}</li>
   {% endfor %}
   </ul>
 {% endblock %}

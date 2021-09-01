@@ -5,7 +5,6 @@ from sqlalchemy import DateTime, Column, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship, validates
 
-
 from models import Base
 
 

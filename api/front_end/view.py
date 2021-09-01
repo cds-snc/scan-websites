@@ -1,12 +1,12 @@
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import Depends, FastAPI, Request, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from babel.plural import PluralRule
 from database.db import db_session
 from logger import log
+from sqlalchemy.orm import Session
 
 from models.Organisation import Organisation
-from schemas.Organization import OrganizationCreate
 
 import glob
 import json
@@ -14,23 +14,37 @@ import os
 
 app = FastAPI()
 
-templates = Jinja2Templates(directory="front_end/templates")
 
+# Dependency
+def get_db():
+    db = db_session()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+templates = Jinja2Templates(directory="front_end/templates")
 default_fallback = "en"
 languages = {}
-plural_rule = PluralRule({"one": "n in 0..1"})
 
-language_list = glob.glob("i18n/*.json")
-for lang in language_list:
-    filename = lang.split(os.path.sep)
-    lang_code = filename[1].split(".")[0]
 
-    with open(lang, "r", encoding="utf8") as file:
-        languages[lang_code] = json.load(file)
+def generate_languages(locale_files):
+    language_list = glob.glob(locale_files)
+    for lang in language_list:
+        filename = lang.split(os.path.sep)
+        lang_code = filename[1].split(".")[0]
+
+        with open(lang, "r", encoding="utf8") as file:
+            languages[lang_code] = json.load(file)
+
+
+generate_languages("i18n/*.json")
 
 
 # custom filters for Jinja2
 def plural_formatting(key_value, input, locale):
+    plural_rule = PluralRule({"one": "n in 0..1"})
     key = ""
     for i in languages[locale]:
         if key_value == languages[locale][i]:
@@ -71,31 +85,20 @@ async def home(request: Request, locale: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# TODO Require auth and redirect to home
+# TODO Require auth & limit to users current organisation
 # TODO Push errors to cloudwatch metric and response when debug enabled
-@app.post("/organization", response_class=RedirectResponse)
-async def create_organization(organization: OrganizationCreate):
-    session = db_session()
+# TODO Enable detailed error messages via debug flag
+@app.get("/{locale}/dashboard", response_class=HTMLResponse)
+async def dashboard(request: Request, locale: str, session: Session = Depends(get_db)):
     try:
-        new_organization = Organisation(name=organization.name)
-        session.add(new_organization)
-        session.commit()
-        return RedirectResponse("/dashboard")
+        if locale not in languages:
+            locale = default_fallback
+
+        organisation_list = session.query(Organisation).all()
+        result = {"request": request}
+        result.update(languages[locale])
+        result.update({"organisations": organisation_list})
     except Exception as e:
         log.error(e)
         raise HTTPException(status_code=500, detail=str(e))
-
-
-# TODO Require auth & limit to users current organization
-# TODO Push errors to cloudwatch metric and response when debug enabled
-@app.get("/dashboard", response_class=HTMLResponse)
-async def dashboard(request: Request):
-    session = db_session()
-    try:
-        result = session.query(Organisation).all()
-    except Exception as e:
-        log.error(e)
-        raise HTTPException(status_code=500, detail=str(e))
-    return templates.TemplateResponse(
-        "dashboard.html", {"request": request, "organisations": result}
-    )
+    return templates.TemplateResponse("dashboard.html", result)

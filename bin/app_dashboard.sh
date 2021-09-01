@@ -1,9 +1,9 @@
 #!/bin/bash
 
-echo hitting app root endpoint
+echo hitting app dashboard endpoint
 curl "http://api:8080/2015-03-31/functions/function/invocations" -d '{
     "resource": "/",
-    "path": "/dashboard",
+    "path": "/en/dashboard",
     "requestContext": {},
     "httpMethod": "GET",
     "headers": {},

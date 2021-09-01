@@ -6,4 +6,7 @@ class OrganisationFilter(BaseModel):
 
 
 class OrganizationCreate(OrganisationFilter):
+    class Config:
+        extra = "forbid"
+
     pass

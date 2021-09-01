@@ -1,9 +1,9 @@
 #!/bin/bash
 
-echo hitting app root endpoint
+echo hitting create organisation endpoint
 curl "http://api:8080/2015-03-31/functions/function/invocations" -d '{
     "resource": "/",
-    "path": "/organization",
+    "path": "/api/v1/organisation",
     "requestContext": {},
     "httpMethod": "POST",
     "headers": {},
@@ -12,6 +12,6 @@ curl "http://api:8080/2015-03-31/functions/function/invocations" -d '{
     "multiValueQueryStringParameters": null,
     "pathParameters": null,
     "stageVariables": null,
-    "body": "{\"name\": \"Canadian Digital Services\"}",
+    "body": "{\"name\": \"ABCDE\"}",
     "isBase64Encoded": false
 }' |jq
