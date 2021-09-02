@@ -36,6 +36,8 @@ services:
       AWS_LOCALSTACK: "True"
       AXE_CORE_URLS_TOPIC: "arn:aws:sns:us-east-1:000000000000:axe-core-urls-topic"
  
+    ports:
+      - "8080:8080" 
   db:
     image: postgres:11.2
     volumes:

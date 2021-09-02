@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+  <div>{{ welcome }}</div>
+  {% block footer %}
+  {{super()}}
+  {% endblock %}
+{% endblock %}
