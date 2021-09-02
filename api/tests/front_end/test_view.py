@@ -2,7 +2,7 @@ from fastapi.testclient import TestClient
 
 from front_end import view
 
-client = TestClient(view.app)
+client = TestClient(view.router)
 
 
 def test_langing_page_redirect_to_en():

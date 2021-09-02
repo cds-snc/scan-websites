@@ -1,6 +1,5 @@
 from mangum import Mangum
-from api_gateway.v1 import api
-from front_end import view
+from api_gateway import api
 from logger import log
 from database.migrate import migrate_head
 from storage import storage
@@ -18,9 +17,7 @@ from models.TemplateScan import TemplateScan  # noqa: F401
 from models.TemplateScanTrigger import TemplateScanTrigger  # noqa: F401
 from models.User import User  # noqa: F401
 
-
-api_v1 = api.app
-app = view.app
+app = api.app
 
 
 def print_env_variables():
@@ -35,13 +32,7 @@ def handler(event, context):
     if "httpMethod" in event:
         # Assume it is an API Gateway event
         asgi_handler = Mangum(app)
-
-        if "path" in event:
-            if event["path"].lower().startswith("/api/v1"):
-                asgi_handler = Mangum(api_v1)
-
         response = asgi_handler(event, context)
-
         return response
 
     elif "Records" in event:

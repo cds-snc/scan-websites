@@ -1,4 +1,4 @@
-from fastapi import Depends, FastAPI, Request, HTTPException
+from fastapi import APIRouter, Depends, Request, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from babel.plural import PluralRule
@@ -12,7 +12,7 @@ import glob
 import json
 import os
 
-app = FastAPI()
+router = APIRouter()
 
 
 # Dependency
@@ -66,12 +66,12 @@ def plural_formatting(key_value, input, locale):
 templates.env.filters["plural_formatting"] = plural_formatting
 
 
-@app.get("/", response_class=HTMLResponse)
+@router.get("/", response_class=HTMLResponse)
 async def force_lang():
     return RedirectResponse("/en")
 
 
-@app.get("/{locale}", response_class=HTMLResponse)
+@router.get("/{locale}", response_class=HTMLResponse)
 async def home(request: Request, locale: str):
     try:
         if locale not in languages:
@@ -88,7 +88,7 @@ async def home(request: Request, locale: str):
 # TODO Require auth & limit to users current organisation
 # TODO Push errors to cloudwatch metric and response when debug enabled
 # TODO Enable detailed error messages via debug flag
-@app.get("/{locale}/dashboard", response_class=HTMLResponse)
+@router.get("/{locale}/dashboard", response_class=HTMLResponse)
 async def dashboard(request: Request, locale: str, session: Session = Depends(get_db)):
     try:
         if locale not in languages:
