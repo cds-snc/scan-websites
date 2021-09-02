@@ -7,6 +7,7 @@ from logger import log
 
 router = APIRouter()
 
+
 # Dependency
 def get_db():
     db = db_session()

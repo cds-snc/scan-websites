@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, FastAPI, Request, HTTPException
+from fastapi import APIRouter, Depends, Request, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from babel.plural import PluralRule
