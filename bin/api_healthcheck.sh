@@ -3,7 +3,7 @@
 echo hitting api healthcheck endpoint
 curl "http://api:8080/2015-03-31/functions/function/invocations" -d '{
     "resource": "/",
-    "path": "/api/v1/healthcheck",
+    "path": "/healthcheck",
     "requestContext": {},
     "httpMethod": "GET",
     "headers": {},

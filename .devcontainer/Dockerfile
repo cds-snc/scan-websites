@@ -92,3 +92,4 @@ output=json\n\
 
 
 RUN su vscode -c "source /usr/local/share/nvm/nvm.sh && npm install -g typescript" 2>&1
+ENV DEV_ENVIRONMENT=true
