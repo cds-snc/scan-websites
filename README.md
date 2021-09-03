@@ -13,3 +13,9 @@ To interact with aws localstack `use` laws
 ```bash
 laws s3api list-buckets
 ``` 
+
+### Example - View SNS messages as they get posted
+```bash
+docker ps
+docker logs --follow [localstack CONTAINER_ID]
+```

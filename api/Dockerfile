@@ -19,7 +19,8 @@ COPY ./requirements_playwright.txt ${FUNCTION_DIR}
 
 RUN python3.9 -m pip install -r ${FUNCTION_DIR}/requirements_playwright.txt 
 
-RUN playwright install chromium
+RUN python3.9 -m playwright install chromium
+
 
 COPY ./requirements.txt ${FUNCTION_DIR}
 
