@@ -34,7 +34,7 @@ services:
     environment:
       <<: *db-connection-strings
       AWS_LOCALSTACK: "True"
-      AXE_CORE_URLS_TOPIC: "arn:aws:sns:us-east-1:000000000000:axe-core-urls-topic"
+      AXE_CORE_URLS_TOPIC: "arn:aws:sns:ca-central-1:000000000000:axe-core-urls-topic"
  
     ports:
       - "8080:8080" 

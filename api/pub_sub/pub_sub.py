@@ -20,7 +20,12 @@ def dispatch(payload):
 
 def send(topic_arn, payload):
     if topic_arn:
-        client = get_session().client("sns")
+        use_localstack = os.environ.get("AWS_LOCALSTACK", False)
+        if use_localstack:
+          client = get_session().client("sns", endpoint_url="http://localstack:4566")
+        else:
+          client = get_session().client("sns")
+        
         client.publish(
             TargetArn=topic_arn,
             Message=json.dumps({"default": json.dumps(payload)}),

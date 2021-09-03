@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, BackgroundTasks
 from logger import log
 from pydantic import BaseModel
 from crawler.crawler import crawl
@@ -12,6 +12,9 @@ class CrawlUrl(BaseModel):
 
 
 @router.post("/crawl")
-def crawl_endpoint(crawl_url: CrawlUrl):
+def crawl_endpoint(crawl_url: CrawlUrl, background_tasks: BackgroundTasks):
     log.info(f"Crawling {crawl_url}")
-    crawl(uuid.uuid4(), crawl_url.url)
+    # background_tasks.add_task(uuid.uuid4(), crawl_url.url)
+    crawl(str(uuid.uuid4()), crawl_url.url)
+    return {"message": "Crawler initiated"}
+
