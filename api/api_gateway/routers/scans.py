@@ -16,4 +16,3 @@ def crawl_endpoint(crawl_url: CrawlUrl, background_tasks: BackgroundTasks):
     log.info(f"Crawling {crawl_url}")
     background_tasks.add_task(crawl, str(uuid.uuid4()), crawl_url.url)
     return {"message": "Crawler initiated"}
-
