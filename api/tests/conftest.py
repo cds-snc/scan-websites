@@ -1,5 +1,6 @@
 import os
 import pytest
+from unittest.mock import MagicMock
 
 from alembic.config import Config
 from alembic import command
@@ -10,7 +11,6 @@ from models.Scan import Scan
 from models.ScanType import ScanType
 from models.Template import Template
 from models.TemplateScan import TemplateScan
-from models.User import User
 
 
 from sqlalchemy import create_engine
@@ -41,11 +41,17 @@ def assert_new_model_saved():
     return f
 
 
+@pytest.fixture
+def context_fixture():
+    context = MagicMock()
+    context.function_name = "api"
+    return context
+
+
 @pytest.fixture(scope="session")
 def organisation_fixture(session):
     organisation = Organisation(name="fixture_name")
     session.add(organisation)
-
     return organisation
 
 
@@ -61,7 +67,6 @@ def setup_db():
     os.environ["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
         "SQLALCHEMY_DATABASE_TEST_URI"
     )
-
     alembic_cfg = Config("./db_migrations/alembic.ini")
     alembic_cfg.set_main_option("script_location", "./db_migrations")
     command.downgrade(alembic_cfg, "base")
@@ -104,10 +109,3 @@ def template_scan_fixture(scan_type_fixture, template_fixture, session):
     )
     session.add(template_scan)
     return template_scan
-
-
-@pytest.fixture(scope="session")
-def user_fixture(session):
-    user = User(name="fixture_name")
-    session.add(user)
-    return user
