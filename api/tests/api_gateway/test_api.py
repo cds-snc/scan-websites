@@ -42,17 +42,33 @@ def test_healthcheck_failure(mock_log, mock_get_db_version):
     # assert mock_log.error.assert_called_once_with(SQLAlchemyError())
 
 
-# @patch("api_gateway.api.crawl")
-# @patch("api_gateway.api.log")
-# @patch("api_gateway.api.uuid")
-# def test_crawl(mock_uuid, mock_log, mock_crawl):
-#    fake_url = "bar"
-#    fake_uuid = "foo"
-#    mock_log.return_value = None
-#    mock_uuid.uuid4.return_value = fake_uuid
-#
-#    response = client.post(url="/crawl", json={"url": fake_url})
-#
-#    assert response.status_code == 200
-#    mock_crawl.assert_called_once_with(fake_uuid, fake_url)
-#    mock_log.info.assert_called_once_with("Crawling url='bar'")
+@patch("api_gateway.routers.scans.crawl")
+@patch("api_gateway.routers.scans.log")
+@patch("api_gateway.routers.scans.uuid")
+def test_crawl(mock_uuid, mock_log, mock_crawl):
+   fake_url = "bar"
+   fake_uuid = "foo"
+   mock_log.return_value = None
+   mock_uuid.uuid4.return_value = fake_uuid
+
+   response = client.post(url="/scans/crawl", json={"url": fake_url})
+
+   assert response.status_code == 200
+   mock_crawl.assert_called_once_with(fake_uuid, fake_url)
+   mock_log.info.assert_called_once_with("Crawling url='bar'")
+
+@patch("api_gateway.routers.scans.crawl")
+@patch("api_gateway.routers.scans.log")
+@patch("api_gateway.routers.scans.uuid")
+def test_crawl_ratelimit(mock_uuid, mock_log, mock_crawl):
+   fake_url = "bar"
+   fake_uuid = "foo"
+   mock_log.return_value = None
+   mock_uuid.uuid4.return_value = fake_uuid
+
+   for i in range(0, 10):
+    response = client.post(url="/scans/crawl", json={"url": fake_url})
+    if i < 4:
+      assert response.status_code == 200
+    else:
+      assert response.status_code == 429   
