@@ -1,5 +1,6 @@
 from mangum import Mangum
 from api_gateway import api
+from aws_lambda_powertools import Metrics
 from logger import log
 from database.migrate import migrate_head
 from storage import storage
@@ -18,6 +19,7 @@ from models.TemplateScanTrigger import TemplateScanTrigger  # noqa: F401
 from models.User import User  # noqa: F401
 
 app = api.app
+metrics = Metrics(namespace="ScanWebsites", service="api")
 
 
 def print_env_variables():
@@ -25,6 +27,7 @@ def print_env_variables():
     log.info(f"AWS_LAMBDA_RUNTIME_API: {rapi}")
 
 
+@metrics.log_metrics(capture_cold_start_metric=True)
 def handler(event, context):
     print_env_variables()
     log.debug(event)
