@@ -11,6 +11,7 @@ from models.Scan import Scan
 from models.ScanType import ScanType
 from models.Template import Template
 from models.TemplateScan import TemplateScan
+from models.User import User
 
 
 from sqlalchemy import create_engine
@@ -109,3 +110,10 @@ def template_scan_fixture(scan_type_fixture, template_fixture, session):
     )
     session.add(template_scan)
     return template_scan
+
+
+@pytest.fixture(scope="session")
+def user_fixture(session):
+    user = User(name="fixture_name")
+    session.add(user)
+    return user
