@@ -9,6 +9,11 @@ from sqlalchemy.orm import relationship, validates
 from models import Base
 from models.Organisation import Organisation
 
+from pydantic import BaseModel
+from starlette.authentication import BaseUser
+
+from typing import Optional
+
 
 class User(Base):
     __tablename__ = "users"
@@ -59,3 +64,19 @@ class User(Base):
     def validate_password_hash(self, _key, value):
         assert value != ""
         return value
+
+class AuthenticatedUser(BaseModel, BaseUser):
+    id: Optional[str]
+    email: Optional[str]
+
+    @property
+    def is_authenticated(self) -> bool:
+        return True
+
+    @property
+    def display_name(self) -> str:
+        return self.email
+
+    @property
+    def identity(self) -> str:
+        raise NotImplementedError()  # pragma: no cover
