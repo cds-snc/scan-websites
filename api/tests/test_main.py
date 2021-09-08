@@ -50,7 +50,7 @@ def test_handler_record_event_no_records(mock_storage, context_fixture):
 @patch("main.storage")
 def test_handler_record_event_contains_s3(mock_storage):
     assert main.handler({"Records": [{"s3": {}}]}, {}) == "Success"
-    mock_storage.get_object.assert_called_once_with({"s3": {}})
+    mock_storage.store.assert_called_once_with({"s3": {}})
 
 
 @patch("main.log")

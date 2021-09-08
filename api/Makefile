@@ -25,7 +25,7 @@ migrations:
 	alembic upgrade head
 
 test:
-	coverage run -m pytest -s -vv tests &&\
+	BCRYPT_WORK_FACTOR=4 coverage run -m pytest -s -vv tests &&\
 	coverage report -m
 
 fmt-ci:

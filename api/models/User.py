@@ -1,5 +1,6 @@
 import bcrypt
 import datetime
+import os
 import uuid
 
 from sqlalchemy import DateTime, Column, ForeignKey, String
@@ -8,6 +9,8 @@ from sqlalchemy.orm import relationship, validates
 
 from models import Base
 from models.Organisation import Organisation
+
+BCRYPT_WORK_FACTOR = int(os.environ.get("BCRYPT_WORK_FACTOR", "14"))
 
 
 class User(Base):
@@ -43,7 +46,7 @@ class User(Base):
 
     @password.setter
     def password(self, password):
-        self.password_hash = bcrypt.hashpw(str.encode(password), bcrypt.gensalt(14))
+        self.password_hash = bcrypt.hashpw(str.encode(password), bcrypt.gensalt(BCRYPT_WORK_FACTOR))
 
     @validates("name")
     def validate_name(self, _key, value):
