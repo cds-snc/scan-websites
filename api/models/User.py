@@ -46,7 +46,9 @@ class User(Base):
 
     @password.setter
     def password(self, password):
-        self.password_hash = bcrypt.hashpw(str.encode(password), bcrypt.gensalt(BCRYPT_WORK_FACTOR))
+        self.password_hash = bcrypt.hashpw(
+            str.encode(password), bcrypt.gensalt(BCRYPT_WORK_FACTOR)
+        )
 
     @validates("name")
     def validate_name(self, _key, value):

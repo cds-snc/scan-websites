@@ -83,14 +83,18 @@ def test_store_with_scan_type_missing(mock_get_object, mock_log, mock_session):
     mock_session().query().options().get.return_value = mock_scan
     mock_get_object.return_value = load_fixture("axe_core_report.json")
     assert storage.store(mock_record()) is False
-    mock_log.error.assert_called_once_with("Error storing scan_id with type unknown_type_name")
+    mock_log.error.assert_called_once_with(
+        "Error storing scan_id with type unknown_type_name"
+    )
 
 
 @patch("storage.storage.db_session")
 @patch("storage.storage.log")
 @patch("storage.storage.get_object")
 @patch("storage.storage.store_axe_core_record")
-def test_store_with_scan_type_as_axe_core(mock_store_axe_core, mock_get_object, mock_log, mock_session):
+def test_store_with_scan_type_as_axe_core(
+    mock_store_axe_core, mock_get_object, mock_log, mock_session
+):
     mock_scan = MagicMock()
     mock_scan.id = "scan_id"
     mock_scan.scan_type.name = "axe_core"
