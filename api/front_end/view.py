@@ -7,6 +7,7 @@ from logger import log
 from sqlalchemy.orm import Session
 
 from models.Organisation import Organisation
+from api_gateway.routers.auth import is_authenticated
 
 import glob
 import json
@@ -88,7 +89,13 @@ async def home(request: Request, locale: str):
 # TODO Require auth & limit to users current organisation
 # TODO Push errors to cloudwatch metric and response when debug enabled
 # TODO Enable detailed error messages via debug flag
-@router.get("/{locale}/dashboard", response_class=HTMLResponse)
+
+
+@router.get(
+    "/{locale}/dashboard",
+    dependencies=[Depends(is_authenticated)],
+    response_class=HTMLResponse,
+)
 async def dashboard(request: Request, locale: str, session: Session = Depends(get_db)):
     try:
         if locale not in languages:

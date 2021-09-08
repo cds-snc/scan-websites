@@ -21,7 +21,7 @@ class User(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String, nullable=False)
     email_address = Column(String, nullable=False, index=False, unique=True)
-    password_hash = Column(String, nullable=False)
+    password_hash = Column(String, nullable=True)
     access_token = Column(UUID(as_uuid=True), default=uuid.uuid4)
     created_at = Column(
         DateTime,
@@ -65,9 +65,10 @@ class User(Base):
         assert value != ""
         return value
 
+
 class AuthenticatedUser(BaseModel, BaseUser):
-    id: Optional[str]
-    email: Optional[str]
+    email_address: Optional[str]
+    name: Optional[str]
 
     @property
     def is_authenticated(self) -> bool:
@@ -75,7 +76,7 @@ class AuthenticatedUser(BaseModel, BaseUser):
 
     @property
     def display_name(self) -> str:
-        return self.email
+        return self.name
 
     @property
     def identity(self) -> str:

@@ -1,5 +1,6 @@
 from os import environ
 from fastapi import FastAPI, HTTPException
+from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
 from front_end import view
@@ -11,10 +12,11 @@ else:
     # This is only needed until a dedicated domain name is live
     app = FastAPI(root_path="/v1")
 
-FASTAPI_SECRET_KEY = environ.get('FASTAPI_SECRET_KEY') or None
+FASTAPI_SECRET_KEY = environ.get("FASTAPI_SECRET_KEY") or None
 if FASTAPI_SECRET_KEY is None:
-    raise HTTPException(status_code=500, detail='Missing FASTAPI_SECRET_KEY')
+    raise HTTPException(status_code=500, detail="Missing FASTAPI_SECRET_KEY")
 
+app.add_middleware(AuthenticationMiddleware, backend=auth.SessionAuthBackend())
 app.add_middleware(SessionMiddleware, secret_key=FASTAPI_SECRET_KEY)
 
 app.include_router(auth.router)
