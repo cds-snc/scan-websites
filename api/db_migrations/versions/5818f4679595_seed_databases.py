@@ -7,7 +7,6 @@ Create Date: 2021-09-08 14:27:33.384835
 """
 from alembic import op
 import sqlalchemy as sa
-from sqlalchemy.sql import func
 from datetime import datetime
 import uuid
 
@@ -24,7 +23,6 @@ def upgrade():
     meta.reflect(only=("organisations", "scan_types", "users"))
     organisations = sa.Table("organisations", meta)
     scan_types = sa.Table("scan_types", meta)
-    users = sa.Table("users", meta)
 
     op.alter_column("users", "password_hash", nullable=True)
 

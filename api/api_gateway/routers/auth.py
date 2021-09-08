@@ -1,9 +1,8 @@
 from authlib.integrations.starlette_client import OAuth, OAuthError
 from fastapi import APIRouter, Depends, Request, HTTPException
-from fastapi.responses import RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from os import environ
 from starlette.authentication import AuthenticationBackend, AuthCredentials
-from starlette.requests import Request
 from starlette.config import Config
 from starlette import status
 from sqlalchemy.orm import Session
@@ -64,6 +63,7 @@ async def auth_google(
     try:
         token = await oauth.google.authorize_access_token(request)
     except OAuthError as error:
+        log.error(error)
         return HTMLResponse(f"<h1>{error.error}</h1>")
     user = await oauth.google.parse_id_token(request, token)
     email = user["email"]
@@ -89,7 +89,7 @@ async def auth_google(
         request.session["user"] = authenticated_user
     except Exception as e:
         log.error(e)
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500)
 
     return RedirectResponse(url="/en/dashboard")
 
