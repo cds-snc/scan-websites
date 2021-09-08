@@ -58,6 +58,7 @@ def upgrade():
 
 
 def downgrade():
+    op.execute("UPDATE users SET password_hash = '' WHERE password_hash IS NULL")
     op.alter_column("users", "password_hash", nullable=False)
 
     op.execute(

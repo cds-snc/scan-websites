@@ -67,7 +67,7 @@ def plural_formatting(key_value, input, locale):
 templates.env.filters["plural_formatting"] = plural_formatting
 
 
-@router.get("/", response_class=HTMLResponse)
+@router.get("/", response_class=HTMLResponse, include_in_schema=False)
 async def force_lang():
     return RedirectResponse("/en")
 
@@ -112,7 +112,7 @@ async def dashboard(request: Request, locale: str, session: Session = Depends(ge
 
 
 @router.get("/{locale}/login", response_class=HTMLResponse)
-async def home(request: Request, locale: str):
+async def login(request: Request, locale: str):
     try:
         if locale not in languages:
             locale = default_fallback

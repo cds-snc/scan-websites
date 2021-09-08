@@ -1,5 +1,5 @@
 from os import environ
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException
 from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
@@ -25,6 +25,7 @@ app.include_router(
     organisations.router,
     prefix="/organisations",
     tags=["organisations"],
+    dependencies=[Depends(auth.is_authenticated)],
 )
 app.include_router(scans.router, prefix="/scans", tags=["scans"])
 app.include_router(view.router)
