@@ -3,6 +3,8 @@
   "goc": "Gouvernement du Canada",
   "goc_banner": "https://ssl-templates.services.gc.ca/app/cls/wet/gcintranet/v4_0_20/assets/sig-blk-fr.svg",
   "lang": "fr",
+  "login": "Ouvrir une session",
+  "logout": "Fermeture de session",
   "organisations_locale" : "Organisations",
   "other_lang": "en",
   "other_language": "English",

@@ -109,3 +109,17 @@ async def dashboard(request: Request, locale: str, session: Session = Depends(ge
         log.error(e)
         raise HTTPException(status_code=500, detail=str(e))
     return templates.TemplateResponse("dashboard.html", result)
+
+
+@router.get("/{locale}/login", response_class=HTMLResponse)
+async def home(request: Request, locale: str):
+    try:
+        if locale not in languages:
+            locale = default_fallback
+
+        result = {"request": request}
+        result.update(languages[locale])
+        return templates.TemplateResponse("login.html", result)
+    except Exception as e:
+        log.error(e)
+        raise HTTPException(status_code=500, detail=str(e))
