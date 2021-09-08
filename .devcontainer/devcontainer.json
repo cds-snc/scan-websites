@@ -47,6 +47,6 @@
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "make install && make install-dev",
+	// "postCreateCommand": "make install && make install-dev",
 	"remoteUser": "vscode"
 }

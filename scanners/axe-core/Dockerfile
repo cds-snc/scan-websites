@@ -72,6 +72,7 @@ RUN make build
 # Grab a fresh copy of the Node image
 FROM node-alpine
 
+RUN apk add --no-cache entr
 # Include global arg in this stage of the build
 ARG FUNCTION_DIR
 
@@ -89,8 +90,8 @@ ENV GIT_SHA=$git_sha
 
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-COPY bin/entry.sh /
-RUN chmod 755 /usr/bin/aws-lambda-rie /entry.sh
+COPY bin/entry.sh bin/local.sh /
+RUN chmod 755 /usr/bin/aws-lambda-rie /entry.sh /local.sh
 
 ENTRYPOINT [ "/entry.sh" ]
 CMD [ "index.handler" ]

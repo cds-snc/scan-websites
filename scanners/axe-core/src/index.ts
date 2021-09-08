@@ -1,9 +1,23 @@
 import { S3Event, SNSEvent } from "aws-lambda";
-import { S3 } from "aws-sdk";
+import { S3, Credentials, ConfigurationOptions } from "aws-sdk";
 import puppeteer from "puppeteer";
 import { Impl, convertEventToRecords } from "./impl";
 
-const s3 = new S3();
+const useLocalstack = process.env.AWS_LOCALSTACK || false;
+
+const options: ConfigurationOptions = {};
+
+
+if (useLocalstack) {
+  const creds: Credentials = new Credentials({
+    accessKeyId: "foo",
+    secretAccessKey: "bar",
+  });
+  options.credentials = creds;
+  options.region = "ca-central-1"
+}
+
+const s3 = new S3(options);
 
 export const handler = async (event: SNSEvent | S3Event): Promise<boolean> => {
   const options = [
