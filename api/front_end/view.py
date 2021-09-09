@@ -86,11 +86,8 @@ async def home(request: Request, locale: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# TODO Require auth & limit to users current organisation
 # TODO Push errors to cloudwatch metric and response when debug enabled
 # TODO Enable detailed error messages via debug flag
-
-
 @router.get(
     "/{locale}/dashboard",
     dependencies=[Depends(is_authenticated)],
