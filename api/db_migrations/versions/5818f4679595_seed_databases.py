@@ -64,7 +64,5 @@ def downgrade():
     op.execute(
         """DELETE FROM "organisations" WHERE name = 'Canadian Digital Service - Service Numérique Canadien'; """
     )
-    op.execute(
-        """DELETE FROM "scan_types" WHERE name = 'axe-core'; """
-    )
+    op.execute("""DELETE FROM "scan_types" WHERE name = 'axe-core'; """)
     op.execute("""DELETE FROM "scan_types" WHERE name = 'OWASP Zap'; """)
