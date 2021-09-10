@@ -43,13 +43,13 @@ def upgrade():
         [
             {
                 "id": str(uuid.uuid4()),
-                "name": "Accessibility - Accessibilité",
+                "name": "axe-core",
                 "created_at": datetime.now(),
                 "updated_at": datetime.now(),
             },
             {
                 "id": str(uuid.uuid4()),
-                "name": "Security - Sécurité",
+                "name": "OWASP Zap",
                 "created_at": datetime.now(),
                 "updated_at": datetime.now(),
             },
@@ -65,6 +65,6 @@ def downgrade():
         """DELETE FROM "organisations" WHERE name = 'Canadian Digital Service - Service Numérique Canadien'; """
     )
     op.execute(
-        """DELETE FROM "scan_types" WHERE name = 'Accessibility - Accessibilité'; """
+        """DELETE FROM "scan_types" WHERE name = 'axe-core'; """
     )
-    op.execute("""DELETE FROM "scan_types" WHERE name = 'Security - Sécurité'; """)
+    op.execute("""DELETE FROM "scan_types" WHERE name = 'OWASP Zap'; """)
