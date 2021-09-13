@@ -20,7 +20,7 @@ resource "aws_lambda_function" "api" {
   }
 
   vpc_config {
-    security_group_ids = [module.rds.proxy_security_group_id]
+    security_group_ids = [module.rds.proxy_security_group_id, aws_security_group.api.id]
     subnet_ids         = module.vpc.private_subnet_ids
   }
 
