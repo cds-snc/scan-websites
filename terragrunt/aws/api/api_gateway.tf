@@ -7,6 +7,22 @@ resource "aws_api_gateway_rest_api" "api" {
   }
 }
 
+resource "aws_api_gateway_domain_name" "api" {
+  regional_certificate_arn = aws_acm_certificate_validation.scan_websites_certificate_validation.certificate_arn
+  domain_name              = var.domain_name
+  security_policy          = "TLS_1_2"
+
+  endpoint_configuration {
+    types = ["REGIONAL"]
+  }
+}
+
+resource "aws_api_gateway_base_path_mapping" "api" {
+  api_id      = aws_api_gateway_rest_api.api.id
+  stage_name  = aws_api_gateway_stage.api.stage_name
+  domain_name = aws_api_gateway_domain_name.api.domain_name
+}
+
 resource "aws_api_gateway_resource" "resource" {
   rest_api_id = aws_api_gateway_rest_api.api.id
   parent_id   = aws_api_gateway_rest_api.api.root_resource_id

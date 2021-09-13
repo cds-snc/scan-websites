@@ -6,11 +6,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from front_end import view
 from .routers import auth, ops, organisations, scans
 
-if "DEV_ENVIRONMENT" in environ:
-    app = FastAPI()
-else:
-    # This is only needed until a dedicated domain name is live
-    app = FastAPI(root_path="/v1")
+app = FastAPI()
 
 FASTAPI_SECRET_KEY = environ.get("FASTAPI_SECRET_KEY") or None
 if FASTAPI_SECRET_KEY is None:
