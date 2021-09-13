@@ -1,3 +1,5 @@
+import json
+
 from storage import storage
 from unittest.mock import MagicMock, patch
 
@@ -103,3 +105,9 @@ def test_store_with_scan_type_as_axe_core(
     mock_get_object.return_value = load_fixture("axe_core_report.json")
     assert storage.store(mock_record()) is True
     mock_store_axe_core.assert_called_once()
+
+
+@patch("storage.storage.db_session")
+def test_store_axe_core_record(_mock_session):
+    payload = json.loads(load_fixture("axe_core_report.json"))
+    storage.store_axe_core_record({}, payload)
