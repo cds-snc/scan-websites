@@ -50,7 +50,6 @@ export const handler = async (event: SNSEvent | S3Event): Promise<boolean> => {
 
   const reportBucket = process.env.REPORT_DATA_BUCKET;
   const screenshotBucket = process.env.SCREENSHOT_BUCKET;
-  console.log(reportBucket, screenshotBucket);
   const records = await convertEventToRecords(event, s3);
   return await Impl(records, browser, s3, reportBucket, screenshotBucket);
 };
