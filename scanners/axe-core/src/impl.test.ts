@@ -96,7 +96,6 @@ describe("Impl", () => {
         Body: Buffer.from("I'm a string!", "utf-8"),
         ContentType: "image/png",
         Key: "bar.png",
-        ACL: "public-read",
       });
 
       expect(storeMock.putObject).toHaveBeenCalledWith({
