@@ -8,7 +8,7 @@ module "vpc" {
 
 resource "aws_network_acl_rule" "https" {
   network_acl_id = module.vpc.main_nacl_id
-  rule_number    = 100
+  rule_number    = 110
   egress         = false
   protocol       = "tcp"
   rule_action    = "allow"
@@ -19,7 +19,7 @@ resource "aws_network_acl_rule" "https" {
 
 resource "aws_network_acl_rule" "ephemeral_ports" {
   network_acl_id = module.vpc.main_nacl_id
-  rule_number    = 101
+  rule_number    = 111
   egress         = false
   protocol       = "tcp"
   rule_action    = "allow"
@@ -30,7 +30,7 @@ resource "aws_network_acl_rule" "ephemeral_ports" {
 
 resource "aws_network_acl_rule" "https_egress" {
   network_acl_id = module.vpc.main_nacl_id
-  rule_number    = 100
+  rule_number    = 110
   egress         = true
   protocol       = "tcp"
   rule_action    = "allow"
@@ -41,7 +41,7 @@ resource "aws_network_acl_rule" "https_egress" {
 
 resource "aws_network_acl_rule" "ephemeral_ports_egress" {
   network_acl_id = module.vpc.main_nacl_id
-  rule_number    = 101
+  rule_number    = 111
   egress         = true
   protocol       = "tcp"
   rule_action    = "allow"
