@@ -6,17 +6,6 @@ module "vpc" {
   enable_flow_log   = false
 }
 
-resource "aws_network_acl_rule" "https_egress" {
-  network_acl_id = module.vpc.main_nacl_id
-  rule_number    = 100
-  egress         = true
-  protocol       = "tcp"
-  rule_action    = "allow"
-  cidr_block     = "0.0.0.0/0"
-  from_port      = 443
-  to_port        = 443
-}
-
 resource "aws_security_group" "api" {
 
   name        = "${var.product_name}_api_sg"
