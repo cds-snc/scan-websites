@@ -13,6 +13,9 @@ resource "aws_lambda_function" "api" {
     variables = {
       AXE_CORE_URLS_TOPIC     = aws_sns_topic.axe-core-urls.arn
       SQLALCHEMY_DATABASE_URI = module.rds.proxy_connection_string_value
+      FASTAPI_SECRET_KEY      = var.fastapi_secret_key
+      GOOGLE_CLIENT_ID        = var.google_client_id
+      GOOGLE_CLIENT_SECRET    = var.google_client_secret
     }
   }
 

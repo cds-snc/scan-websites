@@ -9,6 +9,9 @@ env:
   TERRAFORM_VERSION: 1.0.3
   TERRAGRUNT_VERSION: v0.31.1
   TF_VAR_rds_password: ${{ secrets.TF_VARS_RDS_PASSWORD }}
+  TF_VAR_fastapi_secret_key: ${{ secrets.TF_VARS_FASTAPI_SECRET_KEY }}
+  TF_VAR_google_client_id: ${{ secrets.TF_VARS_GOOGLE_CLIENT_ID }}
+  TF_VAR_google_client_secret: ${{ secrets.TF_VARS_GOOGLE_CLIENT_SECRET }}
 
 jobs:
   terragrunt-apply:
