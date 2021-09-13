@@ -32,11 +32,11 @@ export async function Impl(
         url = slug;
         await page.setContent(fragment, { waitUntil: "networkidle0" });
       }
-      console.log(`url: ${url}`)
+      console.log(`url: ${url}`);
       await takeScreenshot(store, payload.id, page, screenshotBucket);
-      console.log("screenshot taken")
+      console.log("screenshot taken");
       await createReport(store, url, page, payload, reportBucket);
-      console.log("report saved")
+      console.log("report saved");
     });
   } catch (error) {
     console.log(error);
@@ -60,7 +60,7 @@ export async function convertEventToRecords(
     // Parse the correct message body, SNS or S3
     // eslint-disable-next-line no-prototype-builtins
     if (record.hasOwnProperty("s3")) {
-      console.log("S3 event")
+      console.log("S3 event");
       const object = await store
         .getObject({
           Bucket: record.s3.bucket.name,
@@ -74,7 +74,7 @@ export async function convertEventToRecords(
         html: data.html,
       });
     } else {
-      console.log("SNS event")
+      console.log("SNS event");
       records.push({
         payload: JSON.parse(record.Sns.Message),
         html: "",

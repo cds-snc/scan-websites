@@ -3,7 +3,7 @@ import { S3 } from "aws-sdk";
 import puppeteer from "puppeteer";
 import { Impl, convertEventToRecords } from "./impl";
 
-const s3 = new S3({ region: 'ca-central-1' });
+const s3 = new S3({ region: "ca-central-1" });
 
 export const handler = async (event: SNSEvent | S3Event): Promise<boolean> => {
   const options = [
@@ -50,7 +50,7 @@ export const handler = async (event: SNSEvent | S3Event): Promise<boolean> => {
 
   const reportBucket = process.env.REPORT_DATA_BUCKET;
   const screenshotBucket = process.env.SCREENSHOT_BUCKET;
-  console.log(reportBucket, screenshotBucket)
+  console.log(reportBucket, screenshotBucket);
   const records = await convertEventToRecords(event, s3);
   return await Impl(records, browser, s3, reportBucket, screenshotBucket);
 };
