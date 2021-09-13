@@ -7,6 +7,7 @@ from logger import log
 from sqlalchemy.orm import Session
 
 from models.Organisation import Organisation
+from api_gateway.routers.auth import is_authenticated
 
 import glob
 import json
@@ -66,7 +67,7 @@ def plural_formatting(key_value, input, locale):
 templates.env.filters["plural_formatting"] = plural_formatting
 
 
-@router.get("/", response_class=HTMLResponse)
+@router.get("/", response_class=HTMLResponse, include_in_schema=False)
 async def force_lang():
     return RedirectResponse("/en")
 
@@ -85,10 +86,13 @@ async def home(request: Request, locale: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# TODO Require auth & limit to users current organisation
 # TODO Push errors to cloudwatch metric and response when debug enabled
 # TODO Enable detailed error messages via debug flag
-@router.get("/{locale}/dashboard", response_class=HTMLResponse)
+@router.get(
+    "/{locale}/dashboard",
+    dependencies=[Depends(is_authenticated)],
+    response_class=HTMLResponse,
+)
 async def dashboard(request: Request, locale: str, session: Session = Depends(get_db)):
     try:
         if locale not in languages:
@@ -102,3 +106,17 @@ async def dashboard(request: Request, locale: str, session: Session = Depends(ge
         log.error(e)
         raise HTTPException(status_code=500, detail=str(e))
     return templates.TemplateResponse("dashboard.html", result)
+
+
+@router.get("/{locale}/login", response_class=HTMLResponse)
+async def login(request: Request, locale: str):
+    try:
+        if locale not in languages:
+            locale = default_fallback
+
+        result = {"request": request}
+        result.update(languages[locale])
+        return templates.TemplateResponse("login.html", result)
+    except Exception as e:
+        log.error(e)
+        raise HTTPException(status_code=500, detail=str(e))

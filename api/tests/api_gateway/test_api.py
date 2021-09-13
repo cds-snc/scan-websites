@@ -5,6 +5,7 @@ from unittest.mock import patch
 
 from api_gateway import api
 from sqlalchemy.exc import SQLAlchemyError
+from authlib.oidc.core import UserInfo
 
 client = TestClient(api.app)
 
@@ -73,3 +74,67 @@ def test_crawl_ratelimit(mock_uuid, mock_log, mock_crawl):
             assert response.status_code == 200
         else:
             assert response.status_code == 429
+
+
+def test_accessing_protected_route_not_logged_in():
+    fresh_client = TestClient(api.app)
+    response = fresh_client.get("/me")
+    assert response.status_code == 401
+
+
+@patch("api_gateway.routers.auth.oauth.google.authorize_access_token")
+@patch("api_gateway.routers.auth.oauth.google.parse_id_token")
+@patch("database.db.get_session")
+def test_google_oauth_callback(
+    mock_get_session,
+    mock_parse_id_token,
+    mock_authorize_access_token,
+    regular_user_fixture,
+):
+    fresh_client = TestClient(api.app)
+    mock_authorize_access_token.return_value = {"access_token": "TOKEN"}
+    mock_parse_id_token.return_value = UserInfo(regular_user_fixture)
+    response = fresh_client.get("/auth/google")
+
+    assert response.cookies["session"] is not None
+    assert response.status_code == 200
+
+    response = fresh_client.get("/me")
+    assert response.status_code == 200
+
+
+@patch("api_gateway.routers.auth.oauth.google.authorize_access_token")
+@patch("api_gateway.routers.auth.oauth.google.parse_id_token")
+@patch("database.db.get_session")
+def test_accessing_protected_route_logged_in(
+    mock_get_session,
+    mock_parse_id_token,
+    mock_authorize_access_token,
+    regular_user_fixture,
+):
+    fresh_client = TestClient(api.app)
+    mock_authorize_access_token.return_value = {"access_token": "TOKEN"}
+    mock_parse_id_token.return_value = UserInfo(regular_user_fixture)
+    response = fresh_client.get("/auth/google", cookies=None)
+
+    response = fresh_client.get("/me")
+    assert response.status_code == 200
+
+
+@patch("api_gateway.routers.auth.oauth.google.authorize_access_token")
+@patch("api_gateway.routers.auth.oauth.google.parse_id_token")
+@patch("database.db.get_session")
+def test_logout(
+    mock_get_session,
+    mock_parse_id_token,
+    mock_authorize_access_token,
+    regular_user_fixture,
+):
+    fresh_client = TestClient(api.app)
+    mock_authorize_access_token.return_value = {"access_token": "TOKEN"}
+    mock_parse_id_token.return_value = UserInfo(regular_user_fixture)
+    response = fresh_client.get("/auth/google", cookies=None)
+
+    response = fresh_client.get("/logout", allow_redirects=False)
+    assert "session=null" in response.headers["set-cookie"]
+    assert response.is_redirect

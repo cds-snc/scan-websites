@@ -9,3 +9,7 @@ Get current state: `alembic current`
 Revert all migrations: `alembic downgrade base`
 
 Revert last migration: `alembic downgrade -1` or `alembic downgrade {rev_sha}`
+
+## Connect to scan-websites database from devcontainer
+
+`PGPASSWORD=postgres psql -U postgres -h db -d scan-websites`

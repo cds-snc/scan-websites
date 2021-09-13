@@ -10,6 +10,11 @@ from sqlalchemy.orm import relationship, validates
 from models import Base
 from models.Organisation import Organisation
 
+from pydantic import BaseModel
+from starlette.authentication import BaseUser
+
+from typing import Optional
+
 BCRYPT_WORK_FACTOR = int(os.environ.get("BCRYPT_WORK_FACTOR", "14"))
 
 
@@ -19,7 +24,7 @@ class User(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String, nullable=False)
     email_address = Column(String, nullable=False, index=False, unique=True)
-    password_hash = Column(String, nullable=False)
+    password_hash = Column(String, nullable=True)
     access_token = Column(UUID(as_uuid=True), default=uuid.uuid4)
     created_at = Column(
         DateTime,
@@ -64,3 +69,20 @@ class User(Base):
     def validate_password_hash(self, _key, value):
         assert value != ""
         return value
+
+
+class AuthenticatedUser(BaseModel, BaseUser):
+    email_address: Optional[str]
+    name: Optional[str]
+
+    @property
+    def is_authenticated(self) -> bool:
+        return True
+
+    @property
+    def display_name(self) -> str:
+        return self.name
+
+    @property
+    def identity(self) -> str:
+        raise NotImplementedError()  # pragma: no cover

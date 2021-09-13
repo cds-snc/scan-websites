@@ -117,3 +117,12 @@ def user_fixture(session):
     user = User(name="fixture_name")
     session.add(user)
     return user
+
+
+@pytest.fixture(scope="session")
+def regular_user_fixture():
+    user_info = {
+        "email": "user@cds-snc.ca",
+        "name": "User McUser",
+    }
+    return user_info
