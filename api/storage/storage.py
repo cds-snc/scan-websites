@@ -62,9 +62,11 @@ def store_axe_core_record(scan, payload):
         "status": "completed",
         "inapplicable": len(report["inapplicable"]),
         "incomplete": len(report["incomplete"]),
-        "violations": len(report["passes"]),
-        "passes": len(report["passes"]),
+        "violations": functools.reduce(
+            lambda d, c: d.update({c["impact"] : 1}), report["violations"], {}
+        ),
+        "passes": len(report["passes"])
     }
-    summary["violations"]["total"] = sum(list(summary["violations"].values()))
+    # summary["violations"]["total"] = sum(list(summary["violations"].values()))
     print(summary)
     return True
