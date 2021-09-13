@@ -21,3 +21,11 @@ variable "google_client_secret" {
   type      = string
   sensitive = true
 }
+
+variable "domain_name" {
+  type = string
+}
+
+variable "hosted_zone_id" {
+  type = string
+}
