@@ -24,6 +24,7 @@ jobs:
       matrix:
         include:
           - module: api
+          - module: hosted_zone
           - module: scanners/axe-core
           - module: scanners/owasp-zap
 

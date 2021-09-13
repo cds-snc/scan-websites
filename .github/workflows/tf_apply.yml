@@ -45,6 +45,9 @@ jobs:
             api:
               - 'terragrunt/aws/api/**'
               - 'terragrunt/env/api/**'
+            hosted_zone:
+              - 'terragrunt/aws/hosted_zone/**'
+              - 'terragrunt/env/hosted_zone/**'              
             scanners-axe-core:
               - 'terragrunt/aws/scanners/axe-core/**'
               - 'terragrunt/env/scanners/axe-core/**'
@@ -58,6 +61,12 @@ jobs:
         run: |
           terragrunt apply --terragrunt-non-interactive -auto-approve
 
+      - name: Apply hosted_zone
+        if: ${{ steps.filter.outputs.hosted_zone == 'true' }}
+        working-directory: terragrunt/env/hosted_zone
+        run: |
+          terragrunt apply --terragrunt-non-interactive -auto-approve      
+
       - name: Apply scanners/axe-core
         if: ${{ steps.filter.outputs.scanners-axe-core == 'true' }}
         working-directory: terragrunt/env/scanners/axe-core
@@ -68,4 +77,4 @@ jobs:
         if: ${{ steps.filter.outputs.scanners-owasp-zap == 'true' }}
         working-directory: terragrunt/env/scanners/owasp-zap
         run: |
-          terragrunt apply --terragrunt-non-interactive -auto-approve          
+          terragrunt apply --terragrunt-non-interactive -auto-approve
