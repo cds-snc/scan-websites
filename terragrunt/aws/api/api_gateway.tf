@@ -75,17 +75,11 @@ resource "aws_api_gateway_integration_response" "integration_response" {
   }
 }
 
-resource "aws_api_gateway_resource" "root" {
-  rest_api_id = aws_api_gateway_rest_api.api.id
-  parent_id   = aws_api_gateway_rest_api.api.root_resource_id
-  path_part   = "ANY"
-}
-
 # checkov:skip=CKV_AWS_59:Serving publiclicy accessible content
 resource "aws_api_gateway_method" "root_method" {
   rest_api_id   = aws_api_gateway_rest_api.api.id
-  resource_id   = aws_api_gateway_resource.root.id
-  http_method   = "GET"
+  resource_id   = aws_api_gateway_rest_api.api.root_resource_id
+  http_method   = "ANY"
   authorization = "NONE"
   request_parameters = {
     "method.request.path.proxy" = false
@@ -94,7 +88,7 @@ resource "aws_api_gateway_method" "root_method" {
 
 resource "aws_api_gateway_method_response" "api_root_response_200" {
   rest_api_id = aws_api_gateway_rest_api.api.id
-  resource_id = aws_api_gateway_resource.root.id
+  resource_id = aws_api_gateway_rest_api.api.root_resource_id
   http_method = aws_api_gateway_method.root_method.http_method
   status_code = "200"
 
@@ -105,7 +99,7 @@ resource "aws_api_gateway_method_response" "api_root_response_200" {
 
 resource "aws_api_gateway_integration" "root_integration" {
   rest_api_id = aws_api_gateway_rest_api.api.id
-  resource_id = aws_api_gateway_resource.root.id
+  resource_id = aws_api_gateway_rest_api.api.root_resource_id
   http_method = aws_api_gateway_method.root_method.http_method
 
   integration_http_method = "POST"
@@ -119,7 +113,7 @@ resource "aws_api_gateway_integration" "root_integration" {
 
 resource "aws_api_gateway_integration_response" "root_integration_response" {
   rest_api_id = aws_api_gateway_rest_api.api.id
-  resource_id = aws_api_gateway_resource.root.id
+  resource_id = aws_api_gateway_rest_api.api.root_resource_id
   http_method = aws_api_gateway_method.root_method.http_method
   status_code = aws_api_gateway_method_response.api_root_response_200.status_code
 
