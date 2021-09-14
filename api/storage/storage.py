@@ -1,12 +1,12 @@
 import json
+import os
 
 from database.db import db_session
 from logger import log
 from boto3wrapper.wrapper import get_session
-from sqlalchemy.orm import joinedload
 
 from models.A11yReport import A11yReport
-from models.Scan import Scan
+from models.A11yViolation import A11yViolation
 
 
 def get_object(record):
@@ -35,7 +35,7 @@ def store(record):
     try:
         payload = json.loads(body)
 
-        if name == "axe_core":
+        if name == os.environ.get("AXE_CORE_REPORT_DATA_BUCKET", None):
             return store_axe_core_record(payload)
         else:
             log.error(f"Unknown bucket {name}")
@@ -61,6 +61,24 @@ def store_axe_core_record(payload):
         summary["violations"]["total"] = sum(list(summary["violations"].values()))
         a11y_report.summary = summary
         session.commit()
+
+        for violation in report["violations"]:
+            for node in violation["nodes"]:
+                for type in ["any", "all", "none"]:
+                    for item in node[type]:
+                        a11y_violation = A11yViolation(
+                            violation=violation["id"],
+                            impact=node["impact"],
+                            target=node["target"],
+                            html=node["html"],
+                            data=item["data"],
+                            tags=violation["tags"],
+                            message=item["message"],
+                            url=payload["url"],
+                            a11y_report=a11y_report,
+                        )
+                        session.add(a11y_violation)
+                        session.commit()
         return True
     else:
         return False

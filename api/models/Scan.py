@@ -42,4 +42,4 @@ class Scan(Base):
     )
     scan_type = relationship("ScanType", back_populates="scans")
 
-    a11y_reports = relationship("A11yReport")
+    a11y_reports = relationship("A11yReport", cascade="all,delete")

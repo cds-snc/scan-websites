@@ -15,7 +15,7 @@ from starlette.authentication import BaseUser
 
 from typing import Optional
 
-BCRYPT_WORK_FACTOR = int(os.environ.get("BCRYPT_WORK_FACTOR", "14"))
+BCRYPT_WORK_FACTOR = 14 if os.environ.get("CI", False) is False else 4
 
 
 class User(Base):

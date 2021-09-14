@@ -1,4 +1,8 @@
 import json
+import os
+
+from models.A11yReport import A11yReport
+from models.A11yViolation import A11yViolation
 
 from storage import storage
 from unittest.mock import MagicMock, patch
@@ -75,6 +79,7 @@ def test_store_with_unknown_bucket(mock_get_object, mock_log):
 
 @patch("storage.storage.get_object")
 @patch("storage.storage.store_axe_core_record")
+@patch.dict(os.environ, {"AXE_CORE_REPORT_DATA_BUCKET": "axe_core"}, clear=True)
 def test_store_with_bucket_type_as_axe_core(mock_store_axe_core, mock_get_object):
     mock_store_axe_core.return_value = True
     mock_get_object.return_value = load_fixture("axe_core_report.json")
@@ -86,13 +91,43 @@ def test_store_with_bucket_type_as_axe_core(mock_store_axe_core, mock_get_object
 def test_store_axe_core_record_returns_false_on_missing_record(mock_session):
     mock_session().query().get.return_value = None
     payload = json.loads(load_fixture("axe_core_report.json"))
-    assert storage.store_axe_core_record(payload) == False
+    assert storage.store_axe_core_record(payload) is False
 
 
 def test_store_axe_core_record_updates_record(session, a11y_report_fixture):
     payload = json.loads(load_fixture("axe_core_report.json"))
     payload["id"] = a11y_report_fixture.id
-    assert storage.store_axe_core_record(payload) == True
+    assert storage.store_axe_core_record(payload) is True
+    session.refresh(a11y_report_fixture)
+    assert a11y_report_fixture.summary == {
+        "inapplicable": 72,
+        "incomplete": 0,
+        "passes": 12,
+        "status": "completed",
+        "violations": {"moderate": 2, "serious": 1, "total": 3},
+    }
+
+
+def test_store_axe_core_record_creates_violations(session, scan_fixture):
+    a11y_report = A11yReport(
+        product="product",
+        revision="revision",
+        url="url",
+        summary={"jsonb": "data"},
+        scan=scan_fixture,
+    )
+    session.add(a11y_report)
+    session.commit()
+
+    payload = json.loads(load_fixture("axe_core_report.json"))
+    payload["id"] = a11y_report.id
+    assert storage.store_axe_core_record(payload) is True
+    violations = (
+        session.query(A11yViolation)
+        .filter(A11yViolation.a11y_report_id == a11y_report.id)
+        .all()
+    )
+    assert len(violations) == 3
 
 
 def test_sum_impact_empty():

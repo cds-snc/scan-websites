@@ -1,7 +1,7 @@
 import os
 
 from pub_sub import pub_sub
-from unittest.mock import ANY, MagicMock, patch
+from unittest.mock import MagicMock, patch
 
 
 @patch("pub_sub.pub_sub.A11yReport")

@@ -28,9 +28,9 @@ class Organisation(Base):
         onupdate=datetime.datetime.utcnow,
     )
 
-    scans = relationship("Scan")
-    templates = relationship("Template")
-    users = relationship("User")
+    scans = relationship("Scan", cascade="all,delete")
+    templates = relationship("Template", cascade="all,delete")
+    users = relationship("User", cascade="all,delete")
 
     @validates("name")
     def validate_name(self, _key, value):
