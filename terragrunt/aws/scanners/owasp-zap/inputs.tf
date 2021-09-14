@@ -13,3 +13,12 @@ variable "scan_websites_kms_key_arn" {
 variable "log_bucket_id" {
   type = string
 }
+
+variable "domain_name" {
+  type = string
+}
+
+variable "private_api_auth_token" {
+  type      = string
+  sensitive = true
+}

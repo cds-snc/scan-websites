@@ -1,6 +1,7 @@
 import { Impl, convertEventToRecords } from "./impl";
 import { SNSEvent, SNSEventRecord, SNSMessage } from "aws-lambda";
 import AWS = require("aws-sdk");
+import axios from "axios";
 
 const mockResponse = {
   failures: [{}],
@@ -9,6 +10,12 @@ const mockResponse = {
       clusterArn: "12345",
     },
   ],
+};
+
+const mockFileBody = {
+  id: "bar",
+  messageType: "ScanReport",
+  reportType: "OWASP-Zap",
 };
 
 jest.mock("aws-sdk", () => {
@@ -24,14 +31,22 @@ jest.mock("aws-sdk", () => {
   };
 });
 
+jest.mock("axios");
+
+const storeMock = {
+  getObject: jest.fn().mockReturnThis(),
+  putObject: jest.fn().mockReturnThis(),
+  promise: jest.fn(),
+};
+
 describe("Impl", () => {
   const OLD_ENV = process.env;
   beforeEach(() => {
     jest.resetModules(); // Most important - it clears the cache
     process.env = { ...OLD_ENV }; // Make a copy
   });
+  const ecs = new AWS.ECS();
   describe("is trigged by SNS", () => {
-    const ecs = new AWS.ECS();
     test("Launches ecs task and returns true", async () => {
       process.env.PRIVATE_SUBNETS = "10.0.0.0/16,10.0.0.0/16";
       process.env.TASK_DEF_ARN =
@@ -47,7 +62,7 @@ describe("Impl", () => {
         },
       ];
 
-      const response = await Impl(records, ecs);
+      const response = await Impl(records, ecs, axios);
 
       expect(ecs.runTask).toHaveBeenCalledWith({
         launchType: "FARGATE",
@@ -68,6 +83,19 @@ describe("Impl", () => {
       expect(response).toBe(true);
     });
   });
+
+  test("submit owasp zap report from an S3 trigger to api and returns true", async () => {
+    const payloads = [
+      {
+        payload: mockFileBody,
+      },
+    ];
+
+    const result = await Impl(payloads, ecs, axios);
+
+    expect(axios.post).toHaveBeenCalled();
+    expect(result).toEqual(true);
+  });
 });
 
 describe("convertEventToRecords", () => {
@@ -81,7 +109,7 @@ describe("convertEventToRecords", () => {
     const record = { Sns: msg } as SNSEventRecord;
     const event = { Records: [record] } as SNSEvent;
 
-    const records = await convertEventToRecords(event);
+    const records = await convertEventToRecords(event, storeMock);
     expect(records.length).toBe(1);
   });
 });

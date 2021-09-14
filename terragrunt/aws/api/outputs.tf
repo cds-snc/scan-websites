@@ -25,3 +25,7 @@ output "scan_websites_kms_key_arn" {
 output "log_bucket_id" {
   value = module.log_bucket.s3_bucket_id
 }
+
+output "domain_name" {
+  value = aws_api_gateway_domain_name.api.domain_name
+}
