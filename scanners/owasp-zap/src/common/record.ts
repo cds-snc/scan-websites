@@ -7,6 +7,7 @@ export type Payload = {
   importToSecurityhub?: string;
   s3Bucket?: string;
   key?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   report?: any;
 };
 

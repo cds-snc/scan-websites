@@ -14,7 +14,7 @@ install-dev:
 lint:
 	npm run --silent lint
 
-lint: ci
+lint-ci:
 	npm run lint:ci
 
 test:

@@ -1,7 +1,6 @@
 import axios from "axios";
-import { ECS } from "aws-sdk";
+import { ECS, S3 } from "aws-sdk";
 import { SNSEvent } from "aws-lambda";
-import { S3 } from "aws-sdk";
 import { Impl, convertEventToRecords } from "./impl";
 
 const s3 = new S3({ region: "ca-central-1" });

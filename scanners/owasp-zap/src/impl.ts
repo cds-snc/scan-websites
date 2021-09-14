@@ -1,4 +1,3 @@
-import { SNSEvent } from "aws-lambda";
 import { asyncForEach } from "./common/foreach";
 import { BlobStore } from "./common/blobstore";
 import { Record } from "./common/record";
@@ -12,7 +11,7 @@ export async function Impl(
 ): Promise<boolean> {
   try {
     await asyncForEach(records, async (record: Record) => {
-      if (record.payload.hasOwnProperty("reportType")) {
+      if (Object.prototype.hasOwnProperty.call(record.payload, "reportType")) {
         if (record.payload.reportType === "OWASP-Zap") {
           processZapReport(record, axios);
         }
@@ -28,15 +27,16 @@ export async function Impl(
 }
 
 export async function convertEventToRecords(
-  event: SNSEvent,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
+  event: any,
   store: BlobStore
 ): Promise<Record[]> {
   const records: Record[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   await asyncForEach(event.Records, async (record: any) => {
     // Parse the correct message body, SNS or S3
-    // eslint-disable-next-line no-prototype-builtins
     let payload = null;
-    if (record.hasOwnProperty("s3")) {
+    if (Object.prototype.hasOwnProperty.call(record, "s3")) {
       const object = await store
         .getObject({
           Bucket: record.s3.bucket.name,

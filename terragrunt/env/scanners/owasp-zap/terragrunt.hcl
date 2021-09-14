@@ -14,6 +14,7 @@ dependency "api" {
     vpc_id                    = ""
     private_subnet_ids        = ""
     scan_websites_kms_key_arn = ""
+    domain_name               = "example.com"
   }
 }
 
