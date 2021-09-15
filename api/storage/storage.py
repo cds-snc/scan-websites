@@ -37,6 +37,8 @@ def retrieve_and_route(record):
 
         if name == os.environ.get("AXE_CORE_REPORT_DATA_BUCKET", None):
             return store_axe_core_record(payload)
+        elif name == os.environ.get("OWASP_ZAP_REPORT_DATA_BUCKET", None):
+            return store_owasp_zap_record(payload)
         else:
             log.error(f"Unknown bucket {name}")
             return False
@@ -94,3 +96,7 @@ def sum_impact(violations):
             else:
                 d[v["impact"]] = 1
     return d
+
+
+def store_owasp_zap_record(payload):
+    return True

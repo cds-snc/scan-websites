@@ -36,7 +36,7 @@ data "template_file" "scanning_tools" {
     image                 = "${aws_ecr_repository.runners-owasp-zap.repository_url}:latest"
     awslogs-region        = "ca-central-1"
     awslogs-stream-prefix = "ecs-runners-owasp-zap"
-    s3_name               = module.owasp_zap_report_data.s3_bucket_id
+    s3_name               = var.owasp_zap_report_data_bucket_id
     awslogs-group         = aws_cloudwatch_log_group.log.name
     name                  = "runners-owasp-zap"
   }

@@ -26,24 +26,3 @@ def crawl_endpoint(
     log.info(f"Crawling {crawl_url}")
     background_tasks.add_task(crawl, str(uuid.uuid4()), crawl_url.url)
     return {"message": "Crawler initiated"}
-
-
-class ZapReport(BaseModel):
-    messageType: str
-    reportType: str
-    createdAt: str
-    importToSecurityhub: bool
-    scanUrl: str
-    s3Bucket: str
-    key: str
-    report: Json
-
-
-@router.post("/zapreport")
-def process_zap_report(
-    zap_report: ZapReport,
-    request: Request,
-    session: Session = Depends(get_session),
-    _authorized: bool = Depends(verify_private_api_token),
-):
-    return {"message": f"Processing report: {zap_report.key}"}

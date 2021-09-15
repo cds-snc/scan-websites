@@ -10,6 +10,18 @@ output "axe_core_urls_topic_arn" {
   value = aws_sns_topic.axe-core-urls.arn
 }
 
+output "owasp_zap_report_data_bucket_id" {
+  value = module.owasp-zap-report-data.s3_bucket_id
+}
+
+output "owasp_zap_report_data_bucket_arn" {
+  value = module.owasp-zap-report-data.s3_bucket_arn
+}
+
+output "owasp_zap_urls_topic_arn" {
+  value = aws_sns_topic.owasp-zap-urls.arn
+}
+
 output "vpc_id" {
   value = module.vpc.vpc_id
 }
