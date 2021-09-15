@@ -9,7 +9,6 @@ from starlette import status
 from sqlalchemy.orm import Session
 from logger import log
 from pydantic import ValidationError
-from uuid import uuid4
 
 from models.User import User, AuthenticatedUser
 from models.Organisation import Organisation
