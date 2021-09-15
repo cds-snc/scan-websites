@@ -49,39 +49,40 @@ def store(record):
 def store_axe_core_record(payload):
     session = db_session()
     a11y_report = session.query(A11yReport).get(payload["id"])
-    if a11y_report is not None:
-        report = payload["report"]
-        summary = {
-            "status": "completed",
-            "inapplicable": len(report["inapplicable"]),
-            "incomplete": len(report["incomplete"]),
-            "violations": sum_impact(report["violations"]),
-            "passes": len(report["passes"]),
-        }
-        summary["violations"]["total"] = sum(list(summary["violations"].values()))
-        a11y_report.summary = summary
-        session.commit()
 
-        for violation in report["violations"]:
-            for node in violation["nodes"]:
-                for type in ["any", "all", "none"]:
-                    for item in node[type]:
-                        a11y_violation = A11yViolation(
-                            violation=violation["id"],
-                            impact=node["impact"],
-                            target=node["target"],
-                            html=node["html"],
-                            data=item["data"],
-                            tags=violation["tags"],
-                            message=item["message"],
-                            url=payload["url"],
-                            a11y_report=a11y_report,
-                        )
-                        session.add(a11y_violation)
-                        session.commit()
-        return True
-    else:
+    if a11y_report is None:
         return False
+
+    report = payload["report"]
+    summary = {
+        "status": "completed",
+        "inapplicable": len(report["inapplicable"]),
+        "incomplete": len(report["incomplete"]),
+        "violations": sum_impact(report["violations"]),
+        "passes": len(report["passes"]),
+    }
+    summary["violations"]["total"] = sum(list(summary["violations"].values()))
+    a11y_report.summary = summary
+    session.commit()
+
+    for violation in report["violations"]:
+        for node in violation["nodes"]:
+            for type in ["any", "all", "none"]:
+                for item in node[type]:
+                    a11y_violation = A11yViolation(
+                        violation=violation["id"],
+                        impact=node["impact"],
+                        target=node["target"],
+                        html=node["html"],
+                        data=item["data"],
+                        tags=violation["tags"],
+                        message=item["message"],
+                        url=payload["url"],
+                        a11y_report=a11y_report,
+                    )
+                    session.add(a11y_violation)
+    session.commit()
+    return True
 
 
 def sum_impact(violations):

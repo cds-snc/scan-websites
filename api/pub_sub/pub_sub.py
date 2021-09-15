@@ -21,7 +21,7 @@ def dispatch(payload):
         product="product",  # TODO how is this populated?
         revision="revision",  # TODO how is this populated?
         url=payload["url"],
-        summary={"state": "scanning"},
+        summary={"status": "scanning"},
         scan=scan,
     )
     session.add(a11y_report)
