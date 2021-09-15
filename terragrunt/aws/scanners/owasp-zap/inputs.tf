@@ -6,10 +6,14 @@ variable "private_subnet_ids" {
   type = list(any)
 }
 
-variable "scan_websites_kms_key_arn" {
+variable "owasp_zap_urls_topic_arn" {
   type = string
 }
 
-variable "log_bucket_id" {
+variable "owasp_zap_report_data_bucket_id" {
+  type = string
+}
+
+variable "owasp_zap_report_data_bucket_arn" {
   type = string
 }

@@ -123,7 +123,8 @@ resource "aws_api_gateway_integration_response" "root_integration_response" {
 }
 
 resource "aws_api_gateway_deployment" "api" {
-  rest_api_id = aws_api_gateway_rest_api.api.id
+  rest_api_id       = aws_api_gateway_rest_api.api.id
+  stage_description = md5(file("api_gateway.tf"))
 
   lifecycle {
     create_before_destroy = true

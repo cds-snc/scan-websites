@@ -1,4 +1,5 @@
 from authlib.integrations.starlette_client import OAuth, OAuthError
+from aws_lambda_powertools import Metrics
 from fastapi import APIRouter, Depends, Request, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from os import environ
@@ -12,6 +13,7 @@ from pydantic import ValidationError
 from models.User import User, AuthenticatedUser
 from models.Organisation import Organisation
 from database.db import get_session
+
 
 router = APIRouter()
 
@@ -28,6 +30,8 @@ oauth.register(
     server_metadata_url=CONF_URL,
     client_kwargs={"scope": "openid email profile"},
 )
+
+metrics = Metrics(namespace="ScanWebsites", service="api")
 
 
 class SessionAuthBackend(AuthenticationBackend):

@@ -13,7 +13,7 @@ resource "aws_lambda_function" "scanners-owasp-zap" {
 
   environment {
     variables = {
-      REPORT_DATA_BUCKET = module.owasp_zap_report_data.s3_bucket_id
+      REPORT_DATA_BUCKET = var.owasp_zap_report_data_bucket_id
       CLUSTER            = aws_ecs_cluster.scanning_tools.arn
       TASK_DEF_ARN       = aws_ecs_task_definition.runners-owasp-zap.arn
       PRIVATE_SUBNETS    = join(",", var.private_subnet_ids)
@@ -34,7 +34,7 @@ resource "aws_lambda_function" "scanners-owasp-zap" {
 }
 
 resource "aws_sns_topic_subscription" "scanners-owasp-zap-lambda-subscription" {
-  topic_arn = aws_sns_topic.owasp-zap-urls.arn
+  topic_arn = var.owasp_zap_urls_topic_arn
   protocol  = "lambda"
   endpoint  = aws_lambda_function.scanners-owasp-zap.arn
 }
@@ -44,5 +44,5 @@ resource "aws_lambda_permission" "scanners-owasp-zap" {
   function_name = aws_lambda_function.scanners-owasp-zap.function_name
   action        = "lambda:InvokeFunction"
   principal     = "sns.amazonaws.com"
-  source_arn    = aws_sns_topic.owasp-zap-urls.arn
+  source_arn    = var.owasp_zap_urls_topic_arn
 }
