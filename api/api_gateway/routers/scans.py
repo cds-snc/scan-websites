@@ -1,4 +1,4 @@
-from fastapi import APIRouter, BackgroundTasks, Depends, Request
+from fastapi import APIRouter, BackgroundTasks, Request
 from logger import log
 from pydantic import BaseModel
 from crawler.crawler import crawl
