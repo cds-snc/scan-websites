@@ -16,8 +16,8 @@ class SecurityViolation(Base):
     violation = Column(String, nullable=False)
     risk = Column(String, nullable=False)
     confidence = Column(String, nullable=False)
-    solution  = Column(Text)
-    reference  = Column(Text)
+    solution = Column(Text)
+    reference = Column(Text)
     target = Column(Text)
     data = Column(JSONB, nullable=False)
     tags = Column(JSONB, nullable=False)
@@ -40,7 +40,9 @@ class SecurityViolation(Base):
     security_report_id = Column(
         UUID(as_uuid=True), ForeignKey(SecurityReport.id), index=True, nullable=False
     )
-    security_report = relationship("SecurityReport", back_populates="security_violations")
+    security_report = relationship(
+        "SecurityReport", back_populates="security_violations"
+    )
 
     @validates("violation")
     def validate_violation(self, _key, value):
