@@ -41,7 +41,7 @@ def handler(event, context):
     elif "Records" in event:
         for record in event.get("Records", []):
             if "s3" in record:
-                storage.retrieve_and_store(record)
+                storage.retrieve_and_route(record)
             else:
                 log.warning(f"Handler received unrecognised record: {record}")
         return "Success"
