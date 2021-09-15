@@ -62,7 +62,10 @@ def downgrade():
     op.alter_column("users", "password_hash", nullable=False)
 
     op.execute(
-        """DELETE FROM "organisations" WHERE name = 'Canadian Digital Service - Service Numérique Canadien'; """
+        """
+        DELETE FROM users;
+        DELETE FROM "organisations" WHERE name = 'Canadian Digital Service - Service Numérique Canadien';
+        """
     )
     op.execute("""DELETE FROM "scan_types" WHERE name = 'axe-core'; """)
     op.execute("""DELETE FROM "scan_types" WHERE name = 'OWASP Zap'; """)

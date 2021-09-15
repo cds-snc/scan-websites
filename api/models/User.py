@@ -1,5 +1,6 @@
 import bcrypt
 import datetime
+import os
 import uuid
 
 from sqlalchemy import DateTime, Column, ForeignKey, String
@@ -13,6 +14,8 @@ from pydantic import BaseModel
 from starlette.authentication import BaseUser
 
 from typing import Optional
+
+BCRYPT_WORK_FACTOR = 14 if os.environ.get("CI", False) is False else 4
 
 
 class User(Base):
@@ -48,7 +51,9 @@ class User(Base):
 
     @password.setter
     def password(self, password):
-        self.password_hash = bcrypt.hashpw(str.encode(password), bcrypt.gensalt(14))
+        self.password_hash = bcrypt.hashpw(
+            str.encode(password), bcrypt.gensalt(BCRYPT_WORK_FACTOR)
+        )
 
     @validates("name")
     def validate_name(self, _key, value):
