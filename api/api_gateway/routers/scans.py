@@ -1,14 +1,11 @@
 from fastapi import APIRouter, BackgroundTasks, Depends, Request
 from logger import log
-from pydantic import BaseModel, Json
+from pydantic import BaseModel
 from crawler.crawler import crawl
 from slowapi import Limiter
 from slowapi.util import get_remote_address
-from sqlalchemy.orm import Session
 import uuid
 
-from .auth import verify_private_api_token
-from database.db import get_session
 
 limiter = Limiter(key_func=get_remote_address, enabled=True)
 router = APIRouter()
