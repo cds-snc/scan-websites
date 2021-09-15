@@ -55,35 +55,37 @@ def test_get_object_catch_exception(mock_get_session, mock_log):
 
 @patch("storage.storage.log")
 @patch("storage.storage.get_object")
-def test_store_with_not_json(mock_get_object, mock_log):
+def test_retrieve_and_store_with_not_json(mock_get_object, mock_log):
     mock_get_object.return_value = load_fixture("not_json.txt")
-    assert storage.store(mock_record()) is False
+    assert storage.retrieve_and_store(mock_record()) is False
     mock_log.error.assert_called_once_with("Error decoding key from bucket_name")
 
 
 @patch("storage.storage.log")
 @patch("storage.storage.get_object")
-def test_store_with_empty_json(mock_get_object, mock_log):
+def test_retrieve_and_store_with_empty_json(mock_get_object, mock_log):
     mock_get_object.return_value = load_fixture("empty.json")
-    assert storage.store(mock_record()) is False
+    assert storage.retrieve_and_store(mock_record()) is False
     mock_log.error.assert_called_once_with("Unknown bucket bucket_name")
 
 
 @patch("storage.storage.log")
 @patch("storage.storage.get_object")
-def test_store_with_unknown_bucket(mock_get_object, mock_log):
+def test_retrieve_and_store_with_unknown_bucket(mock_get_object, mock_log):
     mock_get_object.return_value = load_fixture("axe_core_report.json")
-    assert storage.store(mock_record("unknown")) is False
+    assert storage.retrieve_and_store(mock_record("unknown")) is False
     mock_log.error.assert_called_once_with("Unknown bucket unknown")
 
 
 @patch("storage.storage.get_object")
 @patch("storage.storage.store_axe_core_record")
 @patch.dict(os.environ, {"AXE_CORE_REPORT_DATA_BUCKET": "axe_core"}, clear=True)
-def test_store_with_bucket_type_as_axe_core(mock_store_axe_core, mock_get_object):
+def test_retrieve_and_store_with_bucket_type_as_axe_core(
+    mock_store_axe_core, mock_get_object
+):
     mock_store_axe_core.return_value = True
     mock_get_object.return_value = load_fixture("axe_core_report.json")
-    assert storage.store(mock_record("axe_core")) is True
+    assert storage.retrieve_and_store(mock_record("axe_core")) is True
     mock_store_axe_core.assert_called_once()
 
 

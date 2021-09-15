@@ -25,7 +25,7 @@ def get_object(record):
         return False
 
 
-def store(record):
+def retrieve_and_store(record):
     name = record.s3.bucket.name
     body = get_object(record)
 
