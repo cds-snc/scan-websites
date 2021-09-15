@@ -15,7 +15,6 @@ env:
   TF_VAR_fastapi_secret_key: ${{ secrets.TF_VARS_FASTAPI_SECRET_KEY }}
   TF_VAR_google_client_id: ${{ secrets.TF_VARS_GOOGLE_CLIENT_ID }}
   TF_VAR_google_client_secret: ${{ secrets.TF_VARS_GOOGLE_CLIENT_SECRET }}
-  TF_VAR_private_api_auth_token: ${{ secrets.TF_VARS_PRIVATE_API_AUTH_TOKEN }}
 
 
 jobs:

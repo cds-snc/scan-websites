@@ -17,8 +17,3 @@ variable "owasp_zap_report_data_bucket_id" {
 variable "owasp_zap_report_data_bucket_arn" {
   type = string
 }
-
-variable "private_api_auth_token" {
-  type      = string
-  sensitive = true
-}

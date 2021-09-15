@@ -1,6 +1,5 @@
 from authlib.integrations.starlette_client import OAuth, OAuthError
 from aws_lambda_powertools import Metrics
-from aws_lambda_powertools.metrics import MetricUnit
 from fastapi import APIRouter, Depends, Request, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from os import environ
@@ -19,7 +18,6 @@ from database.db import get_session
 
 router = APIRouter()
 
-PRIVATE_API_AUTH_TOKEN = environ.get("PRIVATE_API_AUTH_TOKEN", uuid4())
 config_data = {
     "GOOGLE_CLIENT_ID": environ.get("GOOGLE_CLIENT_ID"),
     "GOOGLE_CLIENT_SECRET": environ.get("GOOGLE_CLIENT_SECRET"),
@@ -54,17 +52,6 @@ class SessionAuthBackend(AuthenticationBackend):
 def is_authenticated(request: Request):
     if not request.user.is_authenticated:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-
-
-def verify_private_api_token(req: Request):
-    token = req.headers.get("Authorization", None)
-    if token != PRIVATE_API_AUTH_TOKEN:
-        metrics.add_metric(
-            name="IncorrectAuthorizationToken", unit=MetricUnit.Count, value=1
-        )
-        metrics.add_metadata(key="type", value="private_api_token")
-        raise HTTPException(status_code=401, detail="Unauthorized")
-    return True
 
 
 @router.get("/login/google")

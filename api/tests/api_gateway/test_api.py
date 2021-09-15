@@ -1,13 +1,9 @@
 import os
-import pytest
 
-from aws_lambda_powertools.metrics import MetricUnit
-from fastapi import HTTPException
 from fastapi.testclient import TestClient
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 from api_gateway import api
-from api_gateway.routers import auth
 from sqlalchemy.exc import SQLAlchemyError
 from authlib.oidc.core import UserInfo
 
@@ -142,20 +138,3 @@ def test_logout(
     response = fresh_client.get("/logout", allow_redirects=False)
     assert "session=null" in response.headers["set-cookie"]
     assert response.is_redirect
-
-
-@patch("api_gateway.routers.auth.metrics")
-def test_verify_token_throws_an_exception_if_token_is_not_correct(mock_metrics):
-    request = MagicMock()
-    request.headers = {"Authorization": "invalid"}
-    with pytest.raises(HTTPException):
-        assert auth.verify_private_api_token(request)
-    mock_metrics.add_metric.assert_called_once_with(
-        name="IncorrectAuthorizationToken", unit=MetricUnit.Count, value=1
-    )
-
-
-def test_verify_private_api_token_returns_true_if_token_is_correct():
-    request = MagicMock()
-    request.headers = {"Authorization": os.environ["PRIVATE_API_AUTH_TOKEN"]}
-    assert auth.verify_private_api_token(request)
