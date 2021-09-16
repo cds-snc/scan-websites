@@ -143,7 +143,9 @@ async def template(request: Request, locale: str, session: Session = Depends(get
     dependencies=[Depends(is_authenticated)],
     response_class=HTMLResponse,
 )
-async def template_create(request: Request, locale: str, session: Session = Depends(get_db)):
+async def template_create(
+    request: Request, locale: str, session: Session = Depends(get_db)
+):
     try:
         if locale not in languages:
             locale = default_fallback
