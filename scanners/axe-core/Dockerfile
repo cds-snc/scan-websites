@@ -70,16 +70,17 @@ COPY --from=build-image ${FUNCTION_DIR}/node_modules ${FUNCTION_DIR}/node_module
 COPY --from=build-image ${FUNCTION_DIR}/dist ${FUNCTION_DIR}
 
 # Set build variables
-ARG git_sha 
+ARG git_sha
 ENV GIT_SHA=$git_sha
 
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-# (Optional) Add Lambda Runtime Interface Emulator and use a script in the ENTRYPOINT for simpler local runs
 # Install lambda runtime interactive environment
 ARG RIE_VERSION=1.1
-RUN wget -O aws-lambda-rie https://github.com/aws/aws-lambda-runtime-interface-emulator/releases/download/${RIE_VERSION}/aws-lambda-rie \
+ARG AWS_RIE_SRC=https://github.com/aws/aws-lambda-runtime-interface-emulator/releases/download
+RUN wget -O aws-lambda-rie ${AWS_RIE_SRC}/${RIE_VERSION}/aws-lambda-rie \
     && mv aws-lambda-rie /usr/bin/aws-lambda-rie
+
 COPY bin/entry.sh /
 RUN chmod 755 /usr/bin/aws-lambda-rie /entry.sh
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 printf "Configuring localstack components..."
 sleep 5;
 
