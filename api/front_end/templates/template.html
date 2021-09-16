@@ -2,6 +2,14 @@
 {% block body %}
   <center><h1>{{ templates_locale }}</h1></center>
   <div class="flex flex-col">
+    <form class="w-full max-w-sm" action="/scans/template" method="POST">
+      <div class="flex items-center border-b  py-2 ">
+        {{ name }}: <input class="appearance-none  w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none" name="name" type="text" placeholder="www.example.com" aria-label="Template name">
+        <button class="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 text-sm border-4 text-black py-1 px-2 rounded" type="submit">
+          {{ new_locale }}
+        </button>
+      </div>
+    </form>
     <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
       <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
         <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">

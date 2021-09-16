@@ -47,7 +47,10 @@ async def save_template(
         )
         session.add(new_template)
         session.commit()
-        return RedirectResponse("/en/dashboard")
+        return RedirectResponse(
+            f"/en/template/{new_template.id}/scan",
+            status_code=status.HTTP_303_SEE_OTHER,
+        )
     except SQLAlchemyError as err:
         log.error(err)
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
