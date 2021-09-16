@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block includes %}
+<script src="{{ url_for('static', path='js/table.js') }}"></script>
+<link href="{{ url_for('static', path='/css/table.css') }}" rel="stylesheet">
+{% endblock %}
+{% block body %}
+  <center><h1>{{ manage_template }}</h1></center>
+  <div><strong>{{ name }}</strong>: {{ template.name }}</div></br>
+
+  <div class="container">
+    <div class="row">
+        <div class="col-sm-6">
+          <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="button" 
+        id="addButton" 
+        class="btn btn-primary" 
+        onclick="dataAdd();">Add</button>
+        <form action="/scans/template/scan" method="POST">
+            <table id="dataTable" class="table-auto" id="editableTable">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2">Key</th>
+                        <th class="px-4 py-2">Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                  <tr data-id="1">
+                    <td class="border px-4 py-2" data-field="key">url</td>
+                    <td class="border px-4 py-2" contenteditable='true' data-field="value">https://</td>
+                  </tr>
+                </tbody>
+            </table>
+            <button class="h-12 mt-3 text-white w-full rounded bg-red-800 hover:bg-red-900">Save</button>
+          </form>
+        </div>
+    </div>
+</div>
+  {% block footer %}
+  {{super()}}
+  {% endblock %}
+{% endblock %}

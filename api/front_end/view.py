@@ -5,8 +5,10 @@ from babel.plural import PluralRule
 from database.db import db_session
 from logger import log
 from sqlalchemy.orm import Session
+from uuid import UUID
 
 from models.Organisation import Organisation
+from models.Template import Template
 from api_gateway.routers.auth import is_authenticated
 
 import glob
@@ -26,6 +28,7 @@ def get_db():
 
 
 templates = Jinja2Templates(directory="front_end/templates")
+
 default_fallback = "en"
 languages = {}
 
@@ -106,6 +109,62 @@ async def dashboard(request: Request, locale: str, session: Session = Depends(ge
         log.error(e)
         raise HTTPException(status_code=500, detail=str(e))
     return templates.TemplateResponse("dashboard.html", result)
+
+
+@router.get(
+    "/{locale}/template",
+    dependencies=[Depends(is_authenticated)],
+    response_class=HTMLResponse,
+)
+async def template(request: Request, locale: str, session: Session = Depends(get_db)):
+    try:
+        if locale not in languages:
+            locale = default_fallback
+
+        template_list = (
+            session.query(Template)
+            .filter(
+                Template.organisation_id == request.user.organisation_id,
+            )
+            .all()
+        )
+
+        result = {"request": request}
+        result.update(languages[locale])
+        result.update({"templates": template_list})
+    except Exception as e:
+        log.error(e)
+        raise HTTPException(status_code=500, detail=str(e))
+    return templates.TemplateResponse("template.html", result)
+
+
+@router.get(
+    "/{locale}/template/{template_id}/scan",
+    dependencies=[Depends(is_authenticated)],
+    response_class=HTMLResponse,
+)
+async def template_scan(
+    request: Request, locale: str, template_id: UUID, session: Session = Depends(get_db)
+):
+    try:
+        if locale not in languages:
+            locale = default_fallback
+
+        template = (
+            session.query(Template)
+            .filter(
+                Template.id == template_id,
+                Template.organisation_id == request.user.organisation_id,
+            )
+            .one()
+        )
+        result = {"request": request}
+        result.update(languages[locale])
+        result.update({"template": template})
+    except Exception as e:
+        log.error(e)
+        raise HTTPException(status_code=500, detail=str(e))
+    return templates.TemplateResponse("template_scan.html", result)
 
 
 @router.get("/{locale}/login", response_class=HTMLResponse)
