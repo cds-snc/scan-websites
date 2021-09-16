@@ -9,6 +9,7 @@ from uuid import UUID
 
 from models.Organisation import Organisation
 from models.Template import Template
+from models.ScanType import ScanType
 from api_gateway.routers.auth import is_authenticated
 
 import glob
@@ -158,9 +159,14 @@ async def template_scan(
             )
             .one()
         )
+
+        scan_types = session.query(ScanType).all()
+        print(scan_types)
+
         result = {"request": request}
         result.update(languages[locale])
         result.update({"template": template})
+        result.update({"scan_types": scan_types})
     except Exception as e:
         log.error(e)
         raise HTTPException(status_code=500, detail=str(e))

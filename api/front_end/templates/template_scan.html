@@ -13,6 +13,14 @@
         id="addButton" 
         class="btn btn-primary" 
         onclick="dataAdd();">Add</button>
+        <div>
+          <select>
+            {{ scan_types }}
+            {% for scan_type in scan_types %}
+                <option value="{{ scan_type.id }}">{{ scan_type.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
         <form action="/scans/template/scan" method="POST">
             <table id="dataTable" class="table-auto" id="editableTable">
                 <thead>
