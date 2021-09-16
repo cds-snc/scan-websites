@@ -137,6 +137,7 @@ async def template(request: Request, locale: str, session: Session = Depends(get
         raise HTTPException(status_code=500, detail=str(e))
     return templates.TemplateResponse("template.html", result)
 
+
 @router.get(
     "/{locale}/template/create",
     dependencies=[Depends(is_authenticated)],
@@ -147,7 +148,6 @@ async def template_create(request: Request, locale: str, session: Session = Depe
         if locale not in languages:
             locale = default_fallback
 
-        
         result = {"request": request}
         result.update(languages[locale])
     except Exception as e:
