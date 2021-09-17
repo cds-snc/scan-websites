@@ -9,6 +9,9 @@ env:
   TERRAFORM_VERSION: 1.0.3
   TERRAGRUNT_VERSION: v0.31.1
   TF_VAR_rds_password: ${{ secrets.TF_VARS_RDS_PASSWORD }}
+  TF_VAR_fastapi_secret_key: ${{ secrets.TF_VARS_FASTAPI_SECRET_KEY }}
+  TF_VAR_google_client_id: ${{ secrets.TF_VARS_GOOGLE_CLIENT_ID }}
+  TF_VAR_google_client_secret: ${{ secrets.TF_VARS_GOOGLE_CLIENT_SECRET }}
 
 jobs:
   terragrunt-apply:
@@ -42,6 +45,9 @@ jobs:
             api:
               - 'terragrunt/aws/api/**'
               - 'terragrunt/env/api/**'
+            hosted_zone:
+              - 'terragrunt/aws/hosted_zone/**'
+              - 'terragrunt/env/hosted_zone/**'              
             scanners-axe-core:
               - 'terragrunt/aws/scanners/axe-core/**'
               - 'terragrunt/env/scanners/axe-core/**'
@@ -55,6 +61,12 @@ jobs:
         run: |
           terragrunt apply --terragrunt-non-interactive -auto-approve
 
+      - name: Apply hosted_zone
+        if: ${{ steps.filter.outputs.hosted_zone == 'true' }}
+        working-directory: terragrunt/env/hosted_zone
+        run: |
+          terragrunt apply --terragrunt-non-interactive -auto-approve      
+
       - name: Apply scanners/axe-core
         if: ${{ steps.filter.outputs.scanners-axe-core == 'true' }}
         working-directory: terragrunt/env/scanners/axe-core
@@ -65,4 +77,4 @@ jobs:
         if: ${{ steps.filter.outputs.scanners-owasp-zap == 'true' }}
         working-directory: terragrunt/env/scanners/owasp-zap
         run: |
-          terragrunt apply --terragrunt-non-interactive -auto-approve          
+          terragrunt apply --terragrunt-non-interactive -auto-approve

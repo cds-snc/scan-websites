@@ -37,7 +37,7 @@ class A11yReport(Base):
     )
     scan = relationship("Scan", back_populates="a11y_reports")
 
-    a11y_violations = relationship("A11yViolation")
+    a11y_violations = relationship("A11yViolation", cascade="all,delete")
 
     @validates("product")
     def validate_product(self, _key, value):

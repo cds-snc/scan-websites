@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block body %}
+  
+    <div class="container flex justify-center items-center">
+        <div class="p-8 bg-white rounded-lg max-w-6xl pb-10">
+            <div class="flex justify-between items-center mt-3">
+                 <span class="p-2 text-gray-400 mb-1">{{ login_text }}</span>
+            </div> 
+            <form action="/login/google">
+            <button class="h-12 mt-3 text-white w-full rounded bg-red-800 hover:bg-red-900"><i class="fa fa-google mr-2"></i>Google</button>
+          </form>
+        </div>
+    </div>
+  {% block footer %}
+  {{super()}}
+  {% endblock %}
+{% endblock %}

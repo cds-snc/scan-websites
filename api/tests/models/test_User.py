@@ -75,18 +75,6 @@ def test_user_empty_email_address_fails(organisation_fixture, session):
     session.rollback()
 
 
-def test_user_empty_password_fails(organisation_fixture, session):
-    user = User(
-        name="name",
-        email_address="email",
-        organisation=organisation_fixture,
-    )
-    session.add(user)
-    with pytest.raises(IntegrityError):
-        session.commit()
-    session.rollback()
-
-
 def test_user_empty_organisation_fails(session):
     user = User(
         name="name",

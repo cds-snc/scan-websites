@@ -32,7 +32,6 @@ export async function Impl(
         url = slug;
         await page.setContent(fragment, { waitUntil: "networkidle0" });
       }
-
       await takeScreenshot(store, payload.id, page, screenshotBucket);
       await createReport(store, url, page, payload, reportBucket);
     });
@@ -145,7 +144,6 @@ const takeScreenshot = async (
       Key: `${id}.png`,
       Body: screenshot as Buffer | Uint8Array | string,
       ContentType: "image/png",
-      ACL: "public-read",
     })
     .promise();
 };

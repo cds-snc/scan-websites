@@ -15,16 +15,16 @@ help:
 	@echo "  build       -- Run build commands"
 	@echo "  db-connect  -- Create a psql connection to the database"
 	@echo "  dev         -- Run API dev server"
-	@echo "  format      -- Alias for fmt"
-	@echo "  fmt         -- Run formatters"
-	@echo "  fmt-ci      -- Run formatters in check mode for CI"
+	@echo "  fmt         -- Run formatters  [alias: format]"
 	@echo "  install     -- Install needed Python and NPM libraries"
 	@echo "  install-dev -- Installs needed development libraries"
 	@echo "  lint        -- Run linters"
-	@echo "  lint-ci     -- Run linters in check mode for CI"
-	@echo "  migrate     -- Alias for migrations"
-	@echo "  migations   -- Run migrations"
+	@echo "  migations   -- Run migrations  [alias: migrate]"
 	@echo "  test        -- Run tests"
+	@echo ""
+	@echo "CI COMMANDS"
+	@echo "  fmt-ci      -- Run formatters in check mode for CI"
+	@echo "  lint-ci     -- Run linters in check mode for CI"
 
 dev:
 	$(MAKE) -C api dev

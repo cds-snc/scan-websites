@@ -2,19 +2,10 @@ from os import environ
 from fastapi import APIRouter, Depends
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
-from database.db import db_session
+from database.db import get_session
 from logger import log
 
 router = APIRouter()
-
-
-# Dependency
-def get_db():
-    db = db_session()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 @router.get("/version")
@@ -30,7 +21,7 @@ def get_db_version(session):
 
 
 @router.get("/healthcheck")
-def healthcheck(session: Session = Depends(get_db)):
+def healthcheck(session: Session = Depends(get_session)):
     try:
         full_name = get_db_version(session)
         db_status = {"able_to_connect": True, "db_version": full_name}

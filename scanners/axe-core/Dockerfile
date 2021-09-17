@@ -85,7 +85,7 @@ COPY --from=build-image ${FUNCTION_DIR}/dist ${FUNCTION_DIR}
 COPY --from=build-image /usr/bin/aws-lambda-rie /usr/bin/
 
 # Set build variables
-ARG git_sha 
+ARG git_sha
 ENV GIT_SHA=$git_sha
 
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
