@@ -1,4 +1,11 @@
-from fastapi import APIRouter, Depends, BackgroundTasks, Request, Response, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    BackgroundTasks,
+    Request,
+    Response,
+    status,
+)
 from fastapi.responses import RedirectResponse
 from logger import log
 from pydantic import BaseModel
@@ -41,7 +48,6 @@ async def save_template(
     session: Session = Depends(get_session),
 ):
     try:
-        print(template)
         new_template = Template(
             name=template.name, organisation_id=request.user.organisation_id
         )
@@ -57,21 +63,20 @@ async def save_template(
         return {"error": f"error creating template: {err}"}
 
 
-@router.post("/template/{template_id}/scan", dependencies=[Depends(is_authenticated)])
+@router.post(
+    "/template/{template_id}/scan",
+    dependencies=[Depends(is_authenticated)],
+    status_code=302,
+)
 async def save_template_scan(
+    template_id: str,
     response: Response,
     request: Request,
-    template: TemplateCreate = Depends(TemplateCreate.as_form),
     session: Session = Depends(get_session),
 ):
     try:
-        print(template)
-        new_template = Template(
-            name=template.name, organisation_id=request.user.organisation_id
-        )
-        session.add(new_template)
-        session.commit()
-        return RedirectResponse("/en/dashboard")
+        response.headers["Location"] = "/en/dashboard"
+        return
     except SQLAlchemyError as err:
         log.error(err)
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR

@@ -3,45 +3,59 @@
 <script src="{{ url_for('static', path='js/table.js') }}"></script>
 {% endblock %}
 {% block body %}
-  <center><h1>{{ manage_template }}</h1></center>
-  <div><strong>{{ name }}</strong>: {{ template.name }}</div></br>
+<center>
+  <h1>{{ manage_template }}</h1>
+</center>
+<div><strong>{{ name }}</strong>: {{ template.name }}</div></br>
 
-  <div class="container">
-    <div class="row">
-        <div class="col-sm-6">
-          <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="button" 
-        id="addButton" 
-        class="btn btn-primary" 
-        onclick="dataAdd();">Add</button>
-        <div>
-          <select>
-            {{ scan_types }}
+<div class="container">
+  <div class="row">
+
+    <div class="flex flex-col ... divide-y">
+      <div>
+        <section><strong>Scan types:</strong>
+          <select id="scanType">
             {% for scan_type in scan_types %}
-                <option value="{{ scan_type.id }}">{{ scan_type.name }}</option>
+            <option id="{{ scan_type.name }}" value="{{ scan_type.id }}">{{ scan_type.name }}</option>
             {% endfor %}
           </select>
-        </div>
-        <form action="/scans/template/scan" method="POST">
-            <table id="dataTable" class="table-auto" id="editableTable">
-                <thead>
-                    <tr>
-                        <th class="px-4 py-2">Key</th>
-                        <th class="px-4 py-2">Value</th>
-                    </tr>
-                </thead>
-                <tbody>
-                  <tr data-id="1">
-                    <td class="border px-4 py-2" data-field="key">url</td>
-                    <td class="border px-4 py-2" contenteditable='true' data-field="value">https://</td>
-                  </tr>
-                </tbody>
-            </table>
-            <button class="h-12 mt-3 text-white w-full rounded bg-red-800 hover:bg-red-900">Save</button>
-          </form>
-        </div>
+
+          <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold  px-2 rounded" type="button"
+            id="addScanButton" class="btn btn-primary" onclick="scanAdd();">&#43;
+          </button>
+        </section>
+      </div>
+      <div class="shadow ...">
+        <form id="templateScan" name="templateScan" action="/scans/template/{{template.id}}/scan" method="POST">
+          <div id="container" class="border-double border-4 border-light-blue-500 ...">
+            <strong>Selected scan type</strong></br>
+          </div>
+          <table id="dataTable" class="table-auto" id="editableTable">
+            <thead>
+              <tr>
+                <th class="px-4 py-2">Key</th>
+                <th class="px-4 py-2">Value</th>
+                <th>
+                  <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold px-2 rounded" type="button"
+                    id="addButton" class="btn btn-primary" onclick="dataAdd();">&#43;</button>
+
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-id="1">
+                <td class="border px-4 py-2"><input type="text" name="key" value="url" /></td>
+                <td class="border px-4 py-2"><input type="text" name="value" value="https://" /></td>
+              </tr>
+            </tbody>
+          </table>
+          <button id="submitBtn" class="h-12 mt-3 text-white w-full rounded bg-red-800 hover:bg-red-900">Save</button>
+        </form>
+      </div>
     </div>
+  </div>
 </div>
-  {% block footer %}
-  {{super()}}
-  {% endblock %}
+{% block footer %}
+{{super()}}
+{% endblock %}
 {% endblock %}
