@@ -7,14 +7,13 @@ const useLocalstack = process.env.AWS_LOCALSTACK || false;
 
 const options: ConfigurationOptions = {};
 
-
 if (useLocalstack) {
   const creds: Credentials = new Credentials({
     accessKeyId: "foo",
     secretAccessKey: "bar",
   });
   options.credentials = creds;
-  options.region = "ca-central-1"
+  options.region = "ca-central-1";
 }
 
 const s3 = new S3(options);
