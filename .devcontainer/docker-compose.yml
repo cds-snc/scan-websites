@@ -38,7 +38,8 @@ services:
  
     ports:
       - "8080:8080" 
-  scanner-axe:
+ 
+ scanner-axe:
     build:
       context: ../scanners/axe-core/
     volumes: 
@@ -47,7 +48,6 @@ services:
       AWS_LOCALSTACK: "True"
       REPORT_DATA_BUCKET: "local-bucket"
       SCREENSHOT_BUCKET: "local-bucket"
-
   db:
     image: postgres:11.2
     volumes:
