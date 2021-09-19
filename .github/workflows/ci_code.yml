@@ -6,6 +6,7 @@ on:
       - api/**
       - scanners/axe-core/**
       - scanners/owasp-zap/**
+      - terragrunt/**
 
 env:
   TERRAGRUNT_VERSION: v0.31.1
@@ -27,23 +28,35 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-          folder: ["api", "scanners/axe-core", "scanners/owasp-zap"] 
+          folder: ["api", "scanners/axe-core", "scanners/owasp-zap", "terragrunt"]
 
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Check for changes
+        uses: dorny/paths-filter@b2feaf19c27470162a626bd6fa8438ae5b263721 # v2.10.2
+        id: filter
+        with:
+          filters: |
+            changes:
+              - '${{ matrix.folder }}/**'
+              - '.github/workflows/ci_code.yml'
+
       - name: Setup python
+        if: ${{ steps.filter.outputs.changes == 'true' }}
         uses: actions/setup-python@v2
         with:
           python-version: "3.9"
 
       - name: Setup node
+        if: ${{ steps.filter.outputs.changes == 'true' && matrix.folder != 'terragrunt' }}
         uses: actions/setup-node@v2
         with:
           node-version: "14"
 
       - name: Setup Terragrunt
+        if: ${{ steps.filter.outputs.changes == 'true' && matrix.folder == 'terragrunt' }}
         run: |
           mkdir -p bin
           wget -O bin/terragrunt https://github.com/gruntwork-io/terragrunt/releases/download/$TERRAGRUNT_VERSION/terragrunt_linux_amd64
@@ -51,22 +64,27 @@ jobs:
           echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
 
       - name: Install dev dependencies
+        if: ${{ steps.filter.outputs.changes == 'true' }}
         working-directory: ${{ matrix.folder }}
         run: make install-dev
 
       - name: Install dependencies
+        if: ${{ steps.filter.outputs.changes == 'true' }}
         working-directory: ${{ matrix.folder }}
         run: make install
 
       - name: Lint
+        if: ${{ steps.filter.outputs.changes == 'true' }}
         working-directory: ${{ matrix.folder }}
         run: make lint-ci
 
       - name: Format
+        if: ${{ steps.filter.outputs.changes == 'true' }}
         working-directory: ${{ matrix.folder }}
         run: make fmt-ci
 
       - name: Test
+        if: ${{ steps.filter.outputs.changes == 'true' }}
         working-directory: ${{ matrix.folder }}
         env:
           SQLALCHEMY_DATABASE_URI: postgresql://postgres:postgres@127.0.0.1/scan-websites
