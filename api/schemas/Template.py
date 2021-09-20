@@ -1,4 +1,4 @@
-from pydantic import BaseModel, AnyUrl
+from pydantic import BaseModel, AnyHttpUrl
 from .common import as_form
 from typing import List
 
@@ -23,7 +23,7 @@ class TemplateScanType(BaseModel):
 
 
 class TemplateScanData(BaseModel):
-    url: AnyUrl
+    url: AnyHttpUrl
 
 
 class TemplateScanCreateList(BaseModel):

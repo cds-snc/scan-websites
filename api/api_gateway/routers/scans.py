@@ -6,7 +6,6 @@ from fastapi import (
     Response,
     status,
 )
-from fastapi.responses import RedirectResponse
 from logger import log
 from pydantic import BaseModel
 from crawler.crawler import crawl
@@ -56,20 +55,16 @@ async def save_template(
         )
         session.add(new_template)
         session.commit()
-        return RedirectResponse(
-            f"/en/template/{new_template.id}/scan",
-            status_code=status.HTTP_303_SEE_OTHER,
-        )
+        return {"id": new_template.id}
     except SQLAlchemyError as err:
         log.error(err)
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        return {"error": f"error creating template: {err}"}
+        return {"error": "error creating template"}
 
 
 @router.post(
     "/template/{template_id}/scan",
     dependencies=[Depends(is_authenticated)],
-    status_code=302,
 )
 async def save_template_scan(
     request: Request,
@@ -97,14 +92,15 @@ async def save_template_scan(
                 data=config_dict["data"], template_id=template_id, scan_type=scan_type
             )
             session.add(new_template_scan)
+            session.commit()
+            return {"id": new_template_scan.id}
         else:
             template_scan.data = config_dict["data"]
             template_scan.scan_type = scan_type
             session.add(template_scan)
+            session.commit()
+            return {"id": template_scan.id}
 
-        session.commit()
-        response.headers["Location"] = f"/en/template/{template_id}/scan"
-        return
     except SQLAlchemyError as err:
         log.error(err)
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR

@@ -64,6 +64,12 @@ def downgrade():
     op.execute(
         """
         DELETE FROM users;
+        DELETE FROM a11y_violations;
+        DELETE FROM a11y_reports;
+        DELETE FROM scans;
+        DELETE FROM template_scan_triggers;
+        DELETE FROM template_scans;
+        DELETE FROM templates;
         DELETE FROM "organisations" WHERE name = 'Canadian Digital Service - Service Numérique Canadien';
         """
     )

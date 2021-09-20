@@ -1,7 +1,7 @@
 import os
 
 from fastapi.testclient import TestClient
-from unittest.mock import patch
+from unittest.mock import ANY, patch
 
 from api_gateway import api
 from sqlalchemy.exc import SQLAlchemyError
@@ -138,3 +138,62 @@ def test_logout(
     response = fresh_client.get("/logout", allow_redirects=False)
     assert "session=null" in response.headers["set-cookie"]
     assert response.is_redirect
+
+
+def test_create_template_valid(logged_in_client):
+    response = logged_in_client.post("/scans/template", data={"name": "foo"})
+    assert response.json() == {"id": ANY}
+    assert response.status_code == 200
+
+
+def test_create_template_scan_valid(
+    template_fixture, scan_type_fixture, logged_in_client
+):
+    response = logged_in_client.post(
+        f"/scans/template/{str(template_fixture.id)}/scan",
+        json={
+            "data": [{"url": "https://www.example.com"}],
+            "scan_types": [{"scanType": scan_type_fixture.name}],
+        },
+    )
+    assert response.json() == {"id": ANY}
+    assert response.status_code == 200
+
+
+def test_create_template_scan_unknown_scan_type(template_fixture, logged_in_client):
+    response = logged_in_client.post(
+        f"/scans/template/{str(template_fixture.id)}/scan",
+        json={
+            "data": [{"url": "https://www.example.com"}],
+            "scan_types": [{"scanType": "foo"}],
+        },
+    )
+    assert response.json() == {
+        "error": "error creating template: No row was found when one was required"
+    }
+    assert response.status_code == 500
+
+
+def test_create_template_scan_invalid_url(
+    template_fixture, scan_type_fixture, logged_in_client
+):
+    response = logged_in_client.post(
+        f"/scans/template/{str(template_fixture.id)}/scan",
+        json={
+            "data": [{"url": "ftp://www.example.com"}],
+            "scan_types": [{"scanType": scan_type_fixture.name}],
+        },
+    )
+
+    assert "URL scheme not permitted" in str(response.text)
+    assert response.status_code == 422
+
+
+def test_create_template_scan_url_missing(template_fixture, logged_in_client):
+    response = logged_in_client.post(
+        f"/scans/template/{str(template_fixture.id)}/scan",
+        json={"data": [{"foo": "bar"}], "scan_types": [{"scanType": "axe-core"}]},
+    )
+
+    assert "value_error.missing" in str(response.text)
+    assert response.status_code == 422
