@@ -1,32 +1,31 @@
-const https = require('https');
-
 import { S3Event, SNSEvent } from "aws-lambda";
 import { Endpoint, S3, Credentials, ConfigurationOptions } from "aws-sdk";
 import puppeteer from "puppeteer";
 import { Impl, convertEventToRecords } from "./impl";
+import https from "https";
 
 const useLocalstack = process.env.AWS_LOCALSTACK || false;
 const options: ConfigurationOptions = {};
 
 if (useLocalstack) {
-  process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
   const creds: Credentials = new Credentials({
     accessKeyId: "foo",
     secretAccessKey: "bar",
   });
   options.credentials = creds;
   options.region = "ca-central-1";
-  options.s3ForcePathStyle = true
+  options.s3ForcePathStyle = true;
   options.httpOptions = {
-    agent: new https.Agent({ rejectUnauthorized: false })
-  }
+    agent: new https.Agent({ rejectUnauthorized: false }),
+  };
 }
 
-let s3 = new S3(options);
+const s3 = new S3(options);
 
 if (useLocalstack) {
-  const endpoint = new Endpoint('localstack:4566');
-  s3.endpoint = endpoint
+  const endpoint = new Endpoint("localstack:4566");
+  s3.endpoint = endpoint;
 }
 
 export const handler = async (event: SNSEvent | S3Event): Promise<boolean> => {
