@@ -16,11 +16,14 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 import uuid
+import json
 
 from .auth import is_authenticated
 from database.db import get_session
 from models.Template import Template
-from schemas.Template import TemplateCreate
+from models.TemplateScan import TemplateScan
+from models.ScanType import ScanType
+from schemas.Template import TemplateCreate, TemplateScanCreateList
 
 limiter = Limiter(key_func=get_remote_address, enabled=True)
 router = APIRouter()
@@ -69,13 +72,38 @@ async def save_template(
     status_code=302,
 )
 async def save_template_scan(
-    template_id: str,
-    response: Response,
     request: Request,
+    response: Response,
+    template_id: str,
+    config: TemplateScanCreateList,
     session: Session = Depends(get_session),
 ):
     try:
-        response.headers["Location"] = "/en/dashboard"
+        template_scan = (
+            session.query(TemplateScan)
+            .filter(TemplateScan.template_id == template_id)
+            .one_or_none()
+        )
+
+        scan_type = (
+            session.query(ScanType)
+            .filter(ScanType.name == config.scan_types[0].scanType)
+            .one()
+        )
+
+        config_dict = json.loads(config.json())
+        if template_scan is None:
+            new_template_scan = TemplateScan(
+                data=config_dict["data"], template_id=template_id, scan_type=scan_type
+            )
+            session.add(new_template_scan)
+        else:
+            template_scan.data = config_dict["data"]
+            template_scan.scan_type = scan_type
+            session.add(template_scan)
+
+        session.commit()
+        response.headers["Location"] = f"/en/template/{template_id}/scan"
         return
     except SQLAlchemyError as err:
         log.error(err)

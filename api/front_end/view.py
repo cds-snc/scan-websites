@@ -161,7 +161,6 @@ async def template_scan(
         )
 
         scan_types = session.query(ScanType).all()
-        print(scan_types)
 
         result = {"request": request}
         result.update(languages[locale])

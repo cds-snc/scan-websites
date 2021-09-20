@@ -1,5 +1,6 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, AnyUrl
 from .common import as_form
+from typing import List
 
 
 class TemplateFilter(BaseModel):
@@ -15,3 +16,16 @@ class TemplateCreate(TemplateFilter):
         extra = "forbid"
 
     pass
+
+
+class TemplateScanType(BaseModel):
+    scanType: str
+
+
+class TemplateScanData(BaseModel):
+    url: AnyUrl
+
+
+class TemplateScanCreateList(BaseModel):
+    data: List[TemplateScanData]
+    scan_types: List[TemplateScanType]
