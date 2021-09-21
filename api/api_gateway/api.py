@@ -6,7 +6,7 @@ from starlette.middleware.sessions import SessionMiddleware
 
 
 from front_end import view
-from .routers import auth, ops, organisations, scans
+from .routers import auth, dev, ops, organisations, scans
 
 app = FastAPI()
 
@@ -27,5 +27,7 @@ app.include_router(
 )
 app.include_router(scans.router, prefix="/scans", tags=["scans"])
 app.include_router(view.router)
+if environ.get("AWS_LOCALSTACK", False):
+    app.include_router(dev.router, prefix="/dev", tags=["dev"])
 
 app.mount("/static", StaticFiles(directory="front_end/static"), name="static")

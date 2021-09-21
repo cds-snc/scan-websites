@@ -14,10 +14,7 @@ def load_fixture(name):
 
 
 def mock_record(name="bucket_name"):
-    mock_record = MagicMock()
-    mock_record.s3.bucket.name = name
-    mock_record.s3.object.key = "key"
-    return mock_record
+    return {"s3": {"bucket": {"name": name}, "object": {"key": "key"}}}
 
 
 @patch("storage.storage.log")
@@ -58,7 +55,9 @@ def test_get_object_catch_exception(mock_get_session, mock_log):
 def test_retrieve_and_route_with_not_json(mock_get_object, mock_log):
     mock_get_object.return_value = load_fixture("not_json.txt")
     assert storage.retrieve_and_route(mock_record()) is False
-    mock_log.error.assert_called_once_with("Error decoding key from bucket_name")
+    mock_log.error.assert_called_once_with(
+        "Error decoding key from bucket_name: Expecting value: line 1 column 1 (char 0)"
+    )
 
 
 @patch("storage.storage.log")

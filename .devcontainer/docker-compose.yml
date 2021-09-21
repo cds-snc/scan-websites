@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 x-db-connection-strings: &db-connection-strings
   SQLALCHEMY_DATABASE_URI: postgresql://postgres:postgres@db/scan-websites
@@ -6,7 +6,7 @@ x-db-connection-strings: &db-connection-strings
 
 services:
   app:
-    build: 
+    build:
       context: ..
       dockerfile: .devcontainer/Dockerfile
       args:
@@ -20,28 +20,30 @@ services:
         TERRAGRUNT_VERSION: "0.31.1"
         TERRAGRUNT_CHECKSUM: "76b253919ad688025a4a37338e5602543b0426cae1be1f863b4f3d60dd95ac28"
         AWS_CLI_VERSION: "2.2.29"
+        
     volumes:
-      - ..:/workspace:cached   
+      - ..:/workspace:cached
     command: sleep infinity
     environment:
-      <<: *db-connection-strings
-
-  api:
-    build:
-      context: ../api/
-    volumes:
-      - ../api:/function
-    environment:
-      <<: *db-connection-strings
       AWS_LOCALSTACK: "True"
       AXE_CORE_URLS_TOPIC: "arn:aws:sns:ca-central-1:000000000000:axe-core-urls-topic"
- 
-    ports:
-      - "8080:8080" 
+      AXE_CORE_REPORT_DATA_BUCKET: axe-core-report-data 
+      OWASP_ZAP_REPORT_DATA_BUCKET: oswasp-zap-report-data 
+      <<: *db-connection-strings
+
+  scanner-axe:
+    build:
+      context: ../scanners/axe-core/
+    volumes:
+      - ../scanners/axe-core:/function
+    environment:
+      AWS_LOCALSTACK: "True"
+      REPORT_DATA_BUCKET: "axe-core-report-data"
+      SCREENSHOT_BUCKET: "axe-core-screenshots"
   db:
     image: postgres:11.2
     volumes:
-    - ./initdb:/docker-entrypoint-initdb.d
+      - ./initdb:/docker-entrypoint-initdb.d
     restart: always
     command:
       - "postgres"
@@ -53,14 +55,14 @@ services:
       POSTGRES_HOST_AUTH_METHOD: trust
       POSTGRES_DB: scan-websites
     expose:
-      - "5433" 
+      - "5433"
     ports:
       - "5433:5432"
-  
+
   test-db:
     image: postgres:11.2
     volumes:
-    - ./initdb:/docker-entrypoint-initdb.d
+      - ./initdb:/docker-entrypoint-initdb.d
     restart: always
     command:
       - "postgres"
@@ -71,7 +73,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_HOST_AUTH_METHOD: trust
       POSTGRES_DB: scan-websites
-  
+
   localstack:
     image: localstack/localstack
     hostname: localstack
@@ -80,8 +82,9 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "./scripts/init_localstack:/docker-entrypoint-initaws.d"
     ports:
-      - 4566:4566 
+      - 4566:4566
       - 4571:4571
+      - 8055:8080
     environment:
       - SERVICES=s3,sns
       - DATA_DIR=/tmp/localstack/data

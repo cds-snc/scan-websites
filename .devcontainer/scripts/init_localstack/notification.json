@@ -1,0 +1,10 @@
+{
+    "TopicConfigurations": [
+        {
+            "TopicArn": "arn:aws:sns:ca-central-1:000000000000:s3-event-topic",
+            "Events": [
+                "s3:ObjectCreated:*"
+            ]
+        }
+    ]
+}
