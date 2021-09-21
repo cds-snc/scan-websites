@@ -35,8 +35,7 @@ def dispatch(payload):
 
 def send(topic_arn, payload):
     if topic_arn:
-        use_localstack = os.environ.get("AWS_LOCALSTACK", False)
-        if use_localstack:
+        if os.environ.get("AWS_LOCALSTACK", False):
             client = get_session().client("sns", endpoint_url="http://localstack:4566")
         else:
             client = get_session().client("sns")
