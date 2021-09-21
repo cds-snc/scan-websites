@@ -5,12 +5,13 @@ import uuid
 
 from sqlalchemy import DateTime, Column, ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID
+from uuid import UUID as VALIDATOR_UUID
 from sqlalchemy.orm import relationship, validates
 
 from models import Base
 from models.Organisation import Organisation
 
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from starlette.authentication import BaseUser
 
 from typing import Optional
@@ -74,6 +75,13 @@ class User(Base):
 class AuthenticatedUser(BaseModel, BaseUser):
     email_address: Optional[str]
     name: Optional[str]
+    organisation_id: Optional[VALIDATOR_UUID]
+
+    # UUID is not JSON serializable so we validate and then cast to str
+    @validator("organisation_id")
+    def must_be_uuid_return_str(cls, v):
+        assert type(v) is VALIDATOR_UUID, "must UUID"
+        return str(v)
 
     @property
     def is_authenticated(self) -> bool:

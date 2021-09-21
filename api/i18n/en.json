@@ -6,9 +6,14 @@
   "login": "Login",
   "login_text": "CDS Employee Login",
   "logout": "Logout",
+  "manage_template": "Manage template",
+  "manage_templates": "Manage templates",
+  "name": "Name",
+  "new_locale": "New",
   "organisations_locale" : "Organisations",
   "other_lang": "fr",
   "other_language": "Français",
+  "templates_locale": "Template",
   "webpage_title": "Scan websites",
   "welcome": "Welcome to Scan websites"
 }

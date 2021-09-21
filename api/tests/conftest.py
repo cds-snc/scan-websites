@@ -1,9 +1,14 @@
 import os
 import pytest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from alembic.config import Config
 from alembic import command
+
+from api_gateway import api
+from authlib.oidc.core import UserInfo
+
+from fastapi.testclient import TestClient
 
 from models.A11yReport import A11yReport
 from models.Organisation import Organisation
@@ -12,7 +17,6 @@ from models.ScanType import ScanType
 from models.Template import Template
 from models.TemplateScan import TemplateScan
 from models.User import User
-
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -53,6 +57,7 @@ def context_fixture():
 def organisation_fixture(session):
     organisation = Organisation(name="fixture_name")
     session.add(organisation)
+    session.commit()
     return organisation
 
 
@@ -72,7 +77,6 @@ def setup_db():
     alembic_cfg.set_main_option("script_location", "./db_migrations")
     command.downgrade(alembic_cfg, "base")
     command.upgrade(alembic_cfg, "head")
-
     yield
 
 
@@ -84,6 +88,7 @@ def scan_fixture(scan_type_fixture, template_fixture, organisation_fixture, sess
         template=template_fixture,
     )
     session.add(scan)
+    session.commit()
     return scan
 
 
@@ -91,6 +96,7 @@ def scan_fixture(scan_type_fixture, template_fixture, organisation_fixture, sess
 def scan_type_fixture(session):
     scan_type = ScanType(name="fixture_name")
     session.add(scan_type)
+    session.commit()
     return scan_type
 
 
@@ -98,6 +104,7 @@ def scan_type_fixture(session):
 def template_fixture(session, organisation_fixture):
     template = Template(name="fixture_name", organisation=organisation_fixture)
     session.add(template)
+    session.commit()
     return template
 
 
@@ -109,6 +116,7 @@ def template_scan_fixture(scan_type_fixture, template_fixture, session):
         template=template_fixture,
     )
     session.add(template_scan)
+    session.commit()
     return template_scan
 
 
@@ -126,3 +134,17 @@ def regular_user_fixture():
         "name": "User McUser",
     }
     return user_info
+
+
+@pytest.fixture(scope="session")
+def logged_in_client(regular_user_fixture):
+    with patch(
+        "api_gateway.routers.auth.oauth.google.authorize_access_token",
+        return_value={"access_token": "TOKEN"},
+    ), patch(
+        "api_gateway.routers.auth.oauth.google.parse_id_token",
+        return_value=UserInfo(regular_user_fixture),
+    ):
+        client = TestClient(api.app)
+        client.get("/auth/google")
+        yield client
