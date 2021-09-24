@@ -105,3 +105,39 @@ async def save_template_scan(
         log.error(err)
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {"error": f"error creating template: {err}"}
+
+
+@router.put(
+    "/template/{template_id}/scan",
+    dependencies=[Depends(is_authenticated)],
+)
+async def update_template_scan(
+    request: Request,
+    response: Response,
+    template_id: str,
+    config: TemplateScanCreateList,
+    session: Session = Depends(get_session),
+):
+    try:
+        template_scan = (
+            session.query(TemplateScan)
+            .filter(TemplateScan.template_id == template_id)
+            .one_or_none()
+        )
+
+        scan_type = (
+            session.query(ScanType)
+            .filter(ScanType.name == config.scan_types[0].scanType)
+            .one()
+        )
+
+        config_dict = json.loads(config.json())
+        template_scan.data = config_dict["data"]
+        template_scan.scan_type = scan_type
+        session.commit()
+        return {"id": template_scan.id}
+
+    except SQLAlchemyError as err:
+        log.error(err)
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {"error": f"error creating template: {err}"}

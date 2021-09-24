@@ -1,5 +1,6 @@
 {
   "alpha": "Alpha",
+  "existing_scans": "Analyses existantes",
   "goc": "Gouvernement du Canada",
   "goc_banner": "https://ssl-templates.services.gc.ca/app/cls/wet/gcintranet/v4_0_20/assets/sig-blk-fr.svg",
   "lang": "fr",
@@ -13,6 +14,7 @@
   "organisations_locale" : "Organisations",
   "other_lang": "en",
   "other_language": "English",
+  "scan_types_locale": "Types d'analyse",
   "templates_locale": "Template",
   "webpage_title": "Analyser les sites web",
   "welcome": "Bienvenue sur les sites Web de Scan"

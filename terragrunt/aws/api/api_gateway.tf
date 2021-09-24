@@ -48,6 +48,10 @@ resource "aws_api_gateway_method_response" "api_response_200" {
   response_models = {
     "application/json" = "Empty"
   }
+
+  response_parameters = {
+    "method.response.header.Strict-Transport-Security" = true
+  }
 }
 
 resource "aws_api_gateway_integration" "integration" {
@@ -73,6 +77,9 @@ resource "aws_api_gateway_integration_response" "integration_response" {
   response_templates = {
     "application/json" = ""
   }
+  response_parameters = {
+    "method.response.header.Strict-Transport-Security" = "max-age=31536000; includeSubDomains; preload"
+  }
 }
 
 # checkov:skip=CKV_AWS_59:Serving publiclicy accessible content
@@ -94,6 +101,10 @@ resource "aws_api_gateway_method_response" "api_root_response_200" {
 
   response_models = {
     "text/html" = "Empty"
+  }
+
+  response_parameters = {
+    "method.response.header.Strict-Transport-Security" = true
   }
 }
 
@@ -119,6 +130,10 @@ resource "aws_api_gateway_integration_response" "root_integration_response" {
 
   response_templates = {
     "text/html" = ""
+  }
+
+  response_parameters = {
+    "method.response.header.Strict-Transport-Security" = "max-age=31536000; includeSubDomains; preload"
   }
 }
 

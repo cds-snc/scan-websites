@@ -31,6 +31,7 @@ function scanAdd() {
     var elementExists = document.getElementById(unique_id);
 
     if (typeof (elementExists) == 'undefined' || elementExists == null) {
+      input.readonly = true;
       input.type = "text";
       input.id = unique_id
       input.name = "scanType"
