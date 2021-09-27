@@ -160,6 +160,23 @@ def test_create_template_scan_valid(
     assert response.status_code == 200
 
 
+def test_create_template_scan_when_already_exist(
+    home_org_template_fixture,
+    home_org_template_scan_fixture,
+    scan_type_fixture,
+    logged_in_client,
+):
+    response = logged_in_client.post(
+        f"/scans/template/{str(home_org_template_fixture.id)}/scan",
+        json={
+            "data": [{"url": "https://www.example.com"}],
+            "scan_types": [{"scanType": scan_type_fixture.name}],
+        },
+    )
+    assert response.json() == {"id": ANY}
+    assert response.status_code == 200
+
+
 def test_create_template_scan_not_my_org(
     template_fixture, scan_type_fixture, logged_in_client
 ):
