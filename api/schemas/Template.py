@@ -29,3 +29,9 @@ class TemplateScanData(BaseModel):
 class TemplateScanCreateList(BaseModel):
     data: List[TemplateScanData]
     scan_types: List[TemplateScanType]
+
+
+class TemplateScanConfigData(BaseModel):
+    id: str
+    key: str
+    value: str

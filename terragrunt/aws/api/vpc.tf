@@ -50,6 +50,7 @@ resource "aws_network_acl_rule" "ephemeral_ports_egress" {
   to_port        = 65535
 }
 
+
 resource "aws_security_group" "api" {
 
   name        = "${var.product_name}_api_sg"
@@ -63,6 +64,7 @@ resource "aws_security_group" "api" {
   }
 
   egress {
+    description = "Allow API outbound connections to the internet"
     from_port   = 443
     to_port     = 443
     protocol    = "TCP"

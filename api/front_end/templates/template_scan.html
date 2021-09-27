@@ -3,20 +3,18 @@
 <script src="{{ url_for('static', path='js/table.js') }}"></script>
 {% endblock %}
 {% block body %}
-<center>
-  <h1>{{ manage_template }}</h1>
-</center>
-<div><strong>{{ name }}</strong>: {{ template.name }}</div></br>
+<h1 class="text-center">{{ manage_template_locale }}</h1>
+<div><strong>{{ name_locale }}</strong>: {{ template.name }}</div></br>
 
 <div class="container">
-  <div class="row">
+  <div class="row mb-8">
 
     <div class="flex flex-col ... divide-y">
       <div>
-        <section><strong>Scan types:</strong>
-          <select id="scanType">
+        <section><strong>{{ scan_types_locale }}:</strong>
+          <select id="scanType" aria-label="{{ scan_types_locale }}">
             {% for scan_type in scan_types %}
-            <option id="{{ scan_type.name }}" value="{{ scan_type.id }}">{{ scan_type.name }}</option>
+            <option id="{{ scan_type.name }}" value="{{ scan_type.id }}" aria-label="{{ scan_type.name }}">{{ scan_type.name }}</option>
             {% endfor %}
           </select>
 
@@ -26,15 +24,29 @@
         </section>
       </div>
       <div class="shadow ...">
+        {% if template.template_scans %}
+        <form id="templateScan" name="templateScan" action="/scans/template/{{template.id}}/scan" method="PUT">
+        {% else %}
         <form id="templateScan" name="templateScan" action="/scans/template/{{template.id}}/scan" method="POST">
+        {% endif %}
           <div id="container" class="border-double border-4 border-light-blue-500 ...">
             <strong>Selected scan type</strong></br>
+            {% if template.template_scans %}
+            <div id='child'>
+              {% for template_scan in template.template_scans %}
+              <input type="text" id="scanType-{{ template_scan.scan_type.id }}"name="scanType" value="{{ template_scan.scan_type.name }}" readonly class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"></input>  
+              {% endfor %}
+              <button class="bg-red-500 hover:bg-red-700 text-white font-bold  px-2 rounded" type="button" id="addScanButton" class="btn btn-primary" onclick="scanClear();">{{ clear_locale }}</button>
+
+            </div>
+            {% endif %}
+            
           </div>
           <table id="dataTable" class="table-auto" id="editableTable">
             <thead>
               <tr>
-                <th class="px-4 py-2">Key</th>
-                <th class="px-4 py-2">Value</th>
+                <th class="px-4 py-2">{{ key_locale }}</th>
+                <th class="px-4 py-2">{{ value_locale }}</th>
                 <th>
                   <button class="bg-green-500 hover:bg-green-700 text-white font-bold px-2 rounded" type="button"
                     id="addButton" class="btn btn-primary" onclick="dataAdd();">&#43;</button>
@@ -43,17 +55,36 @@
               </tr>
             </thead>
             <tbody>
-              <tr data-id="1">
-                <td class="border px-4 py-2"><input type="text" name="key" value="url" /></td>
-                <td class="border px-4 py-2"><input type="text" name="value" value="https://" /></td>
-              </tr>
+              
+              {% if template.template_scans %}
+                {% for template_scan in template.template_scans %}
+                  {% for data in scan_config %}
+                    <tr data-id="{{data.id}}">
+                      <td class='border px-4 py-2'>
+                        <input type='text' name='key' value="{{data.key}}" aria-label="{{ key_locale }}"/>
+                      </td>
+                      <td class='border px-4 py-2'>
+                        <input type='text' name='value' value="{{data.value}}" aria-label="{{ value_locale }}"/>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                {% endfor %}
+              {% else %}
+                <tr data-id="1">
+                  <td class="border px-4 py-2"><input type="text" name="key" value="url" aria-label="{{ key_locale }}"/></td>
+                  <td class="border px-4 py-2"><input type="text" name="value" value="https://" aria-label="{{ value_locale }}"/></td>
+                </tr>
+              {% endif %}
             </tbody>
           </table>
-          <button id="submitBtn" class="h-12 mt-3 text-white w-full rounded bg-red-800 hover:bg-red-900">Save</button>
+          {% if template.template_scans %}
+          <button id="updateBtn" class="h-12 mt-3 text-white w-full rounded bg-red-800 hover:bg-red-900">{{ update_locale }}</button>
+          {% else %}
+          <button id="submitBtn" class="h-12 mt-3 text-white w-full rounded bg-red-800 hover:bg-red-900">{{ save_locale }}</button>
+          {% endif %}
         </form>
       </div>
     </div>
-  </div>
 </div>
 {% block footer %}
 {{super()}}

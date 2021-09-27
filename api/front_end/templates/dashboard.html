@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block body %}
-  <center><h1>{{ organisations_locale }}</h1></center>
+  <h1 class="text-center">{{ organisations_locale }}</h1>
   <div class="flex flex-col">
     <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
       <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
@@ -9,10 +9,10 @@
             <thead class="bg-gray-50">
               <tr>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Name
+                  {{ name_locale }}
                 </th>
                 <th scope="col" class="relative px-6 py-3">
-                  <span class="sr-only">Configure</span>
+                  <span class="sr-only">{{ configure_locale }}</span>
                 </th>
               </tr>
             </thead>
@@ -25,7 +25,7 @@
                       </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <a href="/{{lang}}/organisation/{{ organisation.id }}/edit" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                  <a href="/{{lang}}/organisation/{{ organisation.id }}/edit" class="text-indigo-600 hover:text-indigo-900">{{ edit_locale }}</a>
                 </td>
               </tr>
               {% endfor %}

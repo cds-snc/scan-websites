@@ -2,6 +2,7 @@ from fastapi import (
     APIRouter,
     Depends,
     BackgroundTasks,
+    HTTPException,
     Request,
     Response,
     status,
@@ -24,12 +25,35 @@ from models.TemplateScan import TemplateScan
 from models.ScanType import ScanType
 from schemas.Template import TemplateCreate, TemplateScanCreateList
 
+
 limiter = Limiter(key_func=get_remote_address, enabled=True)
 router = APIRouter()
 
 
 class CrawlUrl(BaseModel):
     url: str
+
+
+def template_belongs_to_org(
+    request: Request, template_id: str, session: Session = Depends(get_session)
+):
+    if template_id:
+        try:
+            template = (
+                session.query(Template)
+                .filter(
+                    Template.id == template_id,
+                    Template.organisation_id == request.user.organisation_id,
+                )
+                .first()
+            )
+        except Exception:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+
+        if template is None:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    else:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
 
 
 @router.post("/crawl")
@@ -62,9 +86,13 @@ async def save_template(
         return {"error": "error creating template"}
 
 
+@router.put(
+    "/template/{template_id}/scan",
+    dependencies=[Depends(is_authenticated), Depends(template_belongs_to_org)],
+)
 @router.post(
     "/template/{template_id}/scan",
-    dependencies=[Depends(is_authenticated)],
+    dependencies=[Depends(is_authenticated), Depends(template_belongs_to_org)],
 )
 async def save_template_scan(
     request: Request,

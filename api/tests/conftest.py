@@ -62,6 +62,18 @@ def organisation_fixture(session):
 
 
 @pytest.fixture(scope="session")
+def home_organisation_fixture(session):
+    home_org = (
+        session.query(Organisation)
+        .filter(
+            Organisation.name == "Canadian Digital Service - Service Numérique Canadien"
+        )
+        .scalar()
+    )
+    return home_org
+
+
+@pytest.fixture(scope="session")
 def session():
     db_engine = create_engine(os.environ.get("SQLALCHEMY_DATABASE_TEST_URI"))
     Session = sessionmaker(bind=db_engine)
@@ -109,11 +121,41 @@ def template_fixture(session, organisation_fixture):
 
 
 @pytest.fixture(scope="session")
+def home_org_template_fixture(session, home_organisation_fixture):
+    template = Template(name="fixture_name", organisation=home_organisation_fixture)
+    session.add(template)
+    session.commit()
+    return template
+
+
+@pytest.fixture(scope="session")
+def home_org_template_fixture_2(session, home_organisation_fixture):
+    template = Template(name="fixture_name_2", organisation=home_organisation_fixture)
+    session.add(template)
+    session.commit()
+    return template
+
+
+@pytest.fixture(scope="session")
 def template_scan_fixture(scan_type_fixture, template_fixture, session):
     template_scan = TemplateScan(
         data={"jsonb": "data"},
         scan_type=scan_type_fixture,
         template=template_fixture,
+    )
+    session.add(template_scan)
+    session.commit()
+    return template_scan
+
+
+@pytest.fixture(scope="session")
+def home_org_template_scan_fixture(
+    scan_type_fixture, home_org_template_fixture, session
+):
+    template_scan = TemplateScan(
+        data={"jsonb": "data"},
+        scan_type=scan_type_fixture,
+        template=home_org_template_fixture,
     )
     session.add(template_scan)
     session.commit()

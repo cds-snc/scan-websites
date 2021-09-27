@@ -5,16 +5,18 @@ from babel.plural import PluralRule
 from database.db import db_session
 from logger import log
 from sqlalchemy.orm import Session
-from uuid import UUID
+
 
 from models.Organisation import Organisation
 from models.Template import Template
 from models.ScanType import ScanType
+from schemas.Template import TemplateScanConfigData
 from api_gateway.routers.auth import is_authenticated
 
 import glob
 import json
 import os
+import uuid
 
 router = APIRouter()
 
@@ -144,8 +146,11 @@ async def template(request: Request, locale: str, session: Session = Depends(get
     dependencies=[Depends(is_authenticated)],
     response_class=HTMLResponse,
 )
-async def template_scan(
-    request: Request, locale: str, template_id: UUID, session: Session = Depends(get_db)
+async def template_scan_list(
+    request: Request,
+    locale: str,
+    template_id: uuid.UUID,
+    session: Session = Depends(get_db),
 ):
     try:
         if locale not in languages:
@@ -161,11 +166,61 @@ async def template_scan(
         )
 
         scan_types = session.query(ScanType).all()
+        result = {"request": request}
+        result.update(languages[locale])
+        result.update({"template": template})
+        result.update({"scan_types": scan_types})
+    except Exception as e:
+        log.error(e)
+        raise HTTPException(status_code=500, detail=str(e))
+    return templates.TemplateResponse("template_scan_list.html", result)
+
+
+@router.get(
+    "/{locale}/template/{template_id}/scan/{template_scan_id}",
+    dependencies=[Depends(is_authenticated)],
+    response_class=HTMLResponse,
+)
+async def template_scan(
+    request: Request,
+    locale: str,
+    template_id: uuid.UUID,
+    template_scan_id: uuid.UUID,
+    session: Session = Depends(get_db),
+):
+    try:
+        if locale not in languages:
+            locale = default_fallback
+
+        template = (
+            session.query(Template)
+            .filter(
+                Template.id == template_id,
+                Template.template_scans.any(id=template_scan_id),
+                Template.organisation_id == request.user.organisation_id,
+            )
+            .one()
+        )
+
+        scan_types = session.query(ScanType).all()
+
+        scan_configs = []
+        print(template.template_scans[0].data)
+        # Currently only allows one template scan per template
+        for template_scan in template.template_scans:
+            for ts in template_scan.data:
+                for key, value in ts.items():
+                    scan_configs.append(
+                        TemplateScanConfigData(
+                            id=str(uuid.uuid4()), key=key, value=value
+                        )
+                    )
 
         result = {"request": request}
         result.update(languages[locale])
         result.update({"template": template})
         result.update({"scan_types": scan_types})
+        result.update({"scan_config": scan_configs})
     except Exception as e:
         log.error(e)
         raise HTTPException(status_code=500, detail=str(e))

@@ -1,15 +1,14 @@
 {% extends "base.html" %}
+{% block includes %}
+<script src="{{ url_for('static', path='js/table.js') }}"></script>
+{% endblock %}
 {% block body %}
-  <h1 class="text-center">{{ templates_locale }}</h1>
-  <div class="flex flex-col">
-    <form class="w-full max-w-sm" action="/scans/template" method="POST">
-      <div class="flex items-center border-b  py-2 ">
-        <stong>{{ templates_locale }}</stong>: <input class="appearance-none  w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none" name="name" type="text" placeholder="www.example.com" aria-label="{{ template_name_locale }}">
-        <button class="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 text-sm border-4 text-black py-1 px-2 rounded" type="submit">
-          {{ new_locale }}
-        </button>
-      </div>
-    </form>
+
+<section><h1 class="text-center">{{ existing_scans_locale }}</h1></section>
+<div class="container">
+  <div class="row mb-8">
+    
+    <br/>
     <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
       <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
         <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
@@ -25,15 +24,16 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              {% for template in templates %}
+              {% for template_scan in template.template_scans %}
               <tr>
                 <td class="px-6 py-4 whitespace-nowrap">
                       <div class="text-sm font-medium text-gray-900">
-                        {{ template.name }}
+                        {{ template_scan.scan_type.name }}
                       </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <a href="/{{lang}}/template/{{ template.id }}/scan" class="text-indigo-600 hover:text-indigo-900">{{ edit_locale }}</a>
+                  <a href="/{{lang}}/template/{{ template_scan.template.id }}/scan/{{ template_scan.id}}" class="text-green-600 hover:text-indigo-900"><span class="material-icons" aria-label="{{ edit_locale }}"> edit </span></a>
+                  <a href="/#" class="text-red-600 hover:text-indigo-900"><span class="material-icons" aria-label="{{ delete_locale }}"> delete </span></a>
                 </td>
               </tr>
               {% endfor %}
@@ -42,7 +42,10 @@
         </div>
       </div>
     </div>
+
   </div>
-
-
+</div>
+{% block footer %}
+{{super()}}
+{% endblock %}
 {% endblock %}
