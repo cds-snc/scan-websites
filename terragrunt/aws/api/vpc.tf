@@ -50,6 +50,7 @@ resource "aws_network_acl_rule" "ephemeral_ports_egress" {
   to_port        = 65535
 }
 
+# checkov:skip=CKV_AWS_23:Parsing bug, resource has description
 resource "aws_security_group" "api" {
 
   name        = "${var.product_name}_api_sg"
