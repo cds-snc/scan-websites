@@ -64,6 +64,7 @@ resource "aws_security_group" "api" {
   }
 
   egress {
+    description = "Allow API outbound connections to the internet"
     from_port   = 443
     to_port     = 443
     protocol    = "TCP"
