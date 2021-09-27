@@ -147,10 +147,10 @@ def test_create_template_valid(logged_in_client):
 
 
 def test_create_template_scan_valid(
-    template_fixture, scan_type_fixture, logged_in_client
+    home_org_template_fixture_2, scan_type_fixture, logged_in_client
 ):
     response = logged_in_client.post(
-        f"/scans/template/{str(template_fixture.id)}/scan",
+        f"/scans/template/{str(home_org_template_fixture_2.id)}/scan",
         json={
             "data": [{"url": "https://www.example.com"}],
             "scan_types": [{"scanType": scan_type_fixture.name}],
@@ -160,9 +160,24 @@ def test_create_template_scan_valid(
     assert response.status_code == 200
 
 
-def test_create_template_scan_unknown_scan_type(template_fixture, logged_in_client):
+def test_create_template_scan_not_my_org(
+    template_fixture, scan_type_fixture, logged_in_client
+):
     response = logged_in_client.post(
         f"/scans/template/{str(template_fixture.id)}/scan",
+        json={
+            "data": [{"url": "https://www.example.com"}],
+            "scan_types": [{"scanType": scan_type_fixture.name}],
+        },
+    )
+    assert response.status_code == 401
+
+
+def test_create_template_scan_unknown_scan_type(
+    home_org_template_fixture, logged_in_client
+):
+    response = logged_in_client.post(
+        f"/scans/template/{str(home_org_template_fixture.id)}/scan",
         json={
             "data": [{"url": "https://www.example.com"}],
             "scan_types": [{"scanType": "foo"}],
@@ -175,10 +190,10 @@ def test_create_template_scan_unknown_scan_type(template_fixture, logged_in_clie
 
 
 def test_create_template_scan_invalid_url(
-    template_fixture, scan_type_fixture, logged_in_client
+    home_org_template_fixture, scan_type_fixture, logged_in_client
 ):
     response = logged_in_client.post(
-        f"/scans/template/{str(template_fixture.id)}/scan",
+        f"/scans/template/{str(home_org_template_fixture.id)}/scan",
         json={
             "data": [{"url": "ftp://www.example.com"}],
             "scan_types": [{"scanType": scan_type_fixture.name}],
@@ -189,9 +204,9 @@ def test_create_template_scan_invalid_url(
     assert response.status_code == 422
 
 
-def test_create_template_scan_url_missing(template_fixture, logged_in_client):
+def test_create_template_scan_url_missing(home_org_template_fixture, logged_in_client):
     response = logged_in_client.post(
-        f"/scans/template/{str(template_fixture.id)}/scan",
+        f"/scans/template/{str(home_org_template_fixture.id)}/scan",
         json={"data": [{"foo": "bar"}], "scan_types": [{"scanType": "axe-core"}]},
     )
 

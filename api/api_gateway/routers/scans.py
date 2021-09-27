@@ -88,7 +88,7 @@ async def save_template(
 
 @router.post(
     "/template/{template_id}/scan",
-    dependencies=[Depends(is_authenticated)],
+    dependencies=[Depends(is_authenticated), Depends(template_belongs_to_org)],
 )
 async def save_template_scan(
     request: Request,
@@ -148,8 +148,6 @@ async def update_template_scan(
             .filter(TemplateScan.template_id == template_id)
             .one_or_none()
         )
-
-        print(str(template_scan))
 
         scan_type = (
             session.query(ScanType)

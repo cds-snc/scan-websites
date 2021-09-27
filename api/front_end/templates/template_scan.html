@@ -3,13 +3,11 @@
 <script src="{{ url_for('static', path='js/table.js') }}"></script>
 {% endblock %}
 {% block body %}
-<center>
-  <h1>{{ manage_template_locale }}</h1>
-</center>
+<h1 class="text-center">{{ manage_template_locale }}</h1>
 <div><strong>{{ name_locale }}</strong>: {{ template.name }}</div></br>
 
 <div class="container">
-  <div class="row margin-bottom: 2em;">
+  <div class="row mb-8">
 
     <div class="flex flex-col ... divide-y">
       <div>

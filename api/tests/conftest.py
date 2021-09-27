@@ -129,6 +129,14 @@ def home_org_template_fixture(session, home_organisation_fixture):
 
 
 @pytest.fixture(scope="session")
+def home_org_template_fixture_2(session, home_organisation_fixture):
+    template = Template(name="fixture_name_2", organisation=home_organisation_fixture)
+    session.add(template)
+    session.commit()
+    return template
+
+
+@pytest.fixture(scope="session")
 def template_scan_fixture(scan_type_fixture, template_fixture, session):
     template_scan = TemplateScan(
         data={"jsonb": "data"},
