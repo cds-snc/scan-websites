@@ -7,6 +7,7 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from front_end import view
 from .routers import auth, dev, ops, organisations, scans
+from .custom_middleware import HSTSHeaderMiddleware
 
 app = FastAPI()
 
@@ -16,6 +17,8 @@ if FASTAPI_SECRET_KEY is None:
 
 app.add_middleware(AuthenticationMiddleware, backend=auth.SessionAuthBackend())
 app.add_middleware(SessionMiddleware, secret_key=FASTAPI_SECRET_KEY)
+app.add_middleware(HSTSHeaderMiddleware)
+
 
 app.include_router(auth.router)
 app.include_router(ops.router, prefix="/ops", tags=["ops"])
