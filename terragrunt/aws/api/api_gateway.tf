@@ -78,7 +78,7 @@ resource "aws_api_gateway_integration_response" "integration_response" {
     "application/json" = ""
   }
   response_parameters = {
-    "method.response.header.Strict-Transport-Security" = "max-age=31536000; includeSubDomains; preload"
+    "method.response.header.Strict-Transport-Security" = "max-age=300; includeSubDomains; preload"
   }
 }
 
@@ -133,7 +133,7 @@ resource "aws_api_gateway_integration_response" "root_integration_response" {
   }
 
   response_parameters = {
-    "method.response.header.Strict-Transport-Security" = "max-age=31536000; includeSubDomains; preload"
+    "method.response.header.Strict-Transport-Security" = "max-age=300; includeSubDomains; preload"
   }
 }
 

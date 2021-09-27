@@ -3,12 +3,10 @@
 <script src="{{ url_for('static', path='js/table.js') }}"></script>
 {% endblock %}
 {% block body %}
-<center>
-  <section><h1>{{ existing_scans }}</h1></section>
-</center>
 
+<section><h1 class="text-center">{{ existing_scans_locale }}</h1></section>
 <div class="container">
-  <div class="row">
+  <div class="row margin-bottom: 2em;">
     
     <br/>
     <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -18,10 +16,10 @@
             <thead class="bg-gray-50">
               <tr>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Name
+                  {{ name_locale }}
                 </th>
                 <th scope="col" class="relative px-6 py-3">
-                  <span class="sr-only">Configure</span>
+                  <span class="sr-only">{{ configure_locale }}</span>
                 </th>
               </tr>
             </thead>
@@ -34,8 +32,8 @@
                       </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <a href="/{{lang}}/template/{{ template_scan.template.id }}/scan/{{ template_scan.id}}" class="text-green-600 hover:text-indigo-900"><span class="material-icons"> edit </span></a>
-                  <a href="/#" class="text-red-600 hover:text-indigo-900"><span class="material-icons"> delete </span></a>
+                  <a href="/{{lang}}/template/{{ template_scan.template.id }}/scan/{{ template_scan.id}}" class="text-green-600 hover:text-indigo-900"><span class="material-icons"> {{ edit_locale }} </span></a>
+                  <a href="/#" class="text-red-600 hover:text-indigo-900"><span class="material-icons"> {{ delete_locale }} </span></a>
                 </td>
               </tr>
               {% endfor %}

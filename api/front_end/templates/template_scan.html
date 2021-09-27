@@ -4,16 +4,16 @@
 {% endblock %}
 {% block body %}
 <center>
-  <h1>{{ manage_template }}</h1>
+  <h1>{{ manage_template_locale }}</h1>
 </center>
-<div><strong>{{ name }}</strong>: {{ template.name }}</div></br>
+<div><strong>{{ name_locale }}</strong>: {{ template.name }}</div></br>
 
 <div class="container">
-  <div class="row">
+  <div class="row margin-bottom: 2em;">
 
     <div class="flex flex-col ... divide-y">
       <div>
-        <section><strong>Scan types:</strong>
+        <section><strong>{{ scan_types_locale }}:</strong>
           <select id="scanType" aria-label="{{ scan_types_locale }}">
             {% for scan_type in scan_types %}
             <option id="{{ scan_type.name }}" value="{{ scan_type.id }}" aria-label="{{ scan_type.name }}">{{ scan_type.name }}</option>
@@ -38,7 +38,7 @@
               {% for template_scan in template.template_scans %}
               <input type="text" name="scanType" value="{{ template_scan.scan_type.name }}" readonly class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"></input>  
               {% endfor %}
-              <button class="bg-red-500 hover:bg-red-700 text-white font-bold  px-2 rounded" type="button" id="addScanButton" class="btn btn-primary" onclick="scanClear();">Clear</button>
+              <button class="bg-red-500 hover:bg-red-700 text-white font-bold  px-2 rounded" type="button" id="addScanButton" class="btn btn-primary" onclick="scanClear();">{{ clear_locale }}</button>
 
             </div>
             {% endif %}
@@ -47,8 +47,8 @@
           <table id="dataTable" class="table-auto" id="editableTable">
             <thead>
               <tr>
-                <th class="px-4 py-2">Key</th>
-                <th class="px-4 py-2">Value</th>
+                <th class="px-4 py-2">{{ key_locale }}</th>
+                <th class="px-4 py-2">{{ value_locale }}</th>
                 <th>
                   <button class="bg-green-500 hover:bg-green-700 text-white font-bold px-2 rounded" type="button"
                     id="addButton" class="btn btn-primary" onclick="dataAdd();">&#43;</button>
@@ -63,31 +63,30 @@
                   {% for data in scan_config %}
                     <tr data-id="{{data.id}}">
                       <td class='border px-4 py-2'>
-                        <input type='text' name='key' value="{{data.key}}"/>
+                        <input type='text' name='key' value="{{data.key}}" aria-label="{{ key_locale }}"/>
                       </td>
                       <td class='border px-4 py-2'>
-                        <input type='text' name='value' value="{{data.value}}"/>
+                        <input type='text' name='value' value="{{data.value}}" aria-label="{{ value_locale }}"/>
                       </td>
                     </tr>
                   {% endfor %}
                 {% endfor %}
               {% else %}
                 <tr data-id="1">
-                  <td class="border px-4 py-2"><input type="text" name="key" value="url" aria-label="key"/></td>
-                  <td class="border px-4 py-2"><input type="text" name="value" value="https://" aria-label="value"/></td>
+                  <td class="border px-4 py-2"><input type="text" name="key" value="url" aria-label="{{ key_locale }}"/></td>
+                  <td class="border px-4 py-2"><input type="text" name="value" value="https://" aria-label="{{ value_locale }}"/></td>
                 </tr>
               {% endif %}
             </tbody>
           </table>
           {% if template.template_scans %}
-          <button id="updateBtn" class="h-12 mt-3 text-white w-full rounded bg-red-800 hover:bg-red-900">Update</button>
+          <button id="updateBtn" class="h-12 mt-3 text-white w-full rounded bg-red-800 hover:bg-red-900">{{ update_locale }}</button>
           {% else %}
-          <button id="submitBtn" class="h-12 mt-3 text-white w-full rounded bg-red-800 hover:bg-red-900">Save</button>
+          <button id="submitBtn" class="h-12 mt-3 text-white w-full rounded bg-red-800 hover:bg-red-900">{{ save_locale }}</button>
           {% endif %}
         </form>
       </div>
     </div>
-    <br/>
 </div>
 {% block footer %}
 {{super()}}

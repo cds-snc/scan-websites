@@ -206,7 +206,7 @@ async def template_scan(
 
         scan_configs = []
         print(template.template_scans[0].data)
-        # Currently only allow once template scan per template
+        # Currently only allows one template scan per template
         for template_scan in template.template_scans:
             for ts in template_scan.data:
                 for key, value in ts.items():

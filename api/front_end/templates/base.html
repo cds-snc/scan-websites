@@ -11,7 +11,7 @@
     {% block includes %}
     {% endblock %}
 
-    <title>{{ webpage_title }}</title>
+    <title>{{ webpage_title_locale }}</title>
   </head>
   <body class="bg-gray-100 font-sans leading-normal tracking-normal h-full">
     <div class="min-h-screen flex flex-col">
@@ -20,19 +20,19 @@
           <div class="w-full container mx-auto flex flex-wrap items-center mt-0 pt-3 pb-3 md:pb-0">
             <div class="pl-2 pb-4 w-1/2 md:pl-0">
               <a class="text-gray-900 text-base no-underline font-bold xl:text-xl hover:no-underline" href="/{{ lang }}" aria-label="{{ lang }}">
-                <img class="h-6 inline-block pr-10" src="{{ goc_banner }}" alt="{{ goc }}" />
+                <img class="h-6 inline-block pr-10" src="{{ goc_banner_locale }}" alt="{{ goc_locale }}" />
               </a>
-              <span class="leading-none lg:ml-4 mr-5 lg:pl-5 font-semibold inline-block top-0 text-brand pb-0">{{ webpage_title }}</span>
-              <span class="bg-blue-200 py-1 px-2 rounded-lg text-small">{{ alpha }}</span>
+              <span class="leading-none lg:ml-4 mr-5 lg:pl-5 font-semibold inline-block top-0 text-brand pb-0">{{ webpage_title_locale }}</span>
+              <span class="bg-blue-200 py-1 px-2 rounded-lg text-small">{{ alpha_locale }}</span>
             </div>
             <div class="pl-2 pb-4 w-1/2 md:pl-0 text-right space-x-4">
               {% if request.session.user is not defined %}
-              <a class="text-base no-underline hover:no-underline" href="/{{lang}}/login" aria-label="{{ login }}">
-                {{ login }}
+              <a class="text-base no-underline hover:no-underline" href="/{{lang}}/login" aria-label="{{ login_locale }}">
+                {{ login_locale }}
               </a>
               {% else %}
-              <a class="text-base no-underline hover:no-underline" href="/logout" aria-label="{{ logout }}">
-                {{ logout }}
+              <a class="text-base no-underline hover:no-underline" href="/logout" aria-label="{{ logout_locale }}">
+                {{ logout_locale }}
               </a>
               {% endif %}
               <a class="text-base no-underline hover:no-underline" href="/{{other_lang}}" aria-label="{{ other_language }}">

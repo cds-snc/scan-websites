@@ -2,6 +2,7 @@ from fastapi import (
     APIRouter,
     Depends,
     BackgroundTasks,
+    HTTPException,
     Request,
     Response,
     status,
@@ -24,12 +25,35 @@ from models.TemplateScan import TemplateScan
 from models.ScanType import ScanType
 from schemas.Template import TemplateCreate, TemplateScanCreateList
 
+
 limiter = Limiter(key_func=get_remote_address, enabled=True)
 router = APIRouter()
 
 
 class CrawlUrl(BaseModel):
     url: str
+
+
+def template_belongs_to_org(
+    request: Request, template_id: str, session: Session = Depends(get_session)
+):
+    if template_id:
+        try:
+            template = (
+                session.query(Template)
+                .filter(
+                    Template.id == template_id,
+                    Template.organisation_id == request.user.organisation_id,
+                )
+                .first()
+            )
+        except Exception:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+
+        if template is None:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    else:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
 
 
 @router.post("/crawl")
@@ -109,7 +133,7 @@ async def save_template_scan(
 
 @router.put(
     "/template/{template_id}/scan",
-    dependencies=[Depends(is_authenticated)],
+    dependencies=[Depends(is_authenticated), Depends(template_belongs_to_org)],
 )
 async def update_template_scan(
     request: Request,
@@ -125,6 +149,8 @@ async def update_template_scan(
             .one_or_none()
         )
 
+        print(str(template_scan))
+
         scan_type = (
             session.query(ScanType)
             .filter(ScanType.name == config.scan_types[0].scanType)
@@ -132,6 +158,7 @@ async def update_template_scan(
         )
 
         config_dict = json.loads(config.json())
+
         template_scan.data = config_dict["data"]
         template_scan.scan_type = scan_type
         session.commit()
@@ -140,4 +167,4 @@ async def update_template_scan(
     except SQLAlchemyError as err:
         log.error(err)
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        return {"error": f"error creating template: {err}"}
+        return {"error": f"error updating template: {err}"}
