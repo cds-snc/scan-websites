@@ -1,4 +1,5 @@
 import os
+import re
 
 from fastapi.testclient import TestClient
 from unittest.mock import ANY, patch
@@ -41,6 +42,13 @@ def test_healthcheck_failure(mock_log, mock_get_db_version):
     expected_val = {"database": {"able_to_connect": False}}
     assert response.json() == expected_val
     # assert mock_log.error.assert_called_once_with(SQLAlchemyError())
+
+
+def test_hsts_in_response(hsts_middleware_client):
+    response = hsts_middleware_client.get("/ops/version")
+    assert response.status_code == 200
+    pattern = re.compile("max-age=[0-9]+ ; includeSubDomains")
+    assert pattern.match(response.headers["Strict-Transport-Security"])
 
 
 @patch("api_gateway.routers.scans.crawl")

@@ -77,9 +77,6 @@ resource "aws_api_gateway_integration_response" "integration_response" {
   response_templates = {
     "application/json" = ""
   }
-  response_parameters = {
-    "method.response.header.Strict-Transport-Security" = "max-age=300; includeSubDomains; preload"
-  }
 }
 
 # checkov:skip=CKV_AWS_59:Serving publiclicy accessible content
@@ -130,10 +127,6 @@ resource "aws_api_gateway_integration_response" "root_integration_response" {
 
   response_templates = {
     "text/html" = ""
-  }
-
-  response_parameters = {
-    "method.response.header.Strict-Transport-Security" = "max-age=300; includeSubDomains; preload"
   }
 }
 

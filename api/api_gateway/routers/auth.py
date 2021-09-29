@@ -101,6 +101,7 @@ async def auth_google(
 @router.get("/logout")
 async def logout(request: Request):
     request.session.pop("user", None)
+    request.cookies.clear()
     return RedirectResponse(url="/")
 
 

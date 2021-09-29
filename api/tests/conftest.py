@@ -8,6 +8,7 @@ from alembic import command
 from api_gateway import api
 from authlib.oidc.core import UserInfo
 
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from models.A11yReport import A11yReport
@@ -17,6 +18,11 @@ from models.ScanType import ScanType
 from models.Template import Template
 from models.TemplateScan import TemplateScan
 from models.User import User
+
+from api_gateway.custom_middleware import add_security_headers
+from api_gateway.routers import ops
+
+from starlette.middleware.base import BaseHTTPMiddleware
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -190,3 +196,13 @@ def logged_in_client(regular_user_fixture):
         client = TestClient(api.app)
         client.get("/auth/google")
         yield client
+
+
+# https://github.com/tiangolo/fastapi/issues/1472; has to be tested seperate from Jinja2 routes
+@pytest.fixture
+def hsts_middleware_client():
+    app = FastAPI()
+    app.add_middleware(BaseHTTPMiddleware, dispatch=add_security_headers)
+    app.include_router(ops.router, prefix="/ops", tags=["ops"])
+    client = TestClient(app)
+    yield client
