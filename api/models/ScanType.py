@@ -2,7 +2,7 @@ import datetime
 import uuid
 
 from sqlalchemy import DateTime, Column, String
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import relationship, validates
 
 
@@ -14,6 +14,7 @@ class ScanType(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String, nullable=False, index=False, unique=True)
+    callback = Column(JSONB, nullable=False)
     created_at = Column(
         DateTime,
         index=False,
