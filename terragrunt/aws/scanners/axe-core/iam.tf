@@ -28,7 +28,7 @@ resource "aws_iam_role_policy_attachment" "lambda_insights" {
 data "aws_iam_policy_document" "api_policies" {
 
   statement {
-
+    sid    = "CloudWatchAccess"
     effect = "Allow"
 
     actions = [
@@ -43,7 +43,7 @@ data "aws_iam_policy_document" "api_policies" {
   }
 
   statement {
-
+    sid    = "ECRImageAccess"
     effect = "Allow"
 
     actions = [
@@ -56,7 +56,7 @@ data "aws_iam_policy_document" "api_policies" {
   }
 
   statement {
-
+    sid    = "S3BucketAccess"
     effect = "Allow"
 
     actions = [
