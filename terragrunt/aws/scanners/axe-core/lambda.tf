@@ -9,6 +9,10 @@ resource "aws_lambda_function" "scanners-axe-core" {
 
   memory_size = 1600
 
+  tracing_config {
+    mode = "PassThrough"
+  }
+
   environment {
     variables = {
       REPORT_DATA_BUCKET = var.axe_core_report_data_bucket_id
