@@ -1,6 +1,4 @@
 resource "aws_ecr_repository" "scanners-axe-core" {
-  # checkov:skip=CKV_AWS_51:The :latest tag is used in Staging
-
   name                 = "${var.product_name}/scanners/axe-core"
   image_tag_mutability = "MUTABLE"
 

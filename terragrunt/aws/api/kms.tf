@@ -1,6 +1,3 @@
-
-data "aws_caller_identity" "current" {}
-
 data "aws_iam_policy_document" "kms_policies" {
 
   statement {
@@ -17,7 +14,7 @@ data "aws_iam_policy_document" "kms_policies" {
 
     principals {
       type        = "AWS"
-      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
+      identifiers = ["arn:aws:iam::${var.account_id}:root"]
     }
   }
   statement {
@@ -38,7 +35,7 @@ data "aws_iam_policy_document" "kms_policies" {
 
     principals {
       type        = "Service"
-      identifiers = ["logs.ca-central-1.amazonaws.com"]
+      identifiers = ["logs.${var.region}.amazonaws.com"]
     }
   }
 

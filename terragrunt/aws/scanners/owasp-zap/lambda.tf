@@ -1,6 +1,4 @@
 resource "aws_lambda_function" "scanners-owasp-zap" {
-  # checkov:skip=CKV_AWS_50:X-ray tracing only required during function debug
-  # checkov:skip=CKV_AWS_115:Reserved concurrency not required (not latency sensitive)
   function_name = "scanners-owasp-zap"
 
   package_type = "Image"
@@ -10,6 +8,10 @@ resource "aws_lambda_function" "scanners-owasp-zap" {
   timeout = 60
 
   memory_size = 1024
+
+  tracing_config {
+    mode = "PassThrough"
+  }
 
   environment {
     variables = {

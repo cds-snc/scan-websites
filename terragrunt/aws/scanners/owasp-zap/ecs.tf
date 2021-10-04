@@ -25,7 +25,6 @@ resource "aws_ecs_task_definition" "runners-owasp-zap" {
 }
 
 resource "aws_cloudwatch_log_group" "log" {
-  # checkov:skip=CKV_AWS_158:Encryption using default CloudWatch service key is acceptable
   name              = "/aws/ecs/runners_owasp_zap_ecs"
   retention_in_days = 14
 }
