@@ -45,6 +45,10 @@ resource "aws_wafv2_web_acl" "api_waf" {
         excluded_rule {
           name = "GenericRFI_BODY"
         }
+
+        excluded_rule {
+          name = "GenericRFI_QUERYARGUMENTS"
+        }
       }
     }
 
