@@ -1,12 +1,11 @@
 import datetime
 import uuid
 
-from sqlalchemy import DateTime, Column, ForeignKey, String
+from sqlalchemy import DateTime, Column, String
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import relationship, validates
 
 from models import Base
-from models.TemplateScan import TemplateScan
 
 
 class TemplateScanTrigger(Base):
@@ -29,12 +28,8 @@ class TemplateScanTrigger(Base):
         nullable=True,
         onupdate=datetime.datetime.utcnow,
     )
-    template_scan_id = Column(
-        UUID(as_uuid=True), ForeignKey(TemplateScan.id), index=True, nullable=False
-    )
-    template_scan = relationship(
-        "TemplateScan", back_populates="template_scan_triggers"
-    )
+
+    template_scans = relationship("TemplateScan")
 
     @validates("callback")
     def validate_callback(self, _key, value):

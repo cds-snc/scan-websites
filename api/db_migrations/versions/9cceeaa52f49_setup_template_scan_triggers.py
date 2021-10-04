@@ -21,6 +21,12 @@ depends_on = None
 
 def upgrade():
     op.drop_column("template_scan_triggers", "template_scan_id")
+    op.add_column(
+        "template_scans",
+        sa.Column(
+            "template_scan_trigger_id", postgresql.UUID(as_uuid=True), nullable=True
+        ),
+    )
     op.add_column("template_scan_triggers", sa.Column("name", sa.String()))
     op.add_column("scan_types", sa.Column("callback", postgresql.JSONB()))
 
@@ -58,7 +64,14 @@ def upgrade():
 def downgrade():
     op.execute(
         """
+        DELETE FROM template_scans;
         DELETE FROM template_scan_triggers;
+        DELETE FROM a11y_violations;
+        DELETE FROM security_violations;
+        DELETE FROM a11y_reports;
+        DELETE FROM security_reports;
+        DELETE FROM scans;
+        DELETE FROM templates;
         """
     )
     op.drop_column("template_scan_triggers", "name")
@@ -67,3 +80,4 @@ def downgrade():
         "template_scan_triggers",
         sa.Column("template_scan_id", postgresql.UUID(as_uuid=True)),
     )
+    op.drop_column("template_scans", "template_scan_trigger_id")

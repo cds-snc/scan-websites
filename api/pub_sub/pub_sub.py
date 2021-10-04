@@ -1,3 +1,4 @@
+from enum import Enum
 import json
 import os
 from boto3wrapper.wrapper import get_session
@@ -10,11 +11,36 @@ from models.SecurityReport import SecurityReport
 from models.Scan import Scan
 
 
+class AvailableScans(Enum):
+    OWASP_ZAP = "OWASP Zap"
+    AXE_CORE = "axe-core"
+
+
+validator_list = {}
+common_validations = ["url", "type", "queue", "product", "revision", "template_id"]
+# Append to common_validations if additional validations are required for only one template
+validator_list[AvailableScans.OWASP_ZAP.value] = common_validations
+validator_list[AvailableScans.AXE_CORE.value] = common_validations
+
+
+def validate_mandatory(payload, scan_type):
+    if scan_type not in validator_list:
+        raise ValueError("Mandatory validator not defined")
+
+    for mandatory_key in validator_list[scan_type]:
+        if mandatory_key not in payload:
+            raise ValueError(f"{mandatory_key} not defined")
+
+
 def dispatch(payload):
     session = db_session()
     scan = session.query(Scan).get(payload["scan_id"])
 
-    if payload["type"] == "OWASP Zap":
+    if "type" not in payload:
+        raise ValueError("type is not defined")
+
+    validate_mandatory(payload, payload["type"])
+    if payload["type"] == AvailableScans.OWASP_ZAP.value:
         security_report = SecurityReport(
             product=payload["product"],
             revision=payload["revision"],
@@ -29,7 +55,7 @@ def dispatch(payload):
         )  # Add a ID that can be linked back to the parent ID of the payload
         session.close()
 
-    elif payload["type"] == "axe-core":
+    elif payload["type"] == AvailableScans.AXE_CORE.value:
         a11y_report = A11yReport(
             product="product",  # TODO how is this populated?
             revision="revision",  # TODO how is this populated?
@@ -47,7 +73,8 @@ def dispatch(payload):
         log.error("Unsupported scan type")
         raise ValueError("Unsupported scan type")
 
-    send(payload["queue"], payload)
+    if payload["event"] == "sns":
+        send(payload["queue"], payload)
 
 
 def send(topic_arn, payload):

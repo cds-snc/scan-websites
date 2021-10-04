@@ -15,9 +15,11 @@ from models.A11yReport import A11yReport
 from models.Organisation import Organisation
 from models.Scan import Scan
 from models.ScanType import ScanType
+from models.SecurityReport import SecurityReport
 from models.Template import Template
 from models.TemplateScan import TemplateScan
 from models.User import User
+from pub_sub import pub_sub
 
 from api_gateway.custom_middleware import add_security_headers
 from api_gateway.routers import ops
@@ -40,6 +42,20 @@ def a11y_report_fixture(session, scan_fixture):
     session.add(a11y_report)
     session.commit()
     return a11y_report
+
+
+@pytest.fixture(scope="session")
+def security_report_fixture(session, scan_fixture):
+    security_report = SecurityReport(
+        product="product",
+        revision="revision",
+        url="url",
+        summary={"jsonb": "data"},
+        scan=scan_fixture,
+    )
+    session.add(security_report)
+    session.commit()
+    return security_report
 
 
 @pytest.fixture
@@ -87,12 +103,13 @@ def session():
 
 
 @pytest.fixture(scope="session", autouse=True)
-def setup_db():
+def setup_db(session):
     os.environ["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
         "SQLALCHEMY_DATABASE_TEST_URI"
     )
     alembic_cfg = Config("./db_migrations/alembic.ini")
     alembic_cfg.set_main_option("script_location", "./db_migrations")
+
     command.downgrade(alembic_cfg, "base")
     command.upgrade(alembic_cfg, "head")
     yield
@@ -112,7 +129,9 @@ def scan_fixture(scan_type_fixture, template_fixture, organisation_fixture, sess
 
 @pytest.fixture(scope="session")
 def scan_type_fixture(session):
-    scan_type = ScanType(name="fixture_name")
+    scan_type = ScanType(
+        name="fixture_name", callback={"event": "sns", "topic_env": "topic"}
+    )
     session.add(scan_type)
     session.commit()
     return scan_type
@@ -121,6 +140,24 @@ def scan_type_fixture(session):
 @pytest.fixture(scope="session")
 def template_fixture(session, organisation_fixture):
     template = Template(name="fixture_name", organisation=organisation_fixture)
+    session.add(template)
+    session.commit()
+    return template
+
+
+@pytest.fixture(scope="session")
+def owasp_zap_fixture(session):
+    owasp_zap_scan_type = (
+        session.query(ScanType)
+        .filter(ScanType.name == pub_sub.AvailableScans.OWASP_ZAP.value)
+        .scalar()
+    )
+    return owasp_zap_scan_type
+
+
+@pytest.fixture(scope="session")
+def home_org_owasp_zap_template_fixture(session, home_organisation_fixture):
+    template = Template(name="Scan OWASP", organisation=home_organisation_fixture)
     session.add(template)
     session.commit()
     return template
@@ -156,12 +193,26 @@ def template_scan_fixture(scan_type_fixture, template_fixture, session):
 
 @pytest.fixture(scope="session")
 def home_org_template_scan_fixture(
-    scan_type_fixture, home_org_template_fixture, session
+    scan_type_fixture, home_org_template_fixture, owasp_zap_fixture, session
 ):
     template_scan = TemplateScan(
         data={"jsonb": "data"},
         scan_type=scan_type_fixture,
         template=home_org_template_fixture,
+    )
+    session.add(template_scan)
+    session.commit()
+    return template_scan
+
+
+@pytest.fixture(scope="session")
+def home_org_owasp_zap_template_scan_fixture(
+    home_org_owasp_zap_template_fixture, owasp_zap_fixture, session
+):
+    template_scan = TemplateScan(
+        data=[{"url": "https://www.alpha.canada.ca"}],
+        scan_type=owasp_zap_fixture,
+        template=home_org_owasp_zap_template_fixture,
     )
     session.add(template_scan)
     session.commit()
@@ -196,6 +247,16 @@ def logged_in_client(regular_user_fixture):
         client = TestClient(api.app)
         client.get("/auth/google")
         yield client
+
+
+@pytest.fixture(scope="session")
+def loggedin_user_fixture(logged_in_client, regular_user_fixture, session):
+    user = (
+        session.query(User)
+        .filter(User.email_address == regular_user_fixture["email"])
+        .scalar()
+    )
+    return user
 
 
 # https://github.com/tiangolo/fastapi/issues/1472; has to be tested seperate from Jinja2 routes

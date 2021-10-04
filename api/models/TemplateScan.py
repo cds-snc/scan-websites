@@ -8,6 +8,7 @@ from sqlalchemy.orm import relationship, validates
 from models import Base
 from models.ScanType import ScanType
 from models.Template import Template
+from models.TemplateScanTrigger import TemplateScanTrigger
 
 
 class TemplateScan(Base):
@@ -38,7 +39,13 @@ class TemplateScan(Base):
     )
     scan_type = relationship("ScanType", back_populates="template_scans")
 
-    template_scan_triggers = relationship("TemplateScanTrigger")
+    template_scan_trigger_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey(TemplateScanTrigger.id),
+        index=True,
+        nullable=True,
+    )
+    # template_scan_trigger = relationship("TemplateScanTrigger", foreign_keys=[template_scan_trigger_id])
 
     @validates("data")
     def validate_data(self, _key, value):
