@@ -12,4 +12,3 @@ skip-check:
   - CKV_AWS_136 # ECR: default encryption key is acceptable 
   - CKV_AWS_158 # CloudWatch: default encryption key is acceptable
   - CKV_AWS_173 # Lambda: environment variable encryption with default KMS key is acceptable
-  - CKV2_AWS_29 # API Gateway needs a WAF ACL.  This can be removed when #142 lands.
