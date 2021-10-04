@@ -42,8 +42,21 @@ resource "aws_wafv2_web_acl" "api_waf" {
         name        = "AWSManagedRulesCommonRuleSet"
         vendor_name = "AWS"
 
-        excluded_rule {
-          name = "GenericRFI_BODY"
+        scope_down_statement {
+          not_statement {
+            statement {
+              regex_pattern_set_reference_statement {
+                arn = aws_wafv2_regex_pattern_set.google_auth_uri.arn
+                field_to_match {
+                  uri_path {}
+                }
+                text_transformation {
+                  type     = "LOWERCASE"
+                  priority = 1
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -150,6 +163,15 @@ resource "aws_wafv2_web_acl" "api_waf" {
   }
 }
 
+resource "aws_wafv2_regex_pattern_set" "google_auth_uri" {
+  name        = "GoogleAuthUri"
+  description = "Regex to match a Google Authentication request"
+  scope       = "REGIONAL"
+
+  regular_expression {
+    regex_string = "^/auth/google.*$"
+  }
+}
 
 resource "aws_wafv2_web_acl_association" "waf_association" {
   resource_arn = aws_api_gateway_stage.api.arn
