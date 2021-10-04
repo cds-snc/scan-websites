@@ -67,23 +67,6 @@ def test_crawl(mock_uuid, mock_log, mock_crawl):
     mock_log.info.assert_called_once_with("Crawling url='bar'")
 
 
-@patch("api_gateway.routers.scans.crawl")
-@patch("api_gateway.routers.scans.log")
-@patch("api_gateway.routers.scans.uuid")
-def test_crawl_ratelimit(mock_uuid, mock_log, mock_crawl):
-    fake_url = "bar"
-    fake_uuid = "foo"
-    mock_log.return_value = None
-    mock_uuid.uuid4.return_value = fake_uuid
-
-    for i in range(0, 10):
-        response = client.post(url="/scans/crawl", json={"url": fake_url})
-        if i < 4:
-            assert response.status_code == 200
-        else:
-            assert response.status_code == 429
-
-
 def test_accessing_protected_route_not_logged_in():
     fresh_client = TestClient(api.app)
     response = fresh_client.get("/me")

@@ -10,8 +10,6 @@ from fastapi import (
 from logger import log
 from pydantic import BaseModel
 from crawler.crawler import crawl
-from slowapi import Limiter
-from slowapi.util import get_remote_address
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
@@ -26,7 +24,6 @@ from models.ScanType import ScanType
 from schemas.Template import TemplateCreate, TemplateScanCreateList
 
 
-limiter = Limiter(key_func=get_remote_address, enabled=True)
 router = APIRouter()
 
 
@@ -57,7 +54,6 @@ def template_belongs_to_org(
 
 
 @router.post("/crawl")
-@limiter.limit("5/minute")
 def crawl_endpoint(
     crawl_url: CrawlUrl, background_tasks: BackgroundTasks, request: Request
 ):
