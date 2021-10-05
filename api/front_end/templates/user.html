@@ -7,9 +7,9 @@
     <div class="container flex justify-center items-center">
       <div>
         <h1>{{ request.session.user.name }}</h1>
-        <p><b>{{ email_locale }}:</b> {{ request.session.user.email_address }}</p>
+        <p><strong>{{ email_locale }}:</strong> {{ request.session.user.email_address }}</p>
         <div id='child'>
-        <b>{{ api_key_locale }}:</b>
+        <strong>{{ api_key_locale }}:</strong>
 
         <button id="show" class="bg-green-500 hover:bg-green-700 text-white font-bold  px-2 rounded" type="button"
           id="addScanButton" class="btn btn-primary" onclick="toggleAPIKey();">{{ show_locale }}
