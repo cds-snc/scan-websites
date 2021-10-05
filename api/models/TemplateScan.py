@@ -45,7 +45,9 @@ class TemplateScan(Base):
         index=True,
         nullable=True,
     )
-    # template_scan_trigger = relationship("TemplateScanTrigger", foreign_keys=[template_scan_trigger_id])
+    template_scan_trigger = relationship(
+        "TemplateScanTrigger", back_populates="template_scans"
+    )
 
     @validates("data")
     def validate_data(self, _key, value):

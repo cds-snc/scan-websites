@@ -7,7 +7,6 @@ from unittest.mock import MagicMock, patch
 @patch("pub_sub.pub_sub.A11yReport")
 @patch("pub_sub.pub_sub.db_session")
 @patch("pub_sub.pub_sub.send")
-# @patch.dict(os.environ, {"AXE_CORE_URLS_TOPIC": "topic"}, clear=True)
 def test_dispatch_adds_an_id_and_calls_send(
     mock_send, _mock_session, mock_a11y_report_class
 ):
