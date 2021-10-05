@@ -3,7 +3,12 @@
 <script src="{{ url_for('static', path='js/table.js') }}"></script>
 {% endblock %}
 {% block body %}
-<h1 class="text-center">{{ manage_template_locale }}</h1>
+{% if template.template_scans %}
+<h1 class="text-center">{{ update_scan_locale }}</h1>
+{% else %}
+<h1 class="text-center">{{ add_new_scan_locale }}</h1>
+{% endif %}
+
 <div><strong>{{ name_locale }}</strong>: {{ template.name }}</div></br>
 
 <div class="container">

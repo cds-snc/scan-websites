@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 
 from models.Organisation import Organisation
 from models.Template import Template
+from models.User import User
 from models.ScanType import ScanType
 from schemas.Template import TemplateScanConfigData
 from api_gateway.routers.auth import is_authenticated
@@ -90,6 +91,31 @@ async def home(request: Request, locale: str):
     except Exception as e:
         log.error(e)
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get(
+    "/{locale}/user",
+    dependencies=[Depends(is_authenticated)],
+    response_class=HTMLResponse,
+)
+async def user(request: Request, locale: str, session: Session = Depends(get_db)):
+    try:
+        if locale not in languages:
+            locale = default_fallback
+
+        user = (
+            session.query(User)
+            .filter(User.email_address == request.user.email_address)
+            .scalar()
+        )
+
+        result = {"request": request}
+        result.update(languages[locale])
+        result.update({"token": user.access_token})
+    except Exception as e:
+        log.error(e)
+        raise HTTPException(status_code=500, detail=str(e))
+    return templates.TemplateResponse("user.html", result)
 
 
 # TODO Push errors to cloudwatch metric and response when debug enabled
@@ -174,6 +200,42 @@ async def template_scan_list(
         log.error(e)
         raise HTTPException(status_code=500, detail=str(e))
     return templates.TemplateResponse("template_scan_list.html", result)
+
+
+@router.get(
+    "/{locale}/template/{template_id}/scan/new",
+    dependencies=[Depends(is_authenticated)],
+    response_class=HTMLResponse,
+)
+async def create_template_scan(
+    request: Request,
+    locale: str,
+    template_id: uuid.UUID,
+    session: Session = Depends(get_db),
+):
+    try:
+        if locale not in languages:
+            locale = default_fallback
+
+        template = (
+            session.query(Template)
+            .filter(
+                Template.id == template_id,
+                Template.organisation_id == request.user.organisation_id,
+            )
+            .one()
+        )
+
+        scan_types = session.query(ScanType).all()
+
+        result = {"request": request}
+        result.update(languages[locale])
+        result.update({"template": template})
+        result.update({"scan_types": scan_types})
+    except Exception as e:
+        log.error(e)
+        raise HTTPException(status_code=500, detail=str(e))
+    return templates.TemplateResponse("template_scan.html", result)
 
 
 @router.get(

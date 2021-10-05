@@ -7,7 +7,6 @@
     <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2016%2016'%3E%3Ctext%20x='0'%20y='14'%3E🍁%3C/text%3E%3C/svg%3E" type="image/svg+xml" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.1/css/all.css">
     {% block includes %}
     {% endblock %}
 
@@ -19,9 +18,16 @@
         <nav class="bg-white w-full z-10 top-0 shadow" id="header">
           <div class="w-full container mx-auto flex flex-wrap items-center mt-0 pt-3 pb-3 md:pb-0">
             <div class="pl-2 pb-4 w-1/2 md:pl-0">
+              {% if request.session.user is not defined %}
               <a class="text-gray-900 text-base no-underline font-bold xl:text-xl hover:no-underline" href="/{{ lang }}" aria-label="{{ lang }}">
                 <img class="h-6 inline-block pr-10" src="{{ goc_banner_locale }}" alt="{{ goc_locale }}" />
               </a>
+              {% else %}
+              <a class="text-gray-900 text-base no-underline font-bold xl:text-xl hover:no-underline" href="/{{ lang }}/dashboard" aria-label="{{ dashboard_locale }}">
+                <img class="h-6 inline-block pr-10" src="{{ goc_banner_locale }}" alt="{{ goc_locale }}" />
+              </a>
+              {% endif %}
+              
               <span class="leading-none lg:ml-4 mr-5 lg:pl-5 font-semibold inline-block top-0 text-brand pb-0">{{ webpage_title_locale }}</span>
               <span class="bg-blue-200 py-1 px-2 rounded-lg text-small">{{ alpha_locale }}</span>
             </div>
@@ -31,6 +37,8 @@
                 {{ login_locale }}
               </a>
               {% else %}
+              <a href="/{{lang}}/user" class=""><span class="material-icons inline-block align-middle" aria-label="{{ my_account_locale }}"> account_circle </span></a>
+                
               <a class="text-base no-underline hover:no-underline" href="/logout" aria-label="{{ logout_locale }}">
                 {{ logout_locale }}
               </a>
