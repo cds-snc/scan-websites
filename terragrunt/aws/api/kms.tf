@@ -70,9 +70,3 @@ resource "aws_kms_key" "scan-websites" {
     CostCenter = var.billing_code
   }
 }
-
-resource "aws_iam_policy" "kms" {
-  name   = "${var.product_name}-kms"
-  path   = "/"
-  policy = data.aws_iam_policy_document.kms_policies.json
-}
