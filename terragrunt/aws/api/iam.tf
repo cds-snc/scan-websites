@@ -63,7 +63,8 @@ data "aws_iam_policy_document" "api_policies" {
       "sns:Publish"
     ]
     resources = [
-      aws_sns_topic.axe-core-urls.arn
+      aws_sns_topic.axe-core-urls.arn,
+      aws_sns_topic.owasp-zap-urls.arn
     ]
   }
 
