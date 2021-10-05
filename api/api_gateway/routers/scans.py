@@ -2,6 +2,7 @@ from fastapi import (
     APIRouter,
     Depends,
     BackgroundTasks,
+    Header,
     HTTPException,
     Request,
     Response,
@@ -13,15 +14,19 @@ from crawler.crawler import crawl
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-import uuid
 import json
+import uuid
+from typing import Optional
 
 from .auth import is_authenticated
 from database.db import get_session
 from models.Template import Template
 from models.TemplateScan import TemplateScan
+from models.User import User
+from models.Scan import Scan
 from models.ScanType import ScanType
 from schemas.Template import TemplateCreate, TemplateScanCreateList
+from pub_sub import pub_sub
 
 
 router = APIRouter()
@@ -51,6 +56,95 @@ def template_belongs_to_org(
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     else:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+
+
+async def verify_scan_tokens(
+    x_api_key: str = Header(None),
+    x_template_token: str = Header(None),
+    session: Session = Depends(get_session),
+):
+    if x_api_key is None or x_template_token is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+
+    try:
+        user = session.query(User).filter(User.access_token == x_api_key).one()
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+
+    try:
+        template = (
+            session.query(Template).filter(Template.token == x_template_token).one()
+        )
+    except Exception as err:
+        log.error(err)
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+
+    if user.organisation_id != template.organisation_id:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+
+    return template
+
+
+@router.get("/start")
+@router.get("/start/revision/{git_sha}")
+def start_scan(
+    request: Request,
+    git_sha: Optional[str] = None,
+    session: Session = Depends(get_session),
+    template: Template = Depends(verify_scan_tokens),
+):
+
+    for template_scan in template.template_scans:
+        scan = (
+            session.query(Scan)
+            .filter(
+                Scan.template_id == template.id,
+                Scan.scan_type == template_scan.scan_type,
+            )
+            .one_or_none()
+        )
+
+        if scan is None:
+            scan = Scan(
+                organisation_id=template.organisation_id,
+                template_id=template.id,
+                scan_type=template_scan.scan_type,
+            )
+            session.add(scan)
+            session.commit()
+
+        item = {}
+        item["event"] = template_scan.scan_type.callback["event"]
+        item["revision"] = "latest"
+
+        if template_scan.scan_type.callback["event"] == "sns":
+            item["scan_id"] = str(scan.id)
+            item["type"] = template_scan.scan_type.name
+            item["product"] = template.name
+            item["template_id"] = str(template.id)
+
+            for entry in template_scan.data:
+                if "url" in entry:
+                    item["url"] = entry["url"]
+                if "revision" in entry:
+                    item["revision"] = entry["revision"]
+            item["queue"] = template_scan.scan_type.callback["topic_env"]
+
+        if "url" not in item:
+            return {"message": "Scan error: URL not configured in template"}
+
+        if "event" not in item:
+            return {"message": "Scan error: Scan type callback event not defined"}
+
+        if git_sha:
+            item["revision"] = git_sha
+
+        try:
+            pub_sub.dispatch(item)
+        except Exception as error:
+            return {"message": f"Scan error: {error}"}
+
+    return {"message": f"Scan started: {template.name}"}
 
 
 @router.post("/crawl")

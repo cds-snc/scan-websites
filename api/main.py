@@ -11,6 +11,8 @@ import os
 # Required so that models are initialized before they're referenced
 from models.A11yReport import A11yReport  # noqa: F401
 from models.A11yViolation import A11yViolation  # noqa: F401
+from models.SecurityReport import SecurityReport  # noqa: F401
+from models.SecurityViolation import SecurityViolation  # noqa: F401
 from models.Organisation import Organisation  # noqa: F401
 from models.Scan import Scan  # noqa: F401
 from models.Template import Template  # noqa: F401
