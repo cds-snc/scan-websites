@@ -45,14 +45,30 @@ resource "aws_wafv2_web_acl" "api_waf" {
         scope_down_statement {
           not_statement {
             statement {
-              regex_pattern_set_reference_statement {
-                arn = aws_wafv2_regex_pattern_set.google_auth_uri.arn
-                field_to_match {
-                  uri_path {}
+              or_statement {
+                statement {
+                  regex_pattern_set_reference_statement {
+                    arn = aws_wafv2_regex_pattern_set.google_auth_uri.arn
+                    field_to_match {
+                      uri_path {}
+                    }
+                    text_transformation {
+                      type     = "LOWERCASE"
+                      priority = 1
+                    }
+                  }
                 }
-                text_transformation {
-                  type     = "LOWERCASE"
-                  priority = 1
+                statement {
+                  regex_pattern_set_reference_statement {
+                    arn = aws_wafv2_regex_pattern_set.body_exclusions.arn
+                    field_to_match {
+                      body {}
+                    }
+                    text_transformation {
+                      type     = "LOWERCASE"
+                      priority = 1
+                    }
+                  }
                 }
               }
             }
@@ -170,6 +186,16 @@ resource "aws_wafv2_regex_pattern_set" "google_auth_uri" {
 
   regular_expression {
     regex_string = "^/auth/google.*$"
+  }
+}
+
+resource "aws_wafv2_regex_pattern_set" "body_exclusions" {
+  name        = "RequestBodyExclusions"
+  description = "Regex to match request urls with bodies that will trigger rulesets"
+  scope       = "REGIONAL"
+
+  regular_expression {
+    regex_string = "^/scans/template/.+/scan$"
   }
 }
 

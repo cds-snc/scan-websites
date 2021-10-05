@@ -15,6 +15,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 import json
+import os
 import uuid
 from typing import Optional
 
@@ -128,7 +129,9 @@ def start_scan(
                     item["url"] = entry["url"]
                 if "revision" in entry:
                     item["revision"] = entry["revision"]
-            item["queue"] = template_scan.scan_type.callback["topic_env"]
+            item["queue"] = os.getenv(
+                template_scan.scan_type.callback["topic_env"], "NOT_FOUND"
+            )
 
         if "url" not in item:
             return {"message": "Scan error: URL not configured in template"}

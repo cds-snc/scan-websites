@@ -2,8 +2,9 @@ from fastapi.testclient import TestClient
 from unittest.mock import ANY, MagicMock, patch
 
 from api_gateway import api
-
 from pub_sub import pub_sub
+
+import os
 
 client = TestClient(api.app)
 
@@ -177,6 +178,7 @@ def test_start_scan_valid_api_keys(
 
 @patch("pub_sub.pub_sub.send")
 @patch("database.db.get_session")
+@patch.dict(os.environ, {"OWASP_ZAP_URLS_TOPIC": "topic"}, clear=True)
 def test_start_scan_valid_api_keys_with_gitsha(
     mock_db_session,
     mock_send,
@@ -196,7 +198,7 @@ def test_start_scan_valid_api_keys_with_gitsha(
     assert response.status_code == 200
 
     mock_send.assert_called_once_with(
-        "OWASP_ZAP_URLS_TOPIC",
+        "topic",
         {
             "type": pub_sub.AvailableScans.OWASP_ZAP.value,
             "product": home_org_owasp_zap_template_fixture.name,
@@ -205,7 +207,7 @@ def test_start_scan_valid_api_keys_with_gitsha(
             "scan_id": ANY,
             "url": "https://www.alpha.canada.ca",
             "event": "sns",
-            "queue": "OWASP_ZAP_URLS_TOPIC",
+            "queue": "topic",
             "id": ANY,
         },
     )
