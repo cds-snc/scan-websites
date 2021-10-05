@@ -81,6 +81,11 @@ resource "aws_iam_role_policy_attachment" "api" {
   policy_arn = aws_iam_policy.api.arn
 }
 
+resource "aws_iam_role_policy_attachment" "kms" {
+  role       = aws_iam_role.api.name
+  policy_arn = aws_iam_policy.kms.arn
+}
+
 # Use AWS managed IAM policy
 ####
 # Provides minimum permissions for a Lambda function to execute while
