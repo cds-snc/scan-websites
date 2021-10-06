@@ -10,7 +10,6 @@ $(document).ready(function() {
       }
 
       if (confirm(text)) {
-        console.log()
         $.ajax({
           url:this.href,
           type:"DELETE",

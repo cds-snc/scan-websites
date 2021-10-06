@@ -269,7 +269,6 @@ async def template_scan(
         scan_configs = []
         return_template_scan = None
 
-        print(template.template_scans[0].data)
         # Currently only allows one template scan per template
         for template_scan in template.template_scans:
             if template_scan.id == template_scan_id:
