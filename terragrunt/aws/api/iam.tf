@@ -68,6 +68,17 @@ data "aws_iam_policy_document" "api_policies" {
     ]
   }
 
+  statement {
+
+    effect = "Allow"
+
+    actions = [
+      "kms:Decrypt",
+      "kms:GenerateDataKey*"
+    ]
+
+    resources = [aws_kms_key.scan-websites.arn]
+  }
 }
 
 resource "aws_iam_policy" "api" {
