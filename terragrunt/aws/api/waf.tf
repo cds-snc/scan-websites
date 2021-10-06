@@ -62,7 +62,7 @@ resource "aws_wafv2_web_acl" "api_waf" {
                   regex_pattern_set_reference_statement {
                     arn = aws_wafv2_regex_pattern_set.body_exclusions.arn
                     field_to_match {
-                      body {}
+                      uri_path {}
                     }
                     text_transformation {
                       type     = "LOWERCASE"
