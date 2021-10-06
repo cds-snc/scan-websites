@@ -26,6 +26,7 @@
   "other_language": "English",
   "save_locale": "Sauvez",
   "scan_types_locale": "Types d'analyse",
+  "scan_delete_confirm_locale": "Etes-vous sûr de vouloir supprimer ce scan ?",
   "show_locale": "Afficher",
   "template_name_locale": "Nom du modèle",
   "templates_locale": "Modèle",
