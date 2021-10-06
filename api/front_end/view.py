@@ -254,6 +254,7 @@ async def template_scan(
         if locale not in languages:
             locale = default_fallback
 
+        # Query on template to ensure users only access their org's templates
         template = (
             session.query(Template)
             .filter(
@@ -263,26 +264,30 @@ async def template_scan(
             )
             .one()
         )
-
         scan_types = session.query(ScanType).all()
 
         scan_configs = []
+        return_template_scan = None
+
         print(template.template_scans[0].data)
         # Currently only allows one template scan per template
         for template_scan in template.template_scans:
-            for ts in template_scan.data:
-                for key, value in ts.items():
-                    scan_configs.append(
-                        TemplateScanConfigData(
-                            id=str(uuid.uuid4()), key=key, value=value
+            if template_scan.id == template_scan_id:
+                return_template_scan = template_scan
+                for ts in template_scan.data:
+                    for key, value in ts.items():
+                        scan_configs.append(
+                            TemplateScanConfigData(
+                                id=str(uuid.uuid4()), key=key, value=value
+                            )
                         )
-                    )
 
         result = {"request": request}
         result.update(languages[locale])
         result.update({"template": template})
         result.update({"scan_types": scan_types})
         result.update({"scan_config": scan_configs})
+        result.update({"template_scan": return_template_scan})
     except Exception as e:
         log.error(e)
         raise HTTPException(status_code=500, detail=str(e))

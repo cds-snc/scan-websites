@@ -5,6 +5,7 @@ from api_gateway import api
 from pub_sub import pub_sub
 
 import os
+import uuid
 
 client = TestClient(api.app)
 
@@ -107,7 +108,7 @@ def test_update_template_scan_valid(
     logged_in_client,
 ):
     response = logged_in_client.put(
-        f"/scans/template/{str(home_org_template_fixture.id)}/scan",
+        f"/scans/template/{str(home_org_template_fixture.id)}/scan/{str(home_org_template_scan_fixture.id)}",
         json={
             "data": [{"url": "https://other.example.com"}],
             "scan_types": [{"scanType": scan_type_fixture.name}],
@@ -120,11 +121,12 @@ def test_update_template_scan_valid(
 def test_update_template_scan_not_my_template(
     template_fixture,
     home_org_template_scan_fixture,
+    template_scan_fixture,
     scan_type_fixture,
     logged_in_client,
 ):
     response = logged_in_client.put(
-        f"/scans/template/{str(template_fixture.id)}/scan",
+        f"/scans/template/{str(template_fixture.id)}/scan/{str(template_scan_fixture.id)}",
         json={
             "data": [{"url": "https://other.example.com"}],
             "scan_types": [{"scanType": scan_type_fixture.name}],
@@ -140,7 +142,7 @@ def test_update_template_scan_invalid_template(
     logged_in_client,
 ):
     response = logged_in_client.put(
-        "/scans/template/cheese/scan",
+        "/scans/template/foo/scan/bar",
         json={
             "data": [{"url": "https://other.example.com"}],
             "scan_types": [{"scanType": scan_type_fixture.name}],
@@ -172,7 +174,33 @@ def test_start_scan_valid_api_keys(
 
     assert response.status_code == 200
     assert response.json() == {
-        "message": f"Scan started: {home_org_owasp_zap_template_fixture.name}"
+        "message": f"Scan start details: {home_org_owasp_zap_template_fixture.name}, successful: ['{home_org_owasp_zap_template_scan_fixture.scan_type.name}'], failed: []"
+    }
+
+
+@patch("database.db.get_session")
+@patch("pub_sub.pub_sub.dispatch")
+def test_start_scan_valid_api_keys_with_unknown_error(
+    mock_dispatch,
+    mock_db_session,
+    loggedin_user_fixture,
+    owasp_zap_fixture,
+    home_org_owasp_zap_template_fixture,
+    home_org_owasp_zap_template_scan_fixture,
+):
+    mock_dispatch.side_effect = Exception()
+
+    response = client.get(
+        "scans/start",
+        headers={
+            "X-API-KEY": str(loggedin_user_fixture.access_token),
+            "X-TEMPLATE-TOKEN": str(home_org_owasp_zap_template_fixture.token),
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "message": f"Scan start details: {home_org_owasp_zap_template_fixture.name}, successful: [], failed: ['{home_org_owasp_zap_template_scan_fixture.scan_type.name}']"
     }
 
 
@@ -291,3 +319,39 @@ def test_start_scan_invalid_template_token(
         },
     )
     assert response.status_code == 401
+
+
+@patch("database.db.get_session")
+def test_delete_template_scan_with_bad_id(
+    mock_db_session, home_org_template_fixture, logged_in_client
+):
+    response = logged_in_client.delete(
+        f"/scans/template/{str(home_org_template_fixture.id)}/scan/foo"
+    )
+    assert response.json() == {"error": "error deleting template"}
+    assert response.status_code == 500
+
+
+@patch("database.db.get_session")
+def test_delete_template_scan_with_id_not_found(
+    mock_db_session, home_org_template_fixture, logged_in_client
+):
+    response = logged_in_client.delete(
+        f"/scans/template/{str(home_org_template_fixture.id)}/scan/{str(uuid.uuid4())}"
+    )
+    assert response.json() == {"error": "error deleting template"}
+    assert response.status_code == 500
+
+
+@patch("database.db.get_session")
+def test_delete_template_scan_with_correct_id(
+    mock_db_session,
+    home_org_template_fixture,
+    home_org_template_scan_fixture,
+    logged_in_client,
+):
+    response = logged_in_client.delete(
+        f"/scans/template/{str(home_org_template_fixture.id)}/scan/{str(home_org_template_scan_fixture.id)}"
+    )
+    assert response.json() == {"status": "OK"}
+    assert response.status_code == 200

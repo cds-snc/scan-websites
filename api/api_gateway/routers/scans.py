@@ -95,6 +95,8 @@ def start_scan(
     template: Template = Depends(verify_scan_tokens),
 ):
 
+    success_list = []
+    fail_list = []
     for template_scan in template.template_scans:
         scan = (
             session.query(Scan)
@@ -144,10 +146,15 @@ def start_scan(
 
         try:
             pub_sub.dispatch(item)
+            success_list.append(template_scan.scan_type.name)
         except Exception as error:
-            return {"message": f"Scan error: {error}"}
+            log.error(error)
+            fail_list.append(template_scan.scan_type.name)
+            pass
 
-    return {"message": f"Scan started: {template.name}"}
+    return {
+        "message": f"Scan start details: {template.name}, successful: {success_list}, failed: {fail_list}"
+    }
 
 
 @router.post("/crawl")
@@ -179,10 +186,6 @@ async def save_template(
         return {"error": "error creating template"}
 
 
-@router.put(
-    "/template/{template_id}/scan",
-    dependencies=[Depends(is_authenticated), Depends(template_belongs_to_org)],
-)
 @router.post(
     "/template/{template_id}/scan",
     dependencies=[Depends(is_authenticated), Depends(template_belongs_to_org)],
@@ -190,15 +193,50 @@ async def save_template(
 async def save_template_scan(
     request: Request,
     response: Response,
-    template_id: str,
+    template_id: uuid.UUID,
+    config: TemplateScanCreateList,
+    session: Session = Depends(get_session),
+):
+    try:
+        scan_type = (
+            session.query(ScanType)
+            .filter(ScanType.name == config.scan_types[0].scanType)
+            .one()
+        )
+
+        config_dict = json.loads(config.json())
+        new_template_scan = TemplateScan(
+            data=config_dict["data"], template_id=template_id, scan_type=scan_type
+        )
+        session.add(new_template_scan)
+        session.commit()
+        return {"id": new_template_scan.id}
+    except SQLAlchemyError as err:
+        log.error(err)
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {"error": f"error creating template: {err}"}
+
+
+@router.put(
+    "/template/{template_id}/scan/{template_scan_id}",
+    dependencies=[Depends(is_authenticated), Depends(template_belongs_to_org)],
+)
+async def update_template_scan(
+    request: Request,
+    response: Response,
+    template_id: uuid.UUID,
+    template_scan_id: uuid.UUID,
     config: TemplateScanCreateList,
     session: Session = Depends(get_session),
 ):
     try:
         template_scan = (
             session.query(TemplateScan)
-            .filter(TemplateScan.template_id == template_id)
-            .one_or_none()
+            .filter(
+                TemplateScan.id == template_scan_id,
+                TemplateScan.template_id == template_id,
+            )
+            .one()
         )
 
         scan_type = (
@@ -226,3 +264,33 @@ async def save_template_scan(
         log.error(err)
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {"error": f"error creating template: {err}"}
+
+
+@router.delete(
+    "/template/{template_id}/scan/{template_scan_id}",
+    dependencies=[Depends(is_authenticated), Depends(template_belongs_to_org)],
+)
+async def delete_template_scan(
+    request: Request,
+    response: Response,
+    template_id,
+    template_scan_id,
+    session: Session = Depends(get_session),
+):
+    try:
+        template_scan = (
+            session.query(TemplateScan)
+            .filter(
+                TemplateScan.id == template_scan_id,
+                TemplateScan.template_id == template_id,
+            )
+            .one()
+        )
+        session.delete(template_scan)
+        session.commit()
+        return {"status": "OK"}
+
+    except Exception as err:
+        log.error(err)
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {"error": "error deleting template"}

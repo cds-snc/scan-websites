@@ -85,7 +85,7 @@ $(document).ready(function () {
 
     $.ajax({
       url:form.attr("action"),
-      type:"POST",
+      type:form.attr("method"),
       data:JSON.stringify(output),
       contentType:"application/json; charset=utf-8",
       dataType:"json",
