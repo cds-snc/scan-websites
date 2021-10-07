@@ -6,10 +6,7 @@ on:
 
 jobs:
   shellcheck:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - uses: cds-snc/workflows/.github/workflows/shellcheck.yml@main
+    uses: cds-snc/workflows/.github/workflows/shellcheck.yml@main
 
 
 
