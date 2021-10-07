@@ -9,9 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Shellcheck
-      run: |
-        .github/workflows/scripts/run_shellcheck.sh
+    - uses: cds-snc/workflows/.github/workflows/shellcheck.yml
 
 
 
