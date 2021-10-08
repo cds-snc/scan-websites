@@ -12,7 +12,16 @@ To interact with aws localstack `use` laws
 
 ```bash
 laws s3api list-buckets
+laws s3api list-objects --bucket oswasp-zap-report-data --prefix Reports
 ``` 
+
+### Example - Create folder, copy file, and delete file
+
+```bash
+laws s3api put-object --bucket owasp-zap-report-data --key Reports/
+laws s3 cp zap_report.json s3://owasp-zap-report-data/Reports/
+laws s3 rm s3://owasp-zap-report-data/Reports/zap_report.json
+```
 
 ### Example - View SNS messages as they get posted
 ```bash

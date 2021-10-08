@@ -3,6 +3,8 @@ import os
 
 from models.A11yReport import A11yReport
 from models.A11yViolation import A11yViolation
+from models.SecurityReport import SecurityReport
+from models.SecurityViolation import SecurityViolation
 
 from storage import storage
 from unittest.mock import MagicMock, patch
@@ -89,6 +91,7 @@ def test_retrieve_and_route_with_bucket_type_as_axe_core(
 
 
 @patch("storage.storage.db_session")
+@patch.dict(os.environ, {"AXE_CORE_REPORT_DATA_BUCKET": "axe_core"}, clear=True)
 def test_store_axe_core_record_returns_false_on_missing_record(mock_session):
     mock_session().query().get.return_value = None
     payload = json.loads(load_fixture("axe_core_report.json"))
@@ -141,3 +144,58 @@ def test_sum_impact_missing_impact():
 
 def test_sum_impact_correct_impact():
     assert storage.sum_impact([{"impact": "impact_value"}]) == {"impact_value": 1}
+
+
+@patch("storage.storage.get_object")
+@patch("storage.storage.store_owasp_zap_record")
+@patch.dict(os.environ, {"OWASP_ZAP_REPORT_DATA_BUCKET": "owasp_zap"}, clear=True)
+def test_retrieve_and_route_with_bucket_type_as_owasp_zap(
+    mock_store_owasp_zap, mock_get_object
+):
+    mock_store_owasp_zap.return_value = True
+    mock_get_object.return_value = load_fixture("owasp_zap_report.json")
+    assert storage.retrieve_and_route(mock_record("owasp_zap")) is True
+    mock_store_owasp_zap.assert_called_once()
+
+
+@patch("storage.storage.db_session")
+@patch.dict(os.environ, {"OWASP_ZAP_REPORT_DATA_BUCKET": "owasp_zap"}, clear=True)
+def test_store_owasp_zap_record_returns_false_on_missing_record(mock_session):
+    mock_session().query().get.return_value = None
+    payload = json.loads(load_fixture("owasp_zap_report.json"))
+    assert storage.store_owasp_zap_record(payload) is False
+
+
+def test_store_owasp_zap_record_updates_record(session, security_report_fixture):
+    payload = json.loads(load_fixture("owasp_zap_report.json"))
+    payload["id"] = security_report_fixture.id
+    assert storage.store_owasp_zap_record(payload) is True
+    session.refresh(security_report_fixture)
+    assert security_report_fixture.summary == {
+        "status": "completed",
+        "total": 116,
+        "Low (Medium)": 76,
+        "Informational (Low)": 40,
+    }
+
+
+def test_store_owasp_zap_record_creates_violations(session, scan_fixture):
+    security_report = SecurityReport(
+        product="product",
+        revision="revision",
+        url="url",
+        summary={"jsonb": "data"},
+        scan=scan_fixture,
+    )
+    session.add(security_report)
+    session.commit()
+
+    payload = json.loads(load_fixture("owasp_zap_report.json"))
+    payload["id"] = security_report.id
+    assert storage.store_owasp_zap_record(payload) is True
+    violations = (
+        session.query(SecurityViolation)
+        .filter(SecurityViolation.security_report_id == security_report.id)
+        .all()
+    )
+    assert len(violations) == 4
