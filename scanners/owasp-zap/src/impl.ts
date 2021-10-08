@@ -17,7 +17,10 @@ export async function Impl(
           containerOverrides: [
             {
               name: "runners-owasp-zap",
-              environment: [{ name: "SCAN_URL", value: record.payload.url }],
+              environment: [
+                { name: "SCAN_URL", value: record.payload.url },
+                { name: "SCAN_ID", value: record.payload.id },
+              ],
             },
           ],
         },

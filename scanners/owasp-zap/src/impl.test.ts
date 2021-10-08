@@ -59,6 +59,7 @@ describe("Impl", () => {
               name: "runners-owasp-zap",
               environment: [
                 { name: "SCAN_URL", value: "https://example.com/" },
+                { name: "SCAN_ID", value: "bar" },
               ],
             },
           ],

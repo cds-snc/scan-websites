@@ -7,6 +7,8 @@ from boto3wrapper.wrapper import get_session
 
 from models.A11yReport import A11yReport
 from models.A11yViolation import A11yViolation
+from models.SecurityReport import SecurityReport
+from models.SecurityViolation import SecurityViolation
 
 
 def get_object(record):
@@ -104,4 +106,40 @@ def sum_impact(violations):
 
 
 def store_owasp_zap_record(payload):
+    session = db_session()
+    security_report = session.query(SecurityReport).get(payload["id"])
+
+    if security_report is None:
+        return False
+
+    for report in payload["report"]["site"]:
+        summary = {}
+        summary["status"] = "completed"
+        summary["total"] = 0
+        for alert in report["alerts"]:
+            if "riskdesc" in alert:
+                if alert["riskdesc"] in summary:
+                    summary[alert["riskdesc"]] += int(alert["count"])
+                else:
+                    summary[alert["riskdesc"]] = int(alert["count"])
+
+                solution = alert["solution"] if alert["solution"] else ""
+                reference = alert["reference"] if alert["reference"] else ""
+
+                summary["total"] += int(alert["count"])
+                security_violation = SecurityViolation(
+                    violation=alert["alert"],
+                    risk=alert["desc"],
+                    confidence=alert["confidence"],
+                    solution=solution,
+                    reference=reference,
+                    data=alert["instances"],
+                    tags=alert["alertRef"],
+                    url=report["@name"],
+                    security_report=security_report,
+                )
+                session.add(security_violation)
+
+        security_report.summary = summary
+    session.commit()
     return True

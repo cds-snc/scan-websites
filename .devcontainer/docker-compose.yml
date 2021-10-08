@@ -27,11 +27,27 @@ services:
     environment:
       AWS_LOCALSTACK: "True"
       AXE_CORE_URLS_TOPIC: "arn:aws:sns:ca-central-1:000000000000:axe-core-urls-topic"
-      OWASP_ZAP_URLS_TOPIC: "arn:aws:sns:ca-central-1:000000000000:oswasp-zap-urls-topic"
+      OWASP_ZAP_URLS_TOPIC: "arn:aws:sns:ca-central-1:000000000000:owasp-zap-urls-topic"
       AXE_CORE_REPORT_DATA_BUCKET: axe-core-report-data 
-      OWASP_ZAP_REPORT_DATA_BUCKET: oswasp-zap-report-data 
+      OWASP_ZAP_REPORT_DATA_BUCKET: owasp-zap-report-data 
       <<: *db-connection-strings
 
+  api:
+    build:
+      context: ../api/
+    volumes:
+      - ../api:/function
+    environment:
+      <<: *db-connection-strings
+      AWS_LOCALSTACK: "True"
+      AXE_CORE_URLS_TOPIC: "arn:aws:sns:ca-central-1:000000000000:axe-core-urls-topic"
+      OWASP_ZAP_URLS_TOPIC: "arn:aws:sns:ca-central-1:000000000000:owasp-zap-urls-topic"
+      AXE_CORE_REPORT_DATA_BUCKET: axe-core-report-data 
+      OWASP_ZAP_REPORT_DATA_BUCKET: owasp-zap-report-data 
+      FASTAPI_SECRET_KEY: e8cb82f5-b966-4496-b96e-8c021892e265
+    ports:
+      - "8080:8080" 
+      
   scanner-axe:
     build:
       context: ../scanners/axe-core/
