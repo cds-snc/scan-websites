@@ -47,6 +47,6 @@
   "dependencies": {
     "@axe-core/puppeteer": "^4.1.1",
     "aws-sdk": "^2.847.0",
-    "puppeteer": "^10.1.0"
+    "puppeteer": "^10.2.0"
   }
 }
