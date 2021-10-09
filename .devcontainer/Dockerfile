@@ -56,6 +56,14 @@ RUN curl -Lo awscliv2.zip "${AWS_SRC}/awscli-exe-linux-x86_64-${AWS_CLI_VERSION}
     && unzip awscliv2.zip \
     && ./aws/install -i /usr/local/aws-cli -b /usr/local/bin
 
+ARG GO_VERSION
+ENV GOROOT=/usr/local/go
+
+RUN wget https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz \
+    && tar -xvf go${GO_VERSION}.linux-amd64.tar.gz \
+    && mv go /usr/local \
+    && rm go${GO_VERSION}.linux-amd64.tar.gz
+
 COPY .devcontainer/apt-packages.txt ./
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && xargs apt-get -y install --no-install-recommends < apt-packages.txt
@@ -68,7 +76,8 @@ complete -C /usr/local/bin/terraform terragrunt\n\
 alias tf='terraform'\n\
 alias tg='terragrunt'\n\
 alias ll='la -la' \n\
-alias laws='aws --endpoint-url=http://localstack:4566 --region=ca-central-1'" >> /home/vscode/.zshrc
+alias laws='aws --endpoint-url=http://localstack:4566 --region=ca-central-1' \n\
+export PATH=$PATH:/usr/local/go/bin/" >> /home/vscode/.zshrc
 
 # Setup AWS Credentials
 RUN mkdir -p /home/vscode/.aws
