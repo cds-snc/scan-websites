@@ -6,9 +6,19 @@ from database.db import db_session
 
 
 from logger import log
-from models.A11yReport import A11yReport
-from models.SecurityReport import SecurityReport
-from models.Scan import Scan
+
+# Import so that the application is aware of these Models
+# Required so that models are initialized before they're referenced
+from models.A11yReport import A11yReport  # noqa: F401
+from models.A11yViolation import A11yViolation  # noqa: F401
+from models.SecurityReport import SecurityReport  # noqa: F401
+from models.SecurityViolation import SecurityViolation  # noqa: F401
+from models.Organisation import Organisation  # noqa: F401
+from models.Scan import Scan  # noqa: F401
+from models.Template import Template  # noqa: F401
+from models.TemplateScan import TemplateScan  # noqa: F401
+from models.TemplateScanTrigger import TemplateScanTrigger  # noqa: F401
+from models.User import User  # noqa: F401
 
 
 class AvailableScans(Enum):
