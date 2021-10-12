@@ -1,6 +1,6 @@
 from pydantic import BaseModel, AnyHttpUrl
 from .common import as_form
-from typing import List
+from typing import List, Optional
 
 
 class TemplateFilter(BaseModel):
@@ -23,11 +23,12 @@ class TemplateScanType(BaseModel):
 
 
 class TemplateScanData(BaseModel):
+    crawl: Optional[str] = None
     url: AnyHttpUrl
 
 
 class TemplateScanCreateList(BaseModel):
-    data: List[TemplateScanData]
+    data: TemplateScanData
     scan_types: List[TemplateScanType]
 
 

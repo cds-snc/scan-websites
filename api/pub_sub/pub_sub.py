@@ -57,8 +57,8 @@ def dispatch(payload):
 
     elif payload["type"] == AvailableScans.AXE_CORE.value:
         a11y_report = A11yReport(
-            product="product",  # TODO how is this populated?
-            revision="revision",  # TODO how is this populated?
+            product=payload["product"],
+            revision=payload["revision"],
             url=payload["url"],
             summary={"status": "scanning"},
             scan=scan,

@@ -18,8 +18,12 @@ from database.db import get_session
 router = APIRouter()
 
 config_data = {
-    "GOOGLE_CLIENT_ID": environ.get("GOOGLE_CLIENT_ID"),
-    "GOOGLE_CLIENT_SECRET": environ.get("GOOGLE_CLIENT_SECRET"),
+    "GOOGLE_CLIENT_ID": environ.get(
+        "GOOGLE_CLIENT_ID",
+    ),
+    "GOOGLE_CLIENT_SECRET": environ.get(
+        "GOOGLE_CLIENT_SECRET",
+    ),
 }
 config = Config(environ=config_data)
 oauth = OAuth(config)
