@@ -131,6 +131,10 @@ def start_scan(
                     item["url"] = entry["url"]
                 if "revision" in entry:
                     item["revision"] = entry["revision"]
+                if "crawl" in entry:
+                    item["crawl"] = entry["crawl"]
+                else:
+                    item["crawl"] = False
             item["queue"] = os.getenv(
                 template_scan.scan_type.callback["topic_env"], "NOT_FOUND"
             )
@@ -145,7 +149,10 @@ def start_scan(
             item["revision"] = git_sha
 
         try:
-            pub_sub.dispatch(item)
+            if item["crawl"] == "true":
+                BackgroundTasks.add_task(crawl, item)
+            else:
+                pub_sub.dispatch(item)
             success_list.append(template_scan.scan_type.name)
         except Exception as error:
             log.error(error)
@@ -155,15 +162,6 @@ def start_scan(
     return {
         "message": f"Scan start details: {template.name}, successful: {success_list}, failed: {fail_list}"
     }
-
-
-@router.post("/crawl")
-def crawl_endpoint(
-    crawl_url: CrawlUrl, background_tasks: BackgroundTasks, request: Request
-):
-    log.info(f"Crawling {crawl_url}")
-    background_tasks.add_task(crawl, str(uuid.uuid4()), crawl_url.url)
-    return {"message": "Crawler initiated"}
 
 
 @router.post("/template", dependencies=[Depends(is_authenticated)])

@@ -51,22 +51,6 @@ def test_hsts_in_response(hsts_middleware_client):
     assert pattern.match(response.headers["Strict-Transport-Security"])
 
 
-@patch("api_gateway.routers.scans.crawl")
-@patch("api_gateway.routers.scans.log")
-@patch("api_gateway.routers.scans.uuid")
-def test_crawl(mock_uuid, mock_log, mock_crawl):
-    fake_url = "bar"
-    fake_uuid = "foo"
-    mock_log.return_value = None
-    mock_uuid.uuid4.return_value = fake_uuid
-
-    response = client.post(url="/scans/crawl", json={"url": fake_url})
-
-    assert response.status_code == 200
-    mock_crawl.assert_called_once_with(fake_uuid, fake_url)
-    mock_log.info.assert_called_once_with("Crawling url='bar'")
-
-
 def test_accessing_protected_route_not_logged_in():
     fresh_client = TestClient(api.app)
     response = fresh_client.get("/me")

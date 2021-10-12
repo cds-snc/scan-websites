@@ -234,9 +234,51 @@ def test_start_scan_valid_api_keys_with_gitsha(
             "template_id": str(home_org_owasp_zap_template_fixture.id),
             "scan_id": ANY,
             "url": "https://www.alpha.canada.ca",
+            "crawl": False,
             "event": "sns",
             "queue": "topic",
             "id": ANY,
+        },
+    )
+
+
+@patch("fastapi.BackgroundTasks.add_task")
+@patch.dict(os.environ, {"OWASP_ZAP_URLS_TOPIC": "topic"}, clear=True)
+def test_start_scan_valid_api_keys_with_crawling(
+    mock_add_task,
+    session,
+    loggedin_user_fixture,
+    owasp_zap_fixture,
+    home_org_owasp_zap_template_fixture,
+    home_org_owasp_zap_template_scan_fixture,
+):
+    home_org_owasp_zap_template_scan_fixture.data = [
+        {"crawl": "true", "url": "https://www.alpha.canada.ca"}
+    ]
+    session.add(home_org_owasp_zap_template_scan_fixture)
+    session.commit()
+    response = client.get(
+        "scans/start/revision/123456789",
+        headers={
+            "X-API-KEY": str(loggedin_user_fixture.access_token),
+            "X-TEMPLATE-TOKEN": str(home_org_owasp_zap_template_fixture.token),
+        },
+    )
+
+    assert response.status_code == 200
+
+    mock_add_task.assert_called_once_with(
+        ANY,
+        {
+            "type": pub_sub.AvailableScans.OWASP_ZAP.value,
+            "product": home_org_owasp_zap_template_fixture.name,
+            "revision": "123456789",
+            "template_id": str(home_org_owasp_zap_template_fixture.id),
+            "scan_id": ANY,
+            "url": "https://www.alpha.canada.ca",
+            "crawl": "true",
+            "event": "sns",
+            "queue": "topic",
         },
     )
 

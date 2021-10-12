@@ -14,24 +14,21 @@ class UrlSpider(Spider):
     name = "url_spider"
     max_depth = os.environ.get("API_CRAWLER_DEPTH", 2)
 
-    def __init__(self, scan_id, url, *args, **kwargs):
+    def __init__(self, item, *args, **kwargs):
         super(UrlSpider, self).__init__(*args, **kwargs)
-        self.allowed_domains = [urlparse(url).netloc]
-        self.scan_id = scan_id
-        self.url = url
+        self.allowed_domains = [urlparse(item["url"]).netloc]
+        self.item = item
 
     def start_requests(self):
-        yield Request(self.url, meta={"playwright": True})
+        yield Request(self.item["url"], meta={"playwright": True})
 
     def parse(self, response):
         curr_depth = response.meta.get("depth", 1)
 
-        item = {}
-        item["scan_id"] = self.scan_id
+        item = self.item
         item["url"] = response.url
         item["depth"] = curr_depth
         item["referer"] = response.meta.get("referer", "")
-        log.debug(item)
         pub_sub.dispatch(item)
 
         if curr_depth < self.max_depth:
@@ -48,7 +45,7 @@ class UrlSpider(Spider):
         yield True
 
 
-def runner(scan_id, url):
+def runner(item):
     runner = CrawlerProcess(
         settings={
             "TWISTED_REACTOR": "twisted.internet.asyncioreactor.AsyncioSelectorReactor",
@@ -58,15 +55,15 @@ def runner(scan_id, url):
             },
         }
     )
-    runner.crawl(UrlSpider, scan_id, url)
+    runner.crawl(UrlSpider, item)
     runner.start()
 
 
-def crawl(scan_id, url):
-    if not scan_id or not url:
-        log.error(f"scan_id({scan_id}) or url({url}) missing")
+def crawl(item):
+    if not item["scan_id"] or not item["url"]:
+        log.error(f"scan_id({item['scan_id']}) or url({item['url']}) missing")
         return
 
-    process = Process(target=runner, args=(scan_id, url))
+    process = Process(target=runner, args=(item))
     process.start()
     process.join()
