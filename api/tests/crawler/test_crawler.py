@@ -30,7 +30,7 @@ def test_crawl_spawns_process(mock_runner, mock_process_class):
     item = mock_item()
     crawler.crawl(item)
 
-    mock_process_class.assert_called_once_with(target=mock_runner, args=(item))
+    mock_process_class.assert_called_once_with(target=mock_runner, args=(item,))
     mock_process.start.assert_called_once()
     mock_process.join.assert_called_once()
 

@@ -210,7 +210,7 @@ def home_org_owasp_zap_template_scan_fixture(
     home_org_owasp_zap_template_fixture, owasp_zap_fixture, session
 ):
     template_scan = TemplateScan(
-        data=[{"url": "https://www.alpha.canada.ca"}],
+        data={"url": "https://www.alpha.canada.ca"},
         scan_type=owasp_zap_fixture,
         template=home_org_owasp_zap_template_fixture,
     )

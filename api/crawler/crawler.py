@@ -64,6 +64,6 @@ def crawl(item):
         log.error(f"scan_id({item['scan_id']}) or url({item['url']}) missing")
         return
 
-    process = Process(target=runner, args=(item))
+    process = Process(target=runner, args=(item,))
     process.start()
     process.join()

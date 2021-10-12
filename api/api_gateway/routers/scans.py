@@ -9,7 +9,6 @@ from fastapi import (
     status,
 )
 from logger import log
-from pydantic import BaseModel
 from crawler.crawler import crawl
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
@@ -31,10 +30,6 @@ from pub_sub import pub_sub
 
 
 router = APIRouter()
-
-
-class CrawlUrl(BaseModel):
-    url: str
 
 
 def template_belongs_to_org(
@@ -90,6 +85,7 @@ async def verify_scan_tokens(
 @router.get("/start/revision/{git_sha}")
 def start_scan(
     request: Request,
+    background_tasks: BackgroundTasks,
     git_sha: Optional[str] = None,
     session: Session = Depends(get_session),
     template: Template = Depends(verify_scan_tokens),
@@ -126,15 +122,16 @@ def start_scan(
             item["product"] = template.name
             item["template_id"] = str(template.id)
 
-            for entry in template_scan.data:
-                if "url" in entry:
-                    item["url"] = entry["url"]
-                if "revision" in entry:
-                    item["revision"] = entry["revision"]
-                if "crawl" in entry:
-                    item["crawl"] = entry["crawl"]
-                else:
-                    item["crawl"] = False
+            if "url" in template_scan.data:
+                item["url"] = template_scan.data["url"]
+            if "revision" in template_scan.data:
+                item["revision"] = template_scan.data["revision"]
+
+            if "crawl" in template_scan.data:
+                item["crawl"] = template_scan.data["crawl"]
+            else:
+                item["crawl"] = False
+
             item["queue"] = os.getenv(
                 template_scan.scan_type.callback["topic_env"], "NOT_FOUND"
             )
@@ -150,7 +147,7 @@ def start_scan(
 
         try:
             if item["crawl"] == "true":
-                BackgroundTasks.add_task(crawl, item)
+                background_tasks.add_task(crawl, item)
             else:
                 pub_sub.dispatch(item)
             success_list.append(template_scan.scan_type.name)
@@ -201,7 +198,6 @@ async def save_template_scan(
             .filter(ScanType.name == config.scan_types[0].scanType)
             .one()
         )
-
         config_dict = json.loads(config.json())
         new_template_scan = TemplateScan(
             data=config_dict["data"], template_id=template_id, scan_type=scan_type
@@ -242,7 +238,6 @@ async def update_template_scan(
             .filter(ScanType.name == config.scan_types[0].scanType)
             .one()
         )
-
         config_dict = json.loads(config.json())
         if template_scan is None:
             new_template_scan = TemplateScan(
