@@ -195,7 +195,7 @@ resource "aws_wafv2_regex_pattern_set" "body_exclusions" {
   scope       = "REGIONAL"
 
   regular_expression {
-    regex_string = "^/scans/template/.+/scan$"
+    regex_string = "^/scans/template/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}/(scan|scan/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12})$"
   }
 }
 

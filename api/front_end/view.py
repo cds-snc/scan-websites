@@ -274,11 +274,12 @@ async def template_scan(
             if template_scan.id == template_scan_id:
                 return_template_scan = template_scan
                 for key, value in template_scan.data.items():
-                    scan_configs.append(
-                        TemplateScanConfigData(
-                            id=str(uuid.uuid4()), key=key, value=value
+                    if value is not None:
+                        scan_configs.append(
+                            TemplateScanConfigData(
+                                id=str(uuid.uuid4()), key=key, value=value
+                            )
                         )
-                    )
 
         result = {"request": request}
         result.update(languages[locale])
