@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, Request, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from babel.plural import PluralRule
+from babel.dates import format_datetime
 from database.db import db_session
 from logger import log
 from sqlalchemy.orm import Session
@@ -34,10 +35,10 @@ def get_db():
 templates = Jinja2Templates(directory="front_end/templates")
 
 default_fallback = "en"
-languages = {}
 
 
 def generate_languages(locale_files):
+    languages = {}
     language_list = glob.glob(locale_files)
     for lang in language_list:
         filename = lang.split(os.path.sep)
@@ -45,9 +46,10 @@ def generate_languages(locale_files):
 
         with open(lang, "r", encoding="utf8") as file:
             languages[lang_code] = json.load(file)
+    return languages
 
 
-generate_languages("i18n/*.json")
+languages = generate_languages("i18n/*.json")
 
 
 # custom filters for Jinja2
@@ -70,8 +72,17 @@ def plural_formatting(key_value, input, locale):
     return languages[locale][key]
 
 
+def format_date(value, format="medium"):
+    if format == "full":
+        format = "EEEE, d. MMMM y 'at' HH:mm"
+    elif format == "medium":
+        format = "EE dd.MM.y HH:mm"
+    return format_datetime(value, format)
+
+
 # assign filter to Jinja2
 templates.env.filters["plural_formatting"] = plural_formatting
+templates.env.filters["date"] = format_date
 
 
 @router.get("/", response_class=HTMLResponse, include_in_schema=False)
@@ -80,13 +91,16 @@ async def force_lang():
 
 
 @router.get("/{locale}", response_class=HTMLResponse)
-async def home(request: Request, locale: str):
+async def home(request: Request, locale: str, session: Session = Depends(get_db)):
     try:
         if locale not in languages:
             locale = default_fallback
 
+        template_list = session.query(Template).all()
+
         result = {"request": request}
         result.update(languages[locale])
+        result.update({"template_list": template_list})
         return templates.TemplateResponse("index.html", result)
     except Exception as e:
         log.error(e)

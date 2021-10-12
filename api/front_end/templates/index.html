@@ -1,6 +1,84 @@
 {% extends "base.html" %}
 {% block body %}
-  <div>{{ welcome_locale }}</div>
+  <label class="text-gray-800 font-semibold tracking-wider text-2xl ">{{ list_of_products_locale }}</label>
+  <hr/>
+
+  <div class="space-y-4">
+    {% for template in template_list %}
+    <div class="flex flex-row">
+      <label class="text-gray-800 font-semibold tracking-wider text-lg ">{{ template.name }}</label>
+    </div>  
+    <div class="container flex flex-row border-2 border-gray-500 space-y-6">
+        
+        <div class="bg-gray-100 rounded-lg h-auto py-4 flex flex-row justify-between divide-x divide-solid divide-gray-400">
+            {% for scan in template.scans %}
+            {% if scan.security_reports %}
+            <div class="relative flex-1 flex flex-col gap-2 px-4">
+                <label class="text-gray-800 text-base font-semibold tracking-wider">
+                  <a href="/{{ lang }}/results/{{ template.id }}/scan/{{ scan.id }}">
+                    {{ scan.scan_type.name }}
+                  </a>
+                </label>
+                <div class="container flex flex-row gap-1 mx-8">
+                  <div class="relative flex-1 flex flex-col gap-2 px-1">
+                    <label class="font-semibold">{{ revisions_locale }}</label>
+                    <label class="text-green-800 text-4xl font-bold">{{ scan.security_reports | length }}</label>
+                  </div>
+                  <div class="relative flex-1 flex flex-col gap-2 px-1">
+                    <label class="font-semibold">{{ violations_locale }}</label>
+                    <label class="text-green-800 text-4xl font-bold">{{ scan.security_reports[0].security_violations | length }}</label>
+                  </div>
+                  {% if scan.security_reports[1] %}
+                  {% set delta = (((scan.security_reports[0].security_violations | length - scan.security_reports[1].security_violations | length) / scan.security_reports[0].security_violations | length) * 100)|int %}
+                  <div class="absolute bg-red-400 rounded-md font-semibold text-xs text-gray-100 p-2 right-0 bottom-0">
+                    {% if delta < 0  %}
+                    +
+                    {% else %}
+                    -
+                    {% endif %}
+                    {{ delta | abs }}%
+                  </div>
+                  {% endif %}
+                </div>  
+            </div>
+            {% endif %}
+            {% if scan.a11y_reports %}
+            <div class="relative flex-1 flex flex-col gap-2 px-4">
+              <label class="text-gray-800 text-base font-semibold tracking-wider">
+                <a href="/{{ lang }}/results/{{ template.id }}/scan/{{ scan.id }}">
+                  {{ scan.scan_type.name }}
+                </a>
+              </label>
+                <div class="container flex flex-row gap-1 mx-8">
+                  <div class="relative flex-1 flex flex-col gap-2 px-1">
+                    <label class="font-semibold">{{ revisions_locale }}</label>
+                    <label class="text-green-800 text-4xl font-bold">{{ scan.a11y_reports | length }}</label>
+                  </div>
+                  <div class="relative flex-1 flex flex-col gap-2 px-1">
+                    <label class="font-semibold">{{ violations_locale }}</label>
+                    <label class="text-green-800 text-4xl font-bold">{{ scan.a11y_reports[0].a11y_violations | length }}</label>
+                  </div>
+                  {% if scan.a11y_reports[1] %}
+                  {% set a11y_delta = (((scan.a11y_reports[0].a11y_violations | length - scan.a11y_reports[1].a11y_violations | length) / scan.a11y_reports[0].a11y_violations | length) * 100)|int %}
+                  <div class="absolute bg-red-400 rounded-md font-semibold text-xs text-gray-100 p-2 right-0 bottom-0">
+                    {% if a11y_delta < 0  %}
+                    +
+                    {% else %}
+                    -
+                    {% endif %}
+                    {{ a11y_delta | abs }}%
+                  </div>
+                  {% endif %}
+                </div>  
+            </div>
+            {% endif %}
+            {% endfor %}            
+        </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
   {% block footer %}
   {{super()}}
   {% endblock %}

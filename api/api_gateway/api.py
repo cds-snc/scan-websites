@@ -6,7 +6,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
 
-from front_end import view
+from front_end import view, scan_view
 from .routers import auth, dev, ops, organisations, scans
 from .custom_middleware import add_security_headers
 
@@ -35,6 +35,8 @@ app.include_router(
 )
 app.include_router(scans.router, prefix="/scans", tags=["scans"])
 app.include_router(view.router)
+app.include_router(scan_view.router)
+
 if environ.get("AWS_LOCALSTACK", False):
     app.include_router(dev.router, prefix="/dev", tags=["dev"])
 
