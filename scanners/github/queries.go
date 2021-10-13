@@ -1,10 +1,11 @@
 package main
 
 import (
+	"github.com/google/uuid"
 	"github.com/shurcooL/githubv4"
 )
 
-var complianceQuery struct {
+type complianceQuery struct {
 	Repository struct {
 		CodeOfConduct struct {
 			Name githubv4.String
@@ -29,4 +30,9 @@ var complianceQuery struct {
 			}
 		}
 	} `graphql:"repository(name: $Name, owner: $Owner)"`
+}
+
+type complianceScan struct {
+	QueryResults complianceQuery
+	ScanId       uuid.UUID
 }
