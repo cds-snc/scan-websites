@@ -39,6 +39,7 @@ RUN mkdir -p /pymodules
 ENV PYTHONPATH=/pymodules
 ENV PLAYWRIGHT_BROWSERS_PATH=/pymodules/playwright
 
+
 COPY ./requirements_playwright.txt ${FUNCTION_DIR}
 
 RUN python3.9 -m pip install -r ${FUNCTION_DIR}/requirements_playwright.txt
