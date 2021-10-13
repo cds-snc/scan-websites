@@ -37,6 +37,7 @@ WORKDIR ${FUNCTION_DIR}
 
 RUN mkdir -p /pymodules
 ENV PYTHONPATH=/pymodules
+ENV PLAYWRIGHT_BROWSERS_PATH=0
 
 COPY ./requirements_playwright.txt ${FUNCTION_DIR}
 
