@@ -23,7 +23,7 @@
                 <img class="h-6 inline-block pr-10" src="{{ goc_banner_locale }}" alt="{{ goc_locale }}" />
               </a>
               {% else %}
-              <a class="text-gray-900 text-base no-underline font-bold xl:text-xl hover:no-underline" href="/{{ lang }}/dashboard" aria-label="{{ dashboard_locale }}">
+              <a class="text-gray-900 text-base no-underline font-bold xl:text-xl hover:no-underline" href="/{{ lang }}" aria-label="{{ webpage_title_locale }}">
                 <img class="h-6 inline-block pr-10" src="{{ goc_banner_locale }}" alt="{{ goc_locale }}" />
               </a>
               {% endif %}
@@ -57,10 +57,8 @@
               </main>
             </div> 
           </div>
-          <div class="footer">
+          <div class="footer my-8">
             {% block footer %}
-              <br>
-              <br>
             {% endblock %}
           </div>  
         </div>

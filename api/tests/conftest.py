@@ -16,6 +16,7 @@ from models.Organisation import Organisation
 from models.Scan import Scan
 from models.ScanType import ScanType
 from models.SecurityReport import SecurityReport
+from models.SecurityViolation import SecurityViolation
 from models.Template import Template
 from models.TemplateScan import TemplateScan
 from models.User import User
@@ -56,6 +57,56 @@ def security_report_fixture(session, scan_fixture):
     session.add(security_report)
     session.commit()
     return security_report
+
+
+@pytest.fixture(scope="session")
+def security_violation_fixture(session, security_report_fixture):
+    security_violation = SecurityViolation(
+        violation="violation",
+        risk="risk",
+        confidence="confidence",
+        solution="solution",
+        reference="reference",
+        data=[{"uri": "https://example.com/", "method": "POST", "evidence": "foo"}],
+        tags="tags",
+        url="url",
+        security_report=security_report_fixture,
+    )
+    session.add(security_violation)
+    session.commit()
+    return security_violation
+
+
+@pytest.fixture(scope="session")
+def owasp_security_report_fixture(session, home_org_owasp_scan_fixture):
+    security_report = SecurityReport(
+        product="product",
+        revision="revision",
+        url="url",
+        summary={"jsonb": "data"},
+        scan=home_org_owasp_scan_fixture,
+    )
+    session.add(security_report)
+    session.commit()
+    return security_report
+
+
+@pytest.fixture(scope="session")
+def home_org_security_violation_fixture(session, owasp_security_report_fixture):
+    security_violation = SecurityViolation(
+        violation="violation",
+        risk="risk",
+        confidence="confidence",
+        solution="solution",
+        reference="reference",
+        data=[{"uri": "https://example.com/", "method": "POST", "evidence": "foo"}],
+        tags="tags",
+        url="url",
+        security_report=owasp_security_report_fixture,
+    )
+    session.add(security_violation)
+    session.commit()
+    return security_violation
 
 
 @pytest.fixture
@@ -121,6 +172,23 @@ def scan_fixture(scan_type_fixture, template_fixture, organisation_fixture, sess
         organisation=organisation_fixture,
         scan_type=scan_type_fixture,
         template=template_fixture,
+    )
+    session.add(scan)
+    session.commit()
+    return scan
+
+
+@pytest.fixture(scope="session")
+def home_org_owasp_scan_fixture(
+    owasp_zap_fixture,
+    home_org_owasp_zap_template_fixture,
+    home_organisation_fixture,
+    session,
+):
+    scan = Scan(
+        organisation=home_organisation_fixture,
+        scan_type=owasp_zap_fixture,
+        template=home_org_owasp_zap_template_fixture,
     )
     session.add(scan)
     session.commit()
