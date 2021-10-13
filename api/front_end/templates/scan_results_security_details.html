@@ -1,11 +1,9 @@
 {% extends "base.html" %}
 {% block body %}
   
-<section><h1 class="text-center"><label class="text-gray-800 font-semibold tracking-wider text-lg ">{{ report.scan.template.name }}:</label>{{ report.revision }} - {{ report.url }}</h1></section>
+<section><h1 class="text-center"><span class="text-gray-800 font-semibold tracking-wider text-lg ">{{ report.scan.template.name }}:</span>{{ report.revision }} - {{ report.url }}</h1></section>
 <div class="container">
-  
-  <div class="row mb-8">
-    <br/>
+  <div class="row mb-8 my-8">
     <div class="">
       <div class="py-2 align-middle inline-block min-w-full ">
         <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
@@ -27,12 +25,12 @@
               {% for security_violation in report.security_violations %}
               <tr>
                 <td class="px-6 py-4">
-                      <div class="text-sm font-medium text-gray-900">
+                      <div class="text-sm font-medium text-gray-900" lang="en">
                           {{ security_violation.violation }}
                       </div>
                 </td>
                 <td class="px-6 py-4">
-                  <div class="text-sm font-medium">
+                  <div class="text-sm font-medium" lang="en">
                     
                       {{ security_violation.risk | safe}}
 

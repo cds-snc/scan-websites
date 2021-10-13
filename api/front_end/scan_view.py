@@ -31,7 +31,7 @@ def get_db():
     dependencies=[Depends(is_authenticated), Depends(template_belongs_to_org)],
     response_class=HTMLResponse,
 )
-async def get__security_report(
+async def get_security_report(
     request: Request,
     locale: str,
     template_id: uuid.UUID,
