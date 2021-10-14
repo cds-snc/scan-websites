@@ -67,7 +67,7 @@ resource "aws_s3_bucket_notification" "api-notification" {
 }
 
 resource "aws_lambda_permission" "api-owasp-permission-s3" {
-  statement_id  = "AllowExecutionFromS3Bucket"
+  statement_id  = "AllowExecutionFromOWASPS3Bucket"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.api.function_name
   principal     = "s3.amazonaws.com"
