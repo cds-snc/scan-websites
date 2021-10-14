@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% block body %}
-  <h1 class="text-gray-800 font-semibold tracking-wider">{{ list_of_products_locale }}</h1>
+  {% if request.session.user is not defined %}
+  
+  {% else %}
+  <a href="/{{ lang }}/template"><h1 class="text-gray-800 font-semibold tracking-wider underline">{{ list_of_products_locale }}</h1></a>
+  {% endif %}
   <hr/>
 
   <div class="space-y-4">
