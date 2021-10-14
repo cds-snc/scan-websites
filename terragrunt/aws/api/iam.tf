@@ -92,7 +92,7 @@ data "aws_iam_policy_document" "api_policies" {
       "s3:Put*"
     ]
     resources = [
-      module.owasp-zap-report-data.s3_bucket_arn, 
+      module.owasp-zap-report-data.s3_bucket_arn,
       module.axe-core-report-data.s3_bucket_arn,
       "${module.owasp-zap-report-data.s3_bucket_arn}/*",
       "${module.axe-core-report-data.s3_bucket_arn}/*"
