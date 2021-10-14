@@ -25,10 +25,11 @@ def get_object(record):
             f"Downloaded {record['s3']['object']['key']} from {record['s3']['bucket']['name']} with length {len(body)}"
         )
         return body
-    except Exception:
+    except Exception as err:
         log.error(
             f"Error downloading {record['s3']['object']['key']} from {record['s3']['bucket']['name']}"
         )
+        log.error(err)
         return False
 
 

@@ -79,6 +79,20 @@ data "aws_iam_policy_document" "api_policies" {
 
     resources = [aws_kms_key.scan-websites.arn]
   }
+
+  statement {
+
+    effect = "Allow"
+
+    actions = [
+      "s3:ListBucket",
+      "s3:ListBucketVersions",
+      "s3:GetBucketLocation",
+      "s3:Get*",
+      "s3:Put*"
+    ]
+    resources = [module.owasp-zap-report-data.s3_bucket_arn, module.axe-core-report-data.s3_bucket_arn]
+  }
 }
 
 resource "aws_iam_policy" "api" {
