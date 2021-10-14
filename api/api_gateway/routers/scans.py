@@ -279,7 +279,18 @@ async def delete_template_scan(
             )
             .one()
         )
+
+        scan = (
+            session.query(Scan)
+            .filter(
+                Scan.scan_type_id == template_scan.scan_type_id,
+                Scan.template_id == template_scan.template_id,
+            )
+            .one_or_none()
+        )
         session.delete(template_scan)
+        if scan is not None:
+            session.delete(scan)
         session.commit()
         return {"status": "OK"}
 

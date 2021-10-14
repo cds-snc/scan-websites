@@ -92,7 +92,7 @@ def owasp_security_report_fixture(session, home_org_owasp_scan_fixture):
 
 
 @pytest.fixture(scope="session")
-def home_org_security_violation_fixture(session, owasp_security_report_fixture):
+def owasp_security_violation_fixture(session, owasp_security_report_fixture):
     security_violation = SecurityViolation(
         violation="violation",
         risk="risk",
@@ -103,6 +103,38 @@ def home_org_security_violation_fixture(session, owasp_security_report_fixture):
         tags="tags",
         url="url",
         security_report=owasp_security_report_fixture,
+    )
+    session.add(security_violation)
+    session.commit()
+    return security_violation
+
+
+@pytest.fixture(scope="session")
+def home_org_security_report_fixture(session, home_org_scan_fixture):
+    security_report = SecurityReport(
+        product="product",
+        revision="revision",
+        url="url",
+        summary={"jsonb": "data"},
+        scan=home_org_scan_fixture,
+    )
+    session.add(security_report)
+    session.commit()
+    return security_report
+
+
+@pytest.fixture(scope="session")
+def home_org_security_violation_fixture(session, home_org_security_report_fixture):
+    security_violation = SecurityViolation(
+        violation="violation",
+        risk="risk",
+        confidence="confidence",
+        solution="solution",
+        reference="reference",
+        data=[{"uri": "https://example.com/", "method": "POST", "evidence": "foo"}],
+        tags="tags",
+        url="url",
+        security_report=home_org_security_report_fixture,
     )
     session.add(security_violation)
     session.commit()
@@ -172,6 +204,23 @@ def scan_fixture(scan_type_fixture, template_fixture, organisation_fixture, sess
         organisation=organisation_fixture,
         scan_type=scan_type_fixture,
         template=template_fixture,
+    )
+    session.add(scan)
+    session.commit()
+    return scan
+
+
+@pytest.fixture(scope="session")
+def home_org_scan_fixture(
+    owasp_zap_fixture,
+    home_org_template_fixture,
+    home_organisation_fixture,
+    session,
+):
+    scan = Scan(
+        organisation=home_organisation_fixture,
+        scan_type=owasp_zap_fixture,
+        template=home_org_template_fixture,
     )
     session.add(scan)
     session.commit()
@@ -266,6 +315,20 @@ def home_org_template_scan_fixture(
     template_scan = TemplateScan(
         data={"jsonb": "data"},
         scan_type=scan_type_fixture,
+        template=home_org_template_fixture,
+    )
+    session.add(template_scan)
+    session.commit()
+    return template_scan
+
+
+@pytest.fixture(scope="session")
+def home_org_template_scan_fixture_with_zap(
+    owasp_zap_fixture, home_org_template_fixture, session
+):
+    template_scan = TemplateScan(
+        data={"url": "https://www.alpha.canada.ca"},
+        scan_type=owasp_zap_fixture,
         template=home_org_template_fixture,
     )
     session.add(template_scan)

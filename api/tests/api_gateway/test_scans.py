@@ -2,7 +2,11 @@ from fastapi.testclient import TestClient
 from unittest.mock import ANY, MagicMock, patch
 
 from api_gateway import api
+from models.Scan import Scan
+from models.SecurityReport import SecurityReport
+from models.SecurityViolation import SecurityViolation
 from pub_sub import pub_sub
+
 
 import os
 import uuid
@@ -392,10 +396,49 @@ def test_delete_template_scan_with_correct_id(
     mock_db_session,
     home_org_template_fixture,
     home_org_template_scan_fixture,
+    home_org_scan_fixture,
     logged_in_client,
+    session,
 ):
     response = logged_in_client.delete(
         f"/scans/template/{str(home_org_template_fixture.id)}/scan/{str(home_org_template_scan_fixture.id)}"
     )
+
     assert response.json() == {"status": "OK"}
     assert response.status_code == 200
+
+
+def test_delete_template_scan_with_correct_id_has_reports(
+    home_org_template_fixture,
+    home_org_template_scan_fixture_with_zap,
+    home_org_scan_fixture,
+    home_org_security_report_fixture,
+    home_org_security_violation_fixture,
+    logged_in_client,
+    session,
+):
+    deleted_scan_id = home_org_scan_fixture.id
+    deleted_security_report = home_org_security_report_fixture.id
+    deleted_security_violation = home_org_security_violation_fixture.id
+
+    response = logged_in_client.delete(
+        f"/scans/template/{str(home_org_template_fixture.id)}/scan/{str(home_org_template_scan_fixture_with_zap.id)}"
+    )
+
+    scan = session.query(Scan).filter(Scan.id == deleted_scan_id).one_or_none()
+    security_report = (
+        session.query(SecurityReport)
+        .filter(SecurityReport.id == deleted_security_report)
+        .one_or_none()
+    )
+    security_violations = (
+        session.query(SecurityViolation)
+        .filter(SecurityViolation.id == deleted_security_violation)
+        .all()
+    )
+
+    assert response.json() == {"status": "OK"}
+    assert response.status_code == 200
+    assert scan is None
+    assert security_report is None
+    assert len(security_violations) == 0
