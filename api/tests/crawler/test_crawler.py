@@ -92,20 +92,20 @@ def test_UrlSpider_init():
 
 
 @patch("crawler.crawler.Request")
-async def test_UrlSpider_start_requests(mock_request):
+def test_UrlSpider_start_requests(mock_request):
     item = mock_item()
     item["url"] = "http://example.com"
     spider = crawler.UrlSpider(item)
     res = spider.start_requests()
-    await res.__anext__()
+    next(res)
     mock_request.assert_called_once_with(
-        "http://example.com", meta={"playwright": True, "playwright_include_page": True}
+        "http://example.com", meta={"playwright": True}
     )
 
 
 @patch("crawler.crawler.pub_sub")
 @patch("crawler.crawler.LinkExtractor")
-async def test_UrlSpider_parse_calls_dispatch(_mock_extractor, mock_pub_sub):
+def test_UrlSpider_parse_calls_dispatch(_mock_extractor, mock_pub_sub):
     mock_response = MagicMock()
     mock_response.url = "http://example.com"
     mock_response.meta.get.side_effect = [1, "http://google.com"]
@@ -113,7 +113,7 @@ async def test_UrlSpider_parse_calls_dispatch(_mock_extractor, mock_pub_sub):
     item["url"] = "http://example.com"
     spider = crawler.UrlSpider(item)
     res = spider.parse(mock_response)
-    await res.__anext__()
+    next(res)
     mock_pub_sub.dispatch.assert_called_once_with(
         {
             "scan_id": "scan_id",
@@ -126,7 +126,7 @@ async def test_UrlSpider_parse_calls_dispatch(_mock_extractor, mock_pub_sub):
 
 @patch("crawler.crawler.pub_sub")
 @patch("crawler.crawler.LinkExtractor")
-async def test_UrlSpider_parse_crawls_deeper(mock_link_extractor, _mock_pub_sub):
+def test_UrlSpider_parse_crawls_deeper(mock_link_extractor, _mock_pub_sub):
     mock_response = MagicMock()
     mock_response.meta.get.side_effect = [1, "http://google.com"]
     mock_response.url = "http://example.com"
@@ -140,7 +140,7 @@ async def test_UrlSpider_parse_crawls_deeper(mock_link_extractor, _mock_pub_sub)
     item["url"] = "http://example.com"
     spider = crawler.UrlSpider(item)
     res = spider.parse(mock_response)
-    await res.__anext__()
+    next(res)
 
     mock_link_extractor.assert_called_once_with(["example.com"])
     mock_extractor.extract_links.assert_called_once_with(mock_response)
@@ -151,14 +151,13 @@ async def test_UrlSpider_parse_crawls_deeper(mock_link_extractor, _mock_pub_sub)
             "depth": 2,
             "referer": "http://example.com",
             "playwright": True,
-            "playwright_include_page": True,
         },
     )
 
 
 @patch("crawler.crawler.pub_sub")
 @patch("crawler.crawler.LinkExtractor")
-async def test_UrlSpider_parse_stops_crawling_at_max_depth(
+def test_UrlSpider_parse_stops_crawling_at_max_depth(
     mock_link_extractor, _mock_pub_sub
 ):
     mock_response = MagicMock()
@@ -167,6 +166,6 @@ async def test_UrlSpider_parse_stops_crawling_at_max_depth(
     item["url"] = "http://example.com"
     spider = crawler.UrlSpider(item)
     res = spider.parse(mock_response)
-    await res.__anext__()
+    next(res)
 
     mock_link_extractor.assert_not_called()
