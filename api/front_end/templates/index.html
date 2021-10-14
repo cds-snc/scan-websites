@@ -3,7 +3,7 @@
   {% if request.session.user is not defined %}
   <h1 class="text-gray-800 font-semibold tracking-wider underline">{{ list_of_products_locale }}</h1>
   {% else %}
-  <a href="/{{ lang }}/template"><h1 class="text-gray-800 font-semibold tracking-wider underline">{{ list_of_products_locale }}</h1></a>
+  <h1><a href="/{{ lang }}/template" class="text-gray-800 font-semibold tracking-wider underline">{{ list_of_products_locale }}</a></h1>
   {% endif %}
   <hr/>
 
