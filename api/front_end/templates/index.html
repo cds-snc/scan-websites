@@ -15,9 +15,11 @@
             {% if scan.security_reports %}
             <div class="relative flex-1 flex flex-col gap-2 px-4">
                 <h3 class="text-gray-800 text-base font-semibold tracking-wider">
-                  <a href="/{{ lang }}/results/{{ template.id }}/scan/{{ scan.id }}">
-                    {{ scan.scan_type.name }}
-                  </a>
+                  {% if request.session.user is not defined %}
+                  <span>{{ scan.scan_type.name }}</span>
+                  {% else %}
+                  <a href="/{{ lang }}/results/{{ template.id }}/scan/{{ scan.id }}">{{ scan.scan_type.name }}</a>
+                  {% endif %}
                 </h3>
                 <div class="container flex flex-row gap-1 mx-8">
                   <div class="relative flex-1 flex flex-col gap-2 px-1">
@@ -45,9 +47,11 @@
             {% if scan.a11y_reports %}
             <div class="relative flex-1 flex flex-col gap-2 px-4">
               <div class="text-gray-800 text-base font-semibold tracking-wider">
-                <a href="/{{ lang }}/results/{{ template.id }}/scan/{{ scan.id }}">
-                  {{ scan.scan_type.name }}
-                </a>
+                {% if request.session.user is not defined %}
+                <span>{{ scan.scan_type.name }}</span>
+                {% else %}
+                <a href="/{{ lang }}/results/{{ template.id }}/scan/{{ scan.id }}">{{ scan.scan_type.name }}</a>
+                {% endif %}
               </div>
                 <div class="container flex flex-row gap-1 mx-8">
                   <div class="relative flex-1 flex flex-col gap-2 px-1">
