@@ -17,7 +17,7 @@ depends_on = None
 
 def upgrade():
     op.execute(
-        """DELETE FROM "scans" s WHERE NOT EXISTS (SELECT NULL FROM "template_scans" ts WHERE ts.scan_type_id = s.scan_type_id AND ts.template_id = s.template_id); """
+        """DELETE FROM "scans" AS s WHERE NOT EXISTS (SELECT NULL FROM "template_scans" ts WHERE ts.scan_type_id = s.scan_type_id AND ts.template_id = s.template_id); """
     )
 
 

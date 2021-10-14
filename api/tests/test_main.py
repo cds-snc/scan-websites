@@ -37,7 +37,7 @@ def test_handler_migrate_event(mock_migrate_head, context_fixture):
 @patch("main.migrate_head")
 def test_handler_migrate_event_failed(mock_migrate_head, context_fixture):
     mock_migrate_head.side_effect = Exception()
-    assert main.handler({"task": "migrate"}, context_fixture) == "Error"
+    assert main.handler({"task": "migrate"}, context_fixture) == "Error: "
     mock_migrate_head.assert_called_once()
 
 
