@@ -20,9 +20,13 @@ class UrlSpider(Spider):
         self.item = item
 
     def start_requests(self):
-        yield Request(self.item["url"], meta={"playwright": True})
+        yield Request(
+            self.item["url"], meta={"playwright": True, "playwright_include_page": True}
+        )
 
-    def parse(self, response):
+    async def parse(self, response):
+        page = response.meta["playwright_page"]
+        await page.close()
         curr_depth = response.meta.get("depth", 1)
 
         item = self.item
@@ -42,7 +46,7 @@ class UrlSpider(Spider):
                         "playwright": True,
                     },
                 )
-        yield True
+        yield None
 
 
 def runner(item):
