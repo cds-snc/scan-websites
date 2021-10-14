@@ -7,7 +7,7 @@ from models.SecurityReport import SecurityReport
 from models.SecurityViolation import SecurityViolation
 
 from storage import storage
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, call
 
 
 def load_fixture(name):
@@ -49,7 +49,7 @@ def test_get_object_catch_exception(mock_get_session, mock_log):
     mock_get_session.return_value.resource.return_value = mock_client
 
     assert storage.get_object(mock_record()) is False
-    mock_log.error.assert_called_once_with("Error downloading key from bucket_name")
+    mock_log.error.assert_has_calls([call("Error downloading key from bucket_name")])
 
 
 @patch("storage.storage.log")
