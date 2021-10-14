@@ -54,7 +54,7 @@ def handler(event, context):
             return "Success"
         except Exception as err:
             log.error(err)
-            return "Error"
+            return f"Error: {err}"
 
     else:
         log.warning("Handler received unrecognised event")
