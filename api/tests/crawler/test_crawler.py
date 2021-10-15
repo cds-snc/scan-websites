@@ -66,7 +66,6 @@ def test_crawl_runner_calls_spider(mock_cawler_class):
                     "--enable-features=SharedArrayBuffer",
                     "--hide-scrollbars",
                     "--ignore-gpu-blocklist",
-                    "--in-process-gpu",
                     "--mute-audio",
                     "--no-default-browser-check",
                     "--no-pings",
@@ -74,7 +73,6 @@ def test_crawl_runner_calls_spider(mock_cawler_class):
                     "--no-zygote",
                     "--use-gl=swiftshader",
                     "--window-size=1920,1080",
-                    "--single-process",
                 ]
             },
         }
