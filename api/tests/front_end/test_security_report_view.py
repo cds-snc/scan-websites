@@ -79,7 +79,7 @@ def test_security_report_violation_details(
 def risk_colour_assignment_valid():
     assert get_risk_colour("0") == "bg-blue-500"
     assert get_risk_colour("1") == "bg-green-500"
-    assert get_risk_colour("2") == "bg-orange-500"
+    assert get_risk_colour("2") == "bg-yellow-600"
     assert get_risk_colour("3") == "bg-red-500"
 
 
