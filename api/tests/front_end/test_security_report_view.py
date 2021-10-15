@@ -83,5 +83,5 @@ def risk_colour_assignment_valid():
     assert get_risk_colour("3") == "bg-red-500"
 
 
-def risk_colour_assignment_invalid_defaults_red():
+def risk_colour_assignment_invalid_defaults_gray():
     assert get_risk_colour("foo") == "bg-gray-500"
