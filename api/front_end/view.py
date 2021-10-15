@@ -86,7 +86,7 @@ def get_risk_colour(riskcode):
     elif riskcode == "1":  # Low
         return "bg-green-500"
     elif riskcode == "2":  # Medium
-        return "bg-orange-500"
+        return "bg-yellow-600"
     elif riskcode == "3":  # High
         return "bg-red-500"
     else:  # default
