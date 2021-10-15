@@ -9,6 +9,7 @@ from api_gateway.routers.auth import is_authenticated
 from api_gateway.routers.scans import template_belongs_to_org
 from models.Scan import Scan
 from models.SecurityReport import SecurityReport
+from models.SecurityViolation import SecurityViolation
 from pub_sub import pub_sub
 
 
@@ -57,6 +58,60 @@ async def get_security_report(
         result = {"request": request}
         result.update(languages[locale])
         result.update({"report": report})
+    except Exception as e:
+        log.error(e)
+        raise HTTPException(status_code=500, detail=str(e))
+    if report.scan.scan_type.name == pub_sub.AvailableScans.OWASP_ZAP.value:
+        return templates.TemplateResponse("scan_results_security_summary.html", result)
+    else:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Scan type {report.scan.scan_type.name} has no associated layout",
+        )
+
+
+@router.get(
+    "/{locale}/results/{template_id}/security/{scan_id}/{report_id}/{violation_id}",
+    dependencies=[Depends(is_authenticated), Depends(template_belongs_to_org)],
+    response_class=HTMLResponse,
+)
+async def get_security_violation(
+    request: Request,
+    locale: str,
+    template_id: uuid.UUID,
+    scan_id: uuid.UUID,
+    report_id: uuid.UUID,
+    violation_id: uuid.UUID,
+    session: Session = Depends(get_db),
+):
+    try:
+        if locale not in languages:
+            locale = default_fallback
+
+        report = (
+            session.query(SecurityReport)
+            .outerjoin(Scan.security_reports)
+            .filter(
+                SecurityReport.id == report_id,
+                Scan.id == scan_id,
+                Scan.template_id == template_id,
+            )
+            .one()
+        )
+
+        violation = (
+            session.query(SecurityViolation)
+            .filter(
+                SecurityViolation.id == violation_id,
+                SecurityViolation.security_report_id == report_id,
+            )
+            .one()
+        )
+
+        result = {"request": request}
+        result.update(languages[locale])
+        result.update({"report": report})
+        result.update({"security_violation": violation})
     except Exception as e:
         log.error(e)
         raise HTTPException(status_code=500, detail=str(e))

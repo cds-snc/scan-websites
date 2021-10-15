@@ -35,6 +35,7 @@ services:
   api:
     build:
       context: ../api/
+    restart: always
     volumes:
       - ../api:/function
     environment:

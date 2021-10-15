@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block body %}
+  
+<section><h1 class="text-center"><span class="text-gray-800 font-semibold tracking-wider text-lg ">{{ report.scan.template.name }}:</span>{{ report.revision }} - {{ report.url }}</h1></section>
+<div class="container">
+  <div class="row mb-8 my-8">
+    <div class="">
+      <div class="py-2 align-middle inline-block min-w-full ">
+        <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {{ violation_categories_locale }}
+                </th>
+                <th scope="col" class="px-8 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {{ risk_locale }}
+                </th>
+                <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {{ occurences_locale }}
+                </th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              {% for security_violation in report.security_violations %}
+              <tr>
+                <td class="px-6 py-4">
+                      <div class="text-sm font-medium text-gray-900" lang="en">
+                          {{ security_violation.violation }}
+                      </div>
+                      <div class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white {{ security_violation.tags.riskcode | risk_colour }}">
+                        {{ security_violation.risk }}
+                      </div>
+                </td>
+                <td class="px-6 py-4">
+                  <div class="text-sm font-medium" lang="en">
+                    
+                      {{ security_violation.message | safe}}
+
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900">
+                    <a href="{{request.path}}/{{ security_violation.id }}">
+                      {{ security_violation.data | length }}
+                    </a>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+  {% block footer %}
+  {{super()}}
+  {% endblock %}
+{% endblock %}

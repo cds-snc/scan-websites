@@ -3,6 +3,24 @@
   
 <section><h1 class="text-center"><span class="text-gray-800 font-semibold tracking-wider text-lg ">{{ report.scan.template.name }}:</span>{{ report.revision }} - {{ report.url }}</h1></section>
 <div class="container">
+
+
+  <div class="w-full my-4 bg-white mx-auto rounded-sm overflow-hidden">
+    <div class="bg-red-400 flex items-center justify-between">
+      <p class="mr-0 text-black text-lg pl-5">{{ security_violation.violation }}</p>
+    </div>
+    <div class="flex px-5 mb-2 text-sm text-gray-600">
+      <p>{{ security_violation.message | safe }}</p>
+    </div>
+  </div>
+  <div class="w-full pt-2 bg-white mx-auto rounded-sm overflow-hidden">
+    <div class="bg-green-400 flex items-center justify-between">
+      <p class="mr-0 text-black text-lg pl-5">Solution</p>
+    </div>
+    <div class="flex px-5 mb-2 text-sm text-gray-600">
+      <p>{{ security_violation.solution | safe }}</p>
+    </div>
+  </div>
   <div class="row mb-8 my-8">
     <div class="">
       <div class="py-2 align-middle inline-block min-w-full ">
@@ -11,34 +29,48 @@
             <thead class="bg-gray-50">
               <tr>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {{ violation_categories_locale }}
+                  uri
                 </th>
-                <th scope="col" class="px-8 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {{ risk_locale }}
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {{ method_locale }}
                 </th>
-                <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {{ occurences_locale }}
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  param
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {{ attack_locale }}
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {{ evidence_locale }}
                 </th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              {% for security_violation in report.security_violations %}
+              {% for violation in security_violation.data %}
               <tr>
                 <td class="px-6 py-4">
-                      <div class="text-sm font-medium text-gray-900" lang="en">
-                          {{ security_violation.violation }}
-                      </div>
+                  <div class="text-sm font-medium text-gray-900" lang="en">
+                      {{ violation.uri }}
+                  </div>
                 </td>
                 <td class="px-6 py-4">
-                  <div class="text-sm font-medium" lang="en">
-                    
-                      {{ security_violation.risk | safe}}
-
+                  <div class="text-sm font-medium text-gray-900" lang="en">
+                      {{ violation.method }}
+                  </div>
+                </td>
+                <td class="px-6 py-4">
+                  <div class="text-sm font-medium text-gray-900" lang="en">
+                      {{ violation.param }}
                   </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm font-medium text-gray-900">
-                      {{ security_violation.data | length }}
+                  <div class="text-sm font-medium text-gray-900" lang="en">
+                      {{ violation.attack }}
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900" lang="en">
+                      {{ violation.evidence }}
                   </div>
                 </td>
               </tr>

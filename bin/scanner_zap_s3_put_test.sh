@@ -30,10 +30,7 @@ curl "http://api:8080/2015-03-31/functions/function/invocations" -d '{
           "arn": "arn:aws:s3:::owasp-zap-report-data"
         },
         "object": {
-            "key": "Reports/zap_report.json",
-            "lastModified": "2021-10-07T20:09:33+00:00",
-            "eTag": "\"f6291c3d80fc1a72cf8b9a138cbfa888\"",
-            "size": 38638,
+            "key": "Reports/owasp_zap_report.json",
             "storageClass": "STANDARD",
             "owner": {
                 "displayName": "webfile",

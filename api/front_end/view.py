@@ -80,9 +80,23 @@ def format_date(value, format="medium"):
     return format_datetime(value, format)
 
 
+def get_risk_colour(riskcode):
+    if riskcode == "0":  # Informational
+        return "bg-blue-500"
+    elif riskcode == "1":  # Low
+        return "bg-green-500"
+    elif riskcode == "2":  # Medium
+        return "bg-orange-500"
+    elif riskcode == "3":  # High
+        return "bg-red-500"
+    else:  # default
+        return "bg-gray-500"
+
+
 # assign filter to Jinja2
 templates.env.filters["plural_formatting"] = plural_formatting
 templates.env.filters["date"] = format_date
+templates.env.filters["risk_colour"] = get_risk_colour
 
 
 @router.get("/", response_class=HTMLResponse, include_in_schema=False)

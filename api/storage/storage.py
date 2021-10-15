@@ -117,6 +117,9 @@ def store_owasp_zap_record(payload):
         summary = {}
         summary["status"] = "completed"
         summary["total"] = 0
+        session.query(SecurityViolation).filter(
+            SecurityViolation.security_report_id == security_report.id
+        ).delete()
         for alert in report["alerts"]:
             if "riskdesc" in alert:
                 if alert["riskdesc"] in summary:
@@ -130,12 +133,17 @@ def store_owasp_zap_record(payload):
                 summary["total"] += int(alert["count"])
                 security_violation = SecurityViolation(
                     violation=alert["alert"],
-                    risk=alert["desc"],
+                    risk=alert["riskdesc"],
+                    message=alert["desc"],
                     confidence=alert["confidence"],
                     solution=solution,
                     reference=reference,
                     data=alert["instances"],
-                    tags=alert["alertRef"],
+                    tags={
+                        "alertRef": alert["alertRef"],
+                        "riskcode": alert["riskcode"],
+                        "cweid": alert["cweid"],
+                    },
                     url=report["@name"],
                     security_report=security_report,
                 )
