@@ -42,6 +42,7 @@
   "token_locale": "Token",
   "update_locale": "Update",
   "update_scan_locale": "Update scan details",
+  "uri_locale": "Uniform Resource Identifier",
   "value_locale": "Value",
   "violation_categories_locale": "Violation Categories",
   "violations_locale": "Violations",
