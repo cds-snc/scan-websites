@@ -41,3 +41,11 @@ output "log_bucket_id" {
 output "domain_name" {
   value = aws_api_gateway_domain_name.api.domain_name
 }
+
+output "sns_topic_critical_arn" {
+  value = aws_sns_topic.critical.arn
+}
+
+output "sns_topic_warning_arn" {
+  value = aws_sns_topic.warning.arn
+}

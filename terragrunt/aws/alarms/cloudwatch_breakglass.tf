@@ -3,8 +3,7 @@ module "ops_alarms" {
   account_names         = ["ops1", "ops2"]
   namespace             = "ops_alarms"
   log_group_name        = "CloudTrail/Landing-Zone-Logs"
-  alarm_actions_success = [aws_sns_topic.critical.arn]
-  alarm_actions_failure = [aws_sns_topic.warning.arn]
+  alarm_actions_success = [var.sns_topic_critical_arn]
+  alarm_actions_failure = [var.sns_topic_warning_arn]
   num_attempts          = 1
 }
-
