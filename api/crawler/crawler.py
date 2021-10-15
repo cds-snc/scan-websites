@@ -69,7 +69,6 @@ def runner(item):
                     "--enable-features=SharedArrayBuffer",
                     "--hide-scrollbars",
                     "--ignore-gpu-blocklist",
-                    "--in-process-gpu",
                     "--mute-audio",
                     "--no-default-browser-check",
                     "--no-pings",
@@ -77,7 +76,6 @@ def runner(item):
                     "--no-zygote",
                     "--use-gl=swiftshader",
                     "--window-size=1920,1080",
-                    "--single-process",
                 ]
             },
         }
