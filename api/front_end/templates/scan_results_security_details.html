@@ -11,6 +11,14 @@
     </div>
     <div class="space-y-2 px-5 mb-2 text-sm text-gray-600">
       <p>{{ security_violation.message | safe }}</p>
+      {% if security_violation.tags.otherinfo != "" %}
+      <div class="underline">{{ addition_details_locale }}</div>
+      <p lang="en">{{ security_violation.tags.otherinfo | safe }}</p>
+      {% endif %}
+      {% if security_violation.reference != "" %}
+      <div class="underline">{{ references_locale }}</div>
+      <p lang="en">{{ security_violation.reference | safe }}</p>
+      {% endif %}
     </div>
   </div>
   <div class="w-full pt-2 bg-white mx-auto rounded-sm overflow-hidden">
