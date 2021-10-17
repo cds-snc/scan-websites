@@ -120,6 +120,7 @@ def store_owasp_zap_record(payload):
         session.query(SecurityViolation).filter(
             SecurityViolation.security_report_id == security_report.id
         ).delete()
+        session.commit()
         for alert in report["alerts"]:
             if "riskdesc" in alert:
                 if alert["riskdesc"] in summary:
@@ -127,8 +128,22 @@ def store_owasp_zap_record(payload):
                 else:
                     summary[alert["riskdesc"]] = int(alert["count"])
 
-                solution = alert["solution"] if alert["solution"] else ""
-                reference = alert["reference"] if alert["reference"] else ""
+                if "solution" in alert:
+                    solution = alert["solution"]
+                else:
+                    solution = ""
+
+                if "reference" in alert:
+                    reference = alert["reference"]
+                    if reference == "<p></p>":
+                        reference = ""
+                else:
+                    reference = ""
+
+                if "otherinfo" in alert:
+                    otherinfo = alert["otherinfo"]
+                else:
+                    otherinfo = ""
 
                 summary["total"] += int(alert["count"])
                 security_violation = SecurityViolation(
@@ -143,6 +158,7 @@ def store_owasp_zap_record(payload):
                         "alertRef": alert["alertRef"],
                         "riskcode": alert["riskcode"],
                         "cweid": alert["cweid"],
+                        "otherinfo": otherinfo,
                     },
                     url=report["@name"],
                     security_report=security_report,
