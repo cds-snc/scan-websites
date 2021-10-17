@@ -7,23 +7,23 @@
 
   <div class="w-full my-4 bg-white mx-auto rounded-sm overflow-hidden">
     <div class="bg-red-500 flex items-center justify-between">
-      <p class="mr-0 text-white text-lg pl-5" lang="en">{{ security_violation.violation }}</p>
+      <h2 class="mr-0 text-white text-lg pl-5" lang="en">{{ security_violation.violation }}</h2>
     </div>
     <div class="space-y-2 px-5 mb-2 text-sm text-gray-600">
       <p>{{ security_violation.message | safe }}</p>
       {% if security_violation.tags.otherinfo != "" %}
-      <div class="underline">{{ addition_details_locale }}</div>
+      <h3 class="underline">{{ addition_details_locale }}</h3>
       <p lang="en">{{ security_violation.tags.otherinfo | safe }}</p>
       {% endif %}
       {% if security_violation.reference != "" %}
-      <div class="underline">{{ references_locale }}</div>
+      <h3 class="underline">{{ references_locale }}</h3>
       <p lang="en">{{ security_violation.reference | safe }}</p>
       {% endif %}
     </div>
   </div>
   <div class="w-full pt-2 bg-white mx-auto rounded-sm overflow-hidden">
     <div class="bg-green-500 flex items-center justify-between">
-      <p class="mr-0 text-white text-lg pl-5">Solution</p>
+      <h2 class="mr-0 text-white text-lg pl-5">Solution</p>
     </div>
     <div class="space-y-2 px-5 mb-2 text-sm text-gray-600">
       <p lang="en">{{ security_violation.solution | safe }}</p>
