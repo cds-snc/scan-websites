@@ -23,6 +23,8 @@ inputs = {
   owasp_zap_report_data_bucket_arn = dependency.api.outputs.owasp_zap_report_data_bucket_arn
   owasp_zap_report_data_bucket_id  = dependency.api.outputs.owasp_zap_report_data_bucket_id
   owasp_zap_scan_threads           = 3
+  min_ecs_capacity                 = 1
+  max_ecs_capacity                 = 5
 }
 
 include {

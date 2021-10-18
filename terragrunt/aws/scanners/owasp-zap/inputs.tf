@@ -21,3 +21,11 @@ variable "owasp_zap_report_data_bucket_arn" {
 variable "owasp_zap_scan_threads" {
   type = number
 }
+
+variable "min_ecs_capacity" {
+  type = number
+}
+
+variable "max_ecs_capacity" {
+  type = number
+}
