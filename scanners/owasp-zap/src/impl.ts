@@ -11,17 +11,17 @@ export async function Impl(
     await asyncForEach(records, async (record: Record) => {
       const params = {
         launchType: "FARGATE",
-        capacityProviderStrategy: [ 
+        capacityProviderStrategy: [
           {
-              base: process.env.MIN_ECS_CAPACITY,
-              capacityProvider: "FARGATE_SPOT",
-              weight: process.env.MAX_ECS_CAPACITY
+            base: parseInt(process.env.MIN_ECS_CAPACITY),
+            capacityProvider: "FARGATE_SPOT",
+            weight: parseInt(process.env.MAX_ECS_CAPACITY),
           },
           {
-              base: 0,
-              capacityProvider: "FARGATE",
-              weight: process.env.MIN_ECS_CAPACITY
-          }
+            base: 0,
+            capacityProvider: "FARGATE",
+            weight: parseInt(process.env.MIN_ECS_CAPACITY),
+          },
         ],
         cluster: process.env.CLUSTER,
         taskDefinition: process.env.TASK_DEF_ARN,
