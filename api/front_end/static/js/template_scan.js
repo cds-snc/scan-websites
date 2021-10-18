@@ -47,10 +47,10 @@ function scanAdd() {
       span.innerHTML =
         '<button class="bg-red-500 hover:bg-red-700 text-white font-bold  px-2 rounded" type="button" id="addScanButton" class="btn btn-primary" onclick="scanClear();">Clear</button>';
 
-      var header_span = document.createElement("span");
-      header_span.innerHTML = "<strong>Selected scan type</strong></br>";
+      // var header_span = document.createElement("span");
+      // header_span.innerHTML = "<strong>Selected scan type</strong></br>";
 
-      container.appendChild(header_span);
+      //container.appendChild(header_span);
       container.appendChild(input);
       container.appendChild(span);
       container.appendChild(document.createElement("br"));
