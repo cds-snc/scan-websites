@@ -51,7 +51,7 @@ describe("Impl", () => {
       const response = await Impl(records, ecs);
 
       expect(ecs.runTask).toHaveBeenCalledWith({
-        launchType: "FARGATE",
+        launchType: "FARGATE_SPOT",
         cluster: process.env.CLUSTER,
         taskDefinition: process.env.TASK_DEF_ARN,
         overrides: {

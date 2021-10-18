@@ -10,7 +10,7 @@ export async function Impl(
   try {
     await asyncForEach(records, async (record: Record) => {
       const params = {
-        launchType: "FARGATE",
+        launchType: "FARGATE_SPOT",
         cluster: process.env.CLUSTER,
         taskDefinition: process.env.TASK_DEF_ARN,
         overrides: {
