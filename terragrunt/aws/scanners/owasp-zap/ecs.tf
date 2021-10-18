@@ -1,6 +1,8 @@
 resource "aws_ecs_cluster" "scanning_tools" {
   name = "scanning-tools"
 
+  capacity_providers = ["FARGATE", "FARGATE_SPOT"]
+
   setting {
     name  = "containerInsights"
     value = "enabled"
