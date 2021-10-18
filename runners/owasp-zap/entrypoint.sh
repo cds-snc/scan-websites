@@ -42,9 +42,10 @@ zap-cli --port "${ZAP_PORT}" --zap-url "http://$HOST_IP" ajax-spider "${SCAN_URL
 # Gets list of available scans, excludes sqli and converts to csv
 all_except_sqli=$(zap-cli --zap-url http://"$HOST_IP" --port "${ZAP_PORT}" scanners list | tail -n +3 | grep -v "SQL Injection" | awk -F ' ' '{print $2}' | awk NF | awk '$1=$1' RS= OFS=,)
 
+# Set scan threads as defined by environment variable
 curl "http://${HOST_IP}:${ZAP_PORT}/JSON/ascan/action/setOptionThreadPerHost/" -H 'Content-Type: application/x-www-form-urlencoded' --data-raw "Integer=${SCAN_THREADS}" --compressed
 
-# Timeout scan after 1 hour to prevent running indefinitely if the OWASP ZAP container crashes
+# Timeout scan after 2 hour to prevent running indefinitely if the OWASP ZAP container crashes
 timeout 2h zap-cli --port "${ZAP_PORT}" --zap-url "http://$HOST_IP" active-scan -s "$all_except_sqli" --recursive "${SCAN_URL}"
 
 # Set scan threads to 1 to prevent sqli false positives
