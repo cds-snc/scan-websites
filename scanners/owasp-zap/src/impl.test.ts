@@ -53,7 +53,6 @@ describe("Impl", () => {
       const response = await Impl(records, ecs);
 
       expect(ecs.runTask).toHaveBeenCalledWith({
-        launchType: "FARGATE",
         capacityProviderStrategy: [
           {
             base: parseInt(process.env.MIN_ECS_CAPACITY),
