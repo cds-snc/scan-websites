@@ -10,7 +10,6 @@ export async function Impl(
   try {
     await asyncForEach(records, async (record: Record) => {
       const params = {
-        launchType: "FARGATE",
         capacityProviderStrategy: [
           {
             base: parseInt(process.env.MIN_ECS_CAPACITY),
