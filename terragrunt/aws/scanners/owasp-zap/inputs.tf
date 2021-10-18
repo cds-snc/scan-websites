@@ -17,3 +17,7 @@ variable "owasp_zap_report_data_bucket_id" {
 variable "owasp_zap_report_data_bucket_arn" {
   type = string
 }
+
+variable "owasp_zap_scan_threads" {
+  type = number
+}

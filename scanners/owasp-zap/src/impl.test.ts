@@ -37,6 +37,7 @@ describe("Impl", () => {
       process.env.TASK_DEF_ARN =
         "arn:aws:ecs:us-west-2:123456789012:task-definition/TaskDefinitionFamily:1";
       process.env.CLUSTER = "zap";
+      process.env.SCAN_THREADS = "3";
       const records = [
         {
           payload: {
@@ -60,6 +61,7 @@ describe("Impl", () => {
               environment: [
                 { name: "SCAN_URL", value: "https://example.com/" },
                 { name: "SCAN_ID", value: "bar" },
+                { name: "SCAN_THREADS", value: process.env.SCAN_THREADS },
               ],
             },
           ],

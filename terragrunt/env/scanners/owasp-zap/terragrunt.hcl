@@ -22,6 +22,7 @@ inputs = {
   owasp_zap_urls_topic_arn         = dependency.api.outputs.owasp_zap_urls_topic_arn
   owasp_zap_report_data_bucket_arn = dependency.api.outputs.owasp_zap_report_data_bucket_arn
   owasp_zap_report_data_bucket_id  = dependency.api.outputs.owasp_zap_report_data_bucket_id
+  owasp_zap_scan_threads           = 3
 }
 
 include {
