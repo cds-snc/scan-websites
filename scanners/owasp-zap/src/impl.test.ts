@@ -37,6 +37,8 @@ describe("Impl", () => {
       process.env.TASK_DEF_ARN =
         "arn:aws:ecs:us-west-2:123456789012:task-definition/TaskDefinitionFamily:1";
       process.env.CLUSTER = "zap";
+      process.env.MIN_ECS_CAPACITY = "1";
+      process.env.MAX_ECS_CAPACITY = "5";
       process.env.SCAN_THREADS = "3";
       const records = [
         {
@@ -51,7 +53,19 @@ describe("Impl", () => {
       const response = await Impl(records, ecs);
 
       expect(ecs.runTask).toHaveBeenCalledWith({
-        launchType: "FARGATE_SPOT",
+        launchType: "FARGATE",
+        capacityProviderStrategy: [ 
+          {
+              base: process.env.MIN_ECS_CAPACITY,
+              capacityProvider: "FARGATE_SPOT",
+              weight: process.env.MAX_ECS_CAPACITY
+          },
+          {
+              base: 0,
+              capacityProvider: "FARGATE",
+              weight: process.env.MIN_ECS_CAPACITY
+          }
+        ],
         cluster: process.env.CLUSTER,
         taskDefinition: process.env.TASK_DEF_ARN,
         overrides: {

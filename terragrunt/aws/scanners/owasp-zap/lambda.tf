@@ -21,6 +21,8 @@ resource "aws_lambda_function" "scanners-owasp-zap" {
       PRIVATE_SUBNETS    = join(",", var.private_subnet_ids)
       SECURITY_GROUP     = aws_security_group.security_tools_web_scanning.id
       SCAN_THREADS       = var.owasp_zap_scan_threads
+      MIN_ECS_CAPACITY   = var.min_ecs_capacity
+      MAX_ECS_CAPACITY   = var.max_ecs_capacity
     }
   }
 
