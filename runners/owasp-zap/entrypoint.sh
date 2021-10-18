@@ -38,8 +38,21 @@ zap-cli --port "${ZAP_PORT}" --zap-url "http://$HOST_IP" open-url "${SCAN_URL}"
 zap-cli --port "${ZAP_PORT}" --zap-url "http://$HOST_IP" spider "${SCAN_URL}"
 zap-cli --port "${ZAP_PORT}" --zap-url "http://$HOST_IP" ajax-spider "${SCAN_URL}"
 
+# Initial scan will exclude sqli since false positivies occur when sqli is run multithreaded
+# Gets list of available scans, excludes sqli and converts to csv
+all_except_sqli=$(zap-cli --zap-url http://"$HOST_IP" --port "${ZAP_PORT}" scanners list | tail -n +3 | grep -v "SQL Injection" | awk -F ' ' '{print $2}' | awk NF | awk '$1=$1' RS= OFS=,)
+
+curl "http://${HOST_IP}:${ZAP_PORT}/JSON/ascan/action/setOptionThreadPerHost/" -H 'Content-Type: application/x-www-form-urlencoded' --data-raw "Integer=${SCAN_THREADS}" --compressed
+
 # Timeout scan after 1 hour to prevent running indefinitely if the OWASP ZAP container crashes
-timeout 1h zap-cli --port "${ZAP_PORT}" --zap-url "http://$HOST_IP" active-scan --recursive "${SCAN_URL}"
+timeout 2h zap-cli --port "${ZAP_PORT}" --zap-url "http://$HOST_IP" active-scan -s "$all_except_sqli" --recursive "${SCAN_URL}"
+
+# Set scan threads to 1 to prevent sqli false positives
+curl "http://${HOST_IP}:${ZAP_PORT}/JSON/ascan/action/setOptionThreadPerHost/" -H 'Content-Type: application/x-www-form-urlencoded' --data-raw "Integer=1" --compressed
+
+# Timeout scan after 1 hour to prevent running indefinitely if the OWASP ZAP container crashes
+timeout 1h zap-cli --port "${ZAP_PORT}" --zap-url "http://$HOST_IP" active-scan -s sqli --recursive "${SCAN_URL}"
+
 
 high_alerts=$(curl "http://$HOST_IP:${ZAP_PORT}/JSON/alert/view/alertsSummary/?baseurl=${SCAN_URL}" | jq -r '.alertsSummary.High')
 

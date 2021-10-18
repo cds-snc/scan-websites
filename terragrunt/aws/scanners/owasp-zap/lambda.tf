@@ -20,6 +20,7 @@ resource "aws_lambda_function" "scanners-owasp-zap" {
       TASK_DEF_ARN       = aws_ecs_task_definition.runners-owasp-zap.arn
       PRIVATE_SUBNETS    = join(",", var.private_subnet_ids)
       SECURITY_GROUP     = aws_security_group.security_tools_web_scanning.id
+      SCAN_THREADS       = var.owasp_zap_scan_threads
     }
   }
 

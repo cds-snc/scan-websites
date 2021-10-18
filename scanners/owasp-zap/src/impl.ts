@@ -20,6 +20,7 @@ export async function Impl(
               environment: [
                 { name: "SCAN_URL", value: record.payload.url },
                 { name: "SCAN_ID", value: record.payload.id },
+                { name: "SCAN_THREADS", value: process.env.SCAN_THREADS },
               ],
             },
           ],
