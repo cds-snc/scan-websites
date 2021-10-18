@@ -141,6 +141,38 @@ def home_org_security_violation_fixture(session, home_org_security_report_fixtur
     return security_violation
 
 
+@pytest.fixture(scope="session")
+def home_org_security_report_fixture_2(session, home_org_scan_fixture):
+    security_report = SecurityReport(
+        product="product",
+        revision="revision",
+        url="url",
+        summary={"jsonb": "data"},
+        scan=home_org_scan_fixture,
+    )
+    session.add(security_report)
+    session.commit()
+    return security_report
+
+
+@pytest.fixture(scope="session")
+def home_org_security_violation_fixture_2(session, home_org_security_report_fixture_2):
+    security_violation = SecurityViolation(
+        violation="violation",
+        risk="risk",
+        confidence="confidence",
+        solution="solution",
+        reference="reference",
+        data=[{"uri": "https://example.com/", "method": "POST", "evidence": "foo"}],
+        tags="tags",
+        url="url",
+        security_report=home_org_security_report_fixture_2,
+    )
+    session.add(security_violation)
+    session.commit()
+    return security_violation
+
+
 @pytest.fixture
 def assert_new_model_saved():
     def f(model):
