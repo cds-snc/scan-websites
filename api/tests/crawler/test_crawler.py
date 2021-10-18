@@ -73,6 +73,7 @@ def test_crawl_runner_calls_spider(mock_cawler_class):
                     "--no-zygote",
                     "--use-gl=swiftshader",
                     "--window-size=1920,1080",
+                    "--single-process",
                 ]
             },
         }

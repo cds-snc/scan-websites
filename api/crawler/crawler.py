@@ -76,6 +76,7 @@ def runner(item):
                     "--no-zygote",
                     "--use-gl=swiftshader",
                     "--window-size=1920,1080",
+                    "--single-process",
                 ]
             },
         }
