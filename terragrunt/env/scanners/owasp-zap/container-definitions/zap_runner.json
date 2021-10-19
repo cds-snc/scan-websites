@@ -57,6 +57,7 @@
 		],
 		"cpu": 1024,
 		"environment": [],
+    "ephemeral_storage": 200,
 		"essential": true,
 		"image": "owasp/zap2docker-stable",
 		"linuxParameters": {
