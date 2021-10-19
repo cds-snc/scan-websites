@@ -1,4 +1,5 @@
 import os
+import sys
 
 from logging.config import fileConfig
 
@@ -6,6 +7,26 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
+
+# Add parent to PYTHONPATH. This is needed since models is not in the PYTHONPATH when db migrations are generated
+sys.path = ["", ".."] + sys.path[1:]
+
+# import of Base + models is required for the alembic auto generate to work
+from models import ( # noqa
+    Base,
+    A11yReport,
+    A11yViolation,
+    Organisation,
+    Scan,
+    ScanIgnore,
+    ScanType,
+    SecurityReport,
+    SecurityViolation,
+    Template,
+    TemplateScan,
+    TemplateScanTrigger,
+    User,
+)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -19,9 +40,9 @@ fileConfig(config.config_file_name)
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-# from myapp import mymodel
+
 # target_metadata = mymodel.Base.metadata
-target_metadata = None
+target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

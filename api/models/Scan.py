@@ -42,6 +42,8 @@ class Scan(Base):
     )
     scan_type = relationship("ScanType", back_populates="scans")
 
+    scan_ignores = relationship("ScanIgnore", cascade="all,delete")
+
     a11y_reports = relationship(
         "A11yReport", cascade="all,delete", order_by="desc(A11yReport.created_at)"
     )
