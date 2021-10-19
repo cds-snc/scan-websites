@@ -37,9 +37,9 @@
                   {% if scan.security_reports | length > 1 and scan.security_reports[0].security_violations | length > 0 %}
                   {% set delta = (((scan.security_reports[0].security_violations | length - scan.security_reports[1].security_violations | length) / scan.security_reports[0].security_violations | length) * 100)|int %}
                   <div class="absolute bg-red-400 rounded-md font-semibold text-xs text-gray-100 p-2 right-0 bottom-0">
-                    {% if delta < 0  %}
+                    {% if delta > 0  %}
                     +
-                    {% else %}
+                    {% elif delta < 0 %}
                     -
                     {% endif %}
                     {{ delta | abs }}%
@@ -69,9 +69,9 @@
                   {% if scan.a11y_reports | length > 1 and scan.a11y_reports[0].a11y_violations | length > 0 %}
                   {% set a11y_delta = (((scan.a11y_reports[0].a11y_violations | length - scan.a11y_reports[1].a11y_violations | length) / scan.a11y_reports[0].a11y_violations | length) * 100)|int %}
                   <div class="absolute bg-red-400 rounded-md font-semibold text-xs text-gray-100 p-2 right-0 bottom-0">
-                    {% if a11y_delta < 0  %}
+                    {% if a11y_delta > 0  %}
                     +
-                    {% else %}
+                    {% elif a11y_delta < 0 %}
                     -
                     {% endif %}
                     {{ a11y_delta | abs }}%

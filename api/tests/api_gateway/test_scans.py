@@ -1,6 +1,7 @@
 from fastapi.testclient import TestClient
 from unittest.mock import ANY, MagicMock, patch
 
+
 from api_gateway import api
 from models.Scan import Scan
 from models.SecurityReport import SecurityReport
@@ -346,6 +347,66 @@ def test_start_scan_invalid_user_api_key(
         },
     )
     assert response.status_code == 401
+
+
+def test_delete_security_report_with_bad_id(
+    home_org_template_fixture,
+    home_org_template_scan_fixture_with_zap,
+    logged_in_client,
+    session,
+):
+    response = logged_in_client.delete(
+        f"/scans/template/{str(home_org_template_fixture.id)}/scan/{str(home_org_template_scan_fixture_with_zap.id)}/security/foo"
+    )
+
+    assert response.json() == {"error": "error deleting report"}
+    assert response.status_code == 500
+
+
+def test_delete_security_report_with_id_not_found(
+    home_org_template_fixture,
+    home_org_scan_fixture,
+    logged_in_client,
+    session,
+):
+    response = logged_in_client.delete(
+        f"/scans/template/{str(home_org_template_fixture.id)}/scan/{str(home_org_scan_fixture.id)}/security/{str(uuid.uuid4())}"
+    )
+
+    assert response.json() == {"error": "error deleting report"}
+    assert response.status_code == 500
+
+
+def test_delete_security_report_with_correct_id(
+    home_org_template_fixture,
+    home_org_scan_fixture,
+    home_org_security_report_fixture_2,
+    home_org_security_violation_fixture_2,
+    logged_in_client,
+    session,
+):
+
+    deleted_security_report = home_org_security_report_fixture_2.id
+    deleted_security_violation = home_org_security_violation_fixture_2.id
+    response = logged_in_client.delete(
+        f"/scans/template/{str(home_org_template_fixture.id)}/scan/{str(home_org_scan_fixture.id)}/security/{str(home_org_security_report_fixture_2.id)}"
+    )
+
+    security_report = (
+        session.query(SecurityReport)
+        .filter(SecurityReport.id == deleted_security_report)
+        .one_or_none()
+    )
+    security_violations = (
+        session.query(SecurityViolation)
+        .filter(SecurityViolation.id == deleted_security_violation)
+        .all()
+    )
+
+    assert response.json() == {"status": "OK"}
+    assert response.status_code == 200
+    assert security_report is None
+    assert len(security_violations) == 0
 
 
 @patch("database.db.get_session")

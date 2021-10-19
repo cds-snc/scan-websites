@@ -8,6 +8,7 @@ from fastapi import (
     Response,
     status,
 )
+
 from logger import log
 from crawler.crawler import crawl
 from sqlalchemy.exc import SQLAlchemyError
@@ -25,6 +26,7 @@ from models.TemplateScan import TemplateScan
 from models.User import User
 from models.Scan import Scan
 from models.ScanType import ScanType
+from models.SecurityReport import SecurityReport
 from schemas.Template import TemplateCreate, TemplateScanCreateList
 from pub_sub import pub_sub
 
@@ -298,3 +300,41 @@ async def delete_template_scan(
         log.error(err)
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {"error": "error deleting template"}
+
+
+@router.delete(
+    "/template/{template_id}/scan/{scan_id}/security/{report_id}",
+    dependencies=[Depends(is_authenticated), Depends(template_belongs_to_org)],
+)
+async def delete_security_report(
+    request: Request,
+    response: Response,
+    template_id,
+    scan_id,
+    report_id,
+    session: Session = Depends(get_session),
+):
+    try:
+        security_report = (
+            session.query(SecurityReport)
+            .outerjoin(Scan.security_reports)
+            .filter(
+                SecurityReport.id == report_id,
+                Scan.id == scan_id,
+                Scan.template_id == template_id,
+            )
+            .one_or_none()
+        )
+
+        if security_report is not None:
+            session.delete(security_report)
+            session.commit()
+            return {"status": "OK"}
+        else:
+            response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+            return {"error": "error deleting report"}
+
+    except Exception as err:
+        log.error(err)
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {"error": "error deleting report"}
