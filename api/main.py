@@ -15,6 +15,7 @@ from models.SecurityReport import SecurityReport  # noqa: F401
 from models.SecurityViolation import SecurityViolation  # noqa: F401
 from models.Organisation import Organisation  # noqa: F401
 from models.Scan import Scan  # noqa: F401
+from models.ScanIgnore import ScanIgnore  # noqa: F401
 from models.Template import Template  # noqa: F401
 from models.TemplateScan import TemplateScan  # noqa: F401
 from models.TemplateScanTrigger import TemplateScanTrigger  # noqa: F401
