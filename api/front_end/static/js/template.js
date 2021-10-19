@@ -1,5 +1,5 @@
 $(document).ready(function() {
-  $(document).on("click", "#deleteConfirm a", function(event) {
+  $(document).on("click", "#deleteConfirm", function(event) {
     event.preventDefault();
     event.stopPropagation();   
       if (confirm($(this).data("confirm"))) {
