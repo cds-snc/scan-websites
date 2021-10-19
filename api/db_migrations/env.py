@@ -12,7 +12,7 @@ from alembic import context
 sys.path = ["", ".."] + sys.path[1:]
 
 # import of Base + models is required for the alembic auto generate to work
-from models import ( # noqa
+from models import (  # noqa
     Base,
     A11yReport,
     A11yViolation,
