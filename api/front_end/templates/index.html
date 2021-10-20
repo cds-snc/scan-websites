@@ -20,9 +20,8 @@
       <div class="flex items-center border-b-2 mb-2 py-2">
         <h2 class="text-gray-800 tracking-wider">{{ template.name }}</h2>
       </div>  
-      <div class="container flex flex-row border-2 border-gray-500 space-y-6">
-          
-          <div class="bg-gray-100 rounded-lg h-auto py-4 flex flex-row justify-between divide-x divide-solid divide-gray-400">
+      <div class="container flex flex-row border-2 border-gray-300 space-y-6 p-5">
+          <div class="bg-gray-100 rounded-lg h-auto p-4 flex flex-row justify-between divide-x divide-solid divide-gray-400">
               {% for scan in template.scans %}
               {% if scan.security_reports %}
               <div class="relative flex-1 flex flex-col gap-2 px-4">
@@ -33,7 +32,7 @@
                     <a href="/{{ lang }}/results/{{ template.id }}/scan/{{ scan.id }}">{{ scan.scan_type.name }}</a>
                     {% endif %}
                   </h3>
-                  <div class="container flex flex-row gap-1 mx-8">
+                  <div class="container flex flex-row gap-1">
                     <div class="relative flex-1 flex flex-col gap-2 px-1">
                       <span class="font-semibold">{{ revisions_locale }}</span>
                       <div class="text-green-800 text-4xl font-bold">{{ scan.security_reports | length }}</div>
@@ -65,7 +64,7 @@
                   <a href="/{{ lang }}/results/{{ template.id }}/scan/{{ scan.id }}">{{ scan.scan_type.name }}</a>
                   {% endif %}
                 </div>
-                  <div class="container flex flex-row gap-1 mx-8">
+                  <div class="container flex flex-row gap-1">
                     <div class="relative flex-1 flex flex-col gap-2 px-1">
                       <span class="font-semibold">{{ revisions_locale }}</span>
                       <div class="text-green-800 text-4xl font-bold">{{ scan.a11y_reports | length }}</div>
