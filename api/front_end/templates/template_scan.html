@@ -3,6 +3,24 @@
 <script src="{{ url_for('static', path='js/template_scan.js') }}"></script>
 {% endblock %}
 {% block body %}
+<nav
+  class="block text-sm text-left text-green-800 h-12 flex items-center p-4 mb-5 border-2 border-gray-500"
+  role="alert"
+>
+  <ol class="list-reset flex text-grey-dark">
+    <li><a href="/{{ lang }}" class="font-bold">{{dashboard_locale}}</a></li>
+    <li><span class="mx-2">/</span></li>
+    <li><a href="/{{ lang }}/template" class="font-bold">{{templates_locale}}</a></li>
+    <li><span class="mx-2">/</span></li>
+    <li><a href="/{{ lang }}/template/{{template.id}}/scan" class="font-bold">{{template.name}}</a></li>
+    <li><span class="mx-2">/</span></li>
+    {% if template_scan %}
+      <li>{{update_scan_locale}}</li>
+    {% else %}
+      <li>{{add_new_scan_locale}}</li>
+    {% endif %}
+  </ol>
+</nav>
 {% if template_scan %}
 <h1 class="text-center">{{ update_scan_locale }}</h1>
 {% else %}
@@ -13,7 +31,6 @@
 
 <div class="container">
   <div class="row mb-8">
-
     <div class="flex flex-col ... divide-y">
       <div>
         <section><strong>{{ scan_types_locale }}:</strong>
@@ -34,9 +51,8 @@
         {% else %}
         <form id="templateScan" name="templateScan" action="/scans/template/{{template.id}}/scan" method="POST">
         {% endif %}
-          <strong>Selected scan type</strong></br>
           <div id="container" class="border-double border-4 border-light-blue-500 ...">
-            
+            <strong>Selected scan type</strong></br>
             {% if template_scan %}
             <div id='child'>
               <input type="text" id="scanType-{{ template_scan.scan_type.id }}"name="scanType" value="{{ template_scan.scan_type.name }}" readonly class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"></input>  

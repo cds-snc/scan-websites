@@ -4,7 +4,18 @@
 
 {% endblock %}
 {% block body %}
-
+<nav
+  class="block text-sm text-left text-green-800 h-12 flex items-center p-4 mb-5 border-2 border-gray-500"
+  role="alert"
+>
+  <ol class="list-reset flex text-grey-dark">
+    <li><a href="/{{ lang }}" class="font-bold">{{dashboard_locale}}</a></li>
+    <li><span class="mx-2">/</span></li>
+    <li><a href="/{{ lang }}/template" class="font-bold">{{templates_locale}}</a></li>
+    <li><span class="mx-2">/</span></li>
+    <li>{{template.name}}</li>
+  </ol>
+</nav>
 <section><h1 class="text-center">{{ existing_scans_locale }}</h1></section>
 <div class="container">
   <a href="/{{ lang }}/template/{{ template.id }}/scan/new" class="button flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 text-sm border-4 text-black py-1 px-2 rounded">{{ add_new_scan_locale }}</a>

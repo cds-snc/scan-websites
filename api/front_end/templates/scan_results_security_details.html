@@ -1,6 +1,15 @@
 {% extends "base.html" %}
 {% block body %}
-  
+<nav
+  class="block text-sm text-left text-green-800 h-12 flex items-center p-4 mb-5 border-2 border-gray-500"
+  role="alert"
+>
+  <ol class="list-reset flex text-grey-dark">
+    <li><a href="/{{ lang }}" class="font-bold">{{dashboard_locale}}</a></li>
+    <li><span class="mx-2">/</span></li>
+    <li>{{ report.scan.template.name }}: {{ report.revision }} - {{ report.url }}</li>
+  </ol>
+</nav>
 <section><h1 class="text-center"><span class="text-gray-800 font-semibold tracking-wider text-lg ">{{ report.scan.template.name }}:</span>{{ report.revision }} - {{ report.url }}</h1></section>
 <div class="container">
 

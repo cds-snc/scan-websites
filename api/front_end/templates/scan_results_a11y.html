@@ -1,6 +1,15 @@
 {% extends "base.html" %}
 {% block body %}
-  
+<nav
+  class="block text-sm text-left text-green-800 h-12 flex items-center p-4 mb-5 border-2 border-gray-500"
+  role="alert"
+>
+  <ol class="list-reset flex text-grey-dark">
+    <li><a href="/{{ lang }}" class="font-bold">{{dashboard_locale}}</a></li>
+    <li><span class="mx-2">/</span></li>
+    <li>{{ scan.template.name }}: {{ scan.scan_type.name }}</li>
+  </ol>
+</nav>
 <section><h1 class="text-center"><label class="text-gray-800 font-semibold tracking-wider text-lg ">{{ scan.template.name }}:</label>{{ scan.scan_type.name }}</h1></section>
 <div class="container">
   
