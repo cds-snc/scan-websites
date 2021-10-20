@@ -22,11 +22,11 @@
   </ol>
 </nav>
 {% if template_scan %}
-<h1 class="text-center">{{ update_scan_locale }}</h1>
+<h1 class="text-gray-700 font-semibold uppercase text-xl mb-7">{{ update_scan_locale }}</h1>
 {% else %}
-<h1 class="text-center">{{ add_new_scan_locale }}</h1>
+<h1 class="text-gray-700 font-semibold uppercase text-xl mb-7">{{ add_new_scan_locale }}</h1>
 {% endif %}
-
+<hr class="my-3"/>
 <div><strong>{{ name_locale }}</strong>: {{ template.name }}</div></br>
 
 <div class="container">
