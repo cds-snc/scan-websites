@@ -8,6 +8,10 @@ Run this in a dev container.
 
 To interact with aws localstack `use` laws
 
+### Seed local database
+
+`python api/database/seed.py`
+
 ### Example - List buckets
 
 ```bash
