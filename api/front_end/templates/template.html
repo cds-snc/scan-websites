@@ -8,7 +8,7 @@
     role="alert"
   >
     <ol class="list-reset flex text-grey-dark">
-      <li><a href="/{{ lang }}" class="font-bold">{{dashboard_locale}}</a></li>
+      <li><a href="/{{ lang }}" class="font-bold">{{home_locale}}</a></li>
       <li><span class="mx-2">/</span></li>
       <li>{{templates_locale}}</li>
     </ol>
@@ -17,8 +17,9 @@
   <hr class="my-3"/>
   <div class="flex flex-col">
     <form id="newTemplateForm" class="w-full max-w-sm" action="/scans/template" method="POST">
-      <div class="flex items-center border-b  py-2 ">
-        <stong>{{ templates_locale }}</stong>: <input class="appearance-none  w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none" name="name" type="text" placeholder="www.example.com" aria-label="{{ template_name_locale }}">
+      <div class="flex items-center border-b py-2 ">
+        {{ templates_locale }}:
+        <input class="appearance-none  w-full text-gray-700 mx-3 py-1 px-2 leading-tight focus:outline-none" name="name" type="text" placeholder="www.example.com" aria-label="{{ template_name_locale }}">
         <button class="flex-shrink-0 bg-green-500 hover:bg-green-700 border-green-500 hover:border-green-700 text-sm border-4 text-black py-1 px-2 rounded" type="submit">
           {{ new_locale }}
         </button>

@@ -59,6 +59,24 @@ async def login_google(request: Request):
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 
+@router.get("/login/heroku")
+async def login_heroku(request: Request, session: Session = Depends(get_session)):
+    if environ.get("HEROKU_PR_NUMBER", False):
+        db_user = (
+            session.query(User)
+            .filter(User.email_address == "scan-websites+seed@cds-sns.ca")
+            .scalar()
+        )
+        if db_user is not None:
+            authenticated_user = AuthenticatedUser(**db_user.__dict__).dict()
+            request.session["user"] = authenticated_user
+            return RedirectResponse(url="/en/dashboard")
+        else:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    else:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+
+
 @router.get("/auth/google", include_in_schema=False)
 async def auth_google(
     request: Request,

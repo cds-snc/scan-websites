@@ -21,6 +21,7 @@ from models.ScanType import ScanType  # noqa: E402
 from models.Template import Template  # noqa: E402
 from models.TemplateScan import TemplateScan  # noqa: E402
 from models.TemplateScanTrigger import TemplateScanTrigger  # noqa: E402
+from models.User import User  # noqa: E402
 from pub_sub import pub_sub  # noqa: E402
 from storage import storage  # noqa: E402
 
@@ -50,6 +51,8 @@ if __name__ == "__main__":
         .scalar()
     )
 
+    print("Deleting all previous data ...")
+
     session.query(A11yViolation).delete()
     session.query(A11yReport).delete()
     session.query(SecurityViolation).delete()
@@ -59,6 +62,15 @@ if __name__ == "__main__":
     session.query(TemplateScanTrigger).delete()
     session.query(TemplateScan).delete()
     session.query(Template).delete()
+    session.query(User).delete()
+
+    print("Adding new data ...")
+
+    user = User(
+        name="Seed User",
+        email_address="scan-websites+seed@cds-sns.ca",
+        organisation=cds_org,
+    )
 
     owasp_zap_template = Template(
         name="OWASP Zap template",
@@ -101,10 +113,10 @@ if __name__ == "__main__":
     session.add(axe_core_scan)
 
     owasp_zap_report_f = open(
-        "../tests/storage/fixtures/owasp_zap_report.json",
+        "./tests/storage/fixtures/owasp_zap_report.json",
     )
     axe_core_report_f = open(
-        "../tests/storage/fixtures/axe_core_report.json",
+        "./tests/storage/fixtures/axe_core_report.json",
     )
 
     owasp_zap_data = json.load(owasp_zap_report_f)
@@ -145,3 +157,5 @@ if __name__ == "__main__":
 
         owasp_zap_data["id"] = str(security_report.id)
         storage.store_owasp_zap_record(session, owasp_zap_data)
+
+    print("Seed completed!")

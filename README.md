@@ -10,7 +10,7 @@ To interact with aws localstack `use` laws
 
 ### Seed local database
 
-`python api/database/seed.py`
+`cd api && make seed`
 
 ### Example - List buckets
 

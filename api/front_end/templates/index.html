@@ -5,7 +5,7 @@
     role="alert"
   >
     <ol class="list-reset flex text-grey-dark">
-      <li><a href="/{{ lang }}" class="font-bold">{{dashboard_locale}}</a></li>
+      <li><a href="/{{ lang }}" class="font-bold">{{home_locale}}</a></li>
     </ol>
   </nav>
   
@@ -33,11 +33,11 @@
                     {% endif %}
                   </h3>
                   <div class="container flex flex-row gap-1">
-                    <div class="relative flex-1 flex flex-col gap-2 px-1">
+                    <div class="relative flex-1 flex flex-col gap-2">
                       <span class="font-semibold">{{ revisions_locale }}</span>
                       <div class="text-green-800 text-4xl font-bold">{{ scan.security_reports | length }}</div>
                     </div>
-                    <div class="relative flex-1 flex flex-col gap-2 px-1">
+                    <div class="relative flex-1 flex flex-col gap-2">
                       <span class="font-semibold">{{ violations_locale }}</span>
                       <div class="text-green-800 text-4xl font-bold">{{ scan.security_reports[0].security_violations | length }}</div>
                     </div>
@@ -65,11 +65,11 @@
                   {% endif %}
                 </div>
                   <div class="container flex flex-row gap-1">
-                    <div class="relative flex-1 flex flex-col gap-2 px-1">
+                    <div class="relative flex-1 flex flex-col gap-2">
                       <span class="font-semibold">{{ revisions_locale }}</span>
                       <div class="text-green-800 text-4xl font-bold">{{ scan.a11y_reports | length }}</div>
                     </div>
-                    <div class="relative flex-1 flex flex-col gap-2 px-1">
+                    <div class="relative flex-1 flex flex-col gap-2">
                       <span class="font-semibold">{{ violations_locale }}</span>
                       <div class="text-green-800 text-4xl font-bold">{{ scan.a11y_reports[0].a11y_violations | length }}</div>
                     </div>

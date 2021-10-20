@@ -1,4 +1,4 @@
-.PHONY: dev fmt install lint migrations test fmt-ci lint-ci build install-dev
+.PHONY: dev fmt install lint migrations test fmt-ci lint-ci build install-dev seed heroku-seed
 
 build: ;
 
@@ -7,6 +7,13 @@ dev:
 
 fmt:
 	black . $(ARGS)
+
+heroku-seed:
+	make install &&\
+	make migrations &&\
+	make seed
+
+heroku-run:
 
 install:
 	pip3 install --user -r requirements.txt
@@ -23,6 +30,9 @@ lint-ci:
 migrations:
 	cd db_migrations &&\
 	alembic upgrade head
+
+seed: 
+	python database/seed.py
 
 test:
 	FASTAPI_SECRET_KEY='e8cb82f5-b966-4496-b96e-8c021892e265' CI=True coverage run -m pytest -s -vv tests &&\

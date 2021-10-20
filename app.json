@@ -1,0 +1,26 @@
+{
+    "name": "Scan websites",
+    "success_url": "/en",
+    "scripts": {
+        "postdeploy": "cd api && make heroku seed"
+    },
+    "env": {
+        "FASTAPI_SECRET_KEY": {
+            "description": "A secret key for verifying the integrity of signed cookies.",
+            "generator": "secret"
+        }
+    },
+    "addons": [
+        {
+            "plan": "heroku-postgresql",
+            "options": {
+                "version": "9.5"
+            }
+        }
+    ],
+    "buildpacks": [
+        {
+            "url": "heroku/python"
+        }
+    ]
+}
