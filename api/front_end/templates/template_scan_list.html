@@ -16,9 +16,10 @@
     <li>{{template.name}}</li>
   </ol>
 </nav>
-<section><h1 class="text-center">{{ existing_scans_locale }}</h1></section>
+<h1 class="text-gray-700 font-semibold uppercase text-xl mb-7">{{ existing_scans_locale }}</h1>
+<hr class="my-3"/>
 <div class="container">
-  <a href="/{{ lang }}/template/{{ template.id }}/scan/new" class="button flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 text-sm border-4 text-black py-1 px-2 rounded">{{ add_new_scan_locale }}</a>
+  <a href="/{{ lang }}/template/{{ template.id }}/scan/new" class="button flex-shrink-0 bg-green-500 hover:bg-green-700 border-green-500 hover:border-green-700 text-sm border-4 text-black py-1 px-2 rounded">{{ add_new_scan_locale }}</a>
   <div class="row mb-8 my-8">
     <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
       <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
