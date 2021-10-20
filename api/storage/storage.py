@@ -58,9 +58,7 @@ def retrieve_and_route(record):
 
 
 def store_axe_core_record(session, payload):
-    print(session)
     a11y_report = session.query(A11yReport).get(payload["id"])
-    print(a11y_report)
 
     if a11y_report is None:
         return False
