@@ -1,11 +1,19 @@
 {% extends "base.html" %}
 {% block body %}
+  <nav
+    class="block text-sm text-left text-green-800 h-12 flex items-center p-4 mb-5 border-2 border-gray-500"
+    role="alert"
+  >
+    <ol class="list-reset flex text-grey-dark">
+      <li><a href="/{{ lang }}" class="font-bold">{{dashboard_locale}}</a></li>
+    </ol>
+  </nav>
   {% if request.session.user is not defined %}
   <h1 class="text-gray-800 font-semibold tracking-wider underline">{{ list_of_products_locale }}</h1>
   {% else %}
   <h1><a href="/{{ lang }}/template" class="text-gray-800 font-semibold tracking-wider underline">{{ list_of_products_locale }}</a></h1>
   {% endif %}
-  <hr/>
+  <hr class="pb-5"/>
 
   <div class="space-y-4">
     {% for template in template_list %}
@@ -83,8 +91,8 @@
             {% endfor %}            
         </div>
     </div>
-  </div>
   {% endfor %}
+  </div>
 </div>
 
   {% block footer %}

@@ -3,6 +3,16 @@
 <script src="{{ url_for('static', path='js/template.js') }}"></script>
 {% endblock %}
 {% block body %}
+  <nav
+    class="block text-sm text-left text-green-800 h-12 flex items-center p-4 mb-5 border-2 border-gray-500"
+    role="alert"
+  >
+    <ol class="list-reset flex text-grey-dark">
+      <li><a href="/{{ lang }}" class="font-bold">{{dashboard_locale}}</a></li>
+      <li><span class="mx-2">/</span></li>
+      <li>{{templates_locale}}</li>
+    </ol>
+  </nav>
   <h1 class="text-center">{{ templates_locale }}</h1>
   <div class="flex flex-col">
     <form id="newTemplateForm" class="w-full max-w-sm" action="/scans/template" method="POST">
