@@ -42,11 +42,12 @@ def retrieve_and_route(record):
 
     try:
         payload = json.loads(body)
+        session = db_session()
 
         if name == os.environ.get("AXE_CORE_REPORT_DATA_BUCKET", None):
-            return store_axe_core_record(payload)
+            return store_axe_core_record(session, payload)
         elif name == os.environ.get("OWASP_ZAP_REPORT_DATA_BUCKET", None):
-            return store_owasp_zap_record(payload)
+            return store_owasp_zap_record(session, payload)
         else:
             log.error(f"Unknown bucket {name}")
             return False
@@ -56,8 +57,7 @@ def retrieve_and_route(record):
         return False
 
 
-def store_axe_core_record(payload):
-    session = db_session()
+def store_axe_core_record(session, payload):
     a11y_report = session.query(A11yReport).get(payload["id"])
 
     if a11y_report is None:
@@ -106,8 +106,7 @@ def sum_impact(violations):
     return d
 
 
-def store_owasp_zap_record(payload):
-    session = db_session()
+def store_owasp_zap_record(session, payload):
     security_report = session.query(SecurityReport).get(payload["id"])
 
     if security_report is None:
