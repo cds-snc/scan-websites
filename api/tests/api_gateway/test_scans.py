@@ -16,7 +16,7 @@ client = TestClient(api.app)
 
 
 def test_create_template_valid(logged_in_client):
-    response = logged_in_client.post("/scans/template", data={"name": "foo"})
+    response = logged_in_client.post("/scans/template", json={"name": "foo"})
     assert response.json() == {"id": ANY}
     assert response.status_code == 200
 

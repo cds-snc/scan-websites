@@ -1,5 +1,4 @@
 from pydantic import BaseModel, AnyHttpUrl
-from .common import as_form
 from typing import List, Optional
 
 
@@ -10,12 +9,9 @@ class TemplateFilter(BaseModel):
         orm_mode = True
 
 
-@as_form
 class TemplateCreate(TemplateFilter):
     class Config:
         extra = "forbid"
-
-    pass
 
 
 class TemplateScanType(BaseModel):

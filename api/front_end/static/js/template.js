@@ -20,7 +20,8 @@ $(document).ready(function() {
     $.ajax({
       url: form.attr("action"),
       type: form.attr("method"),
-      data: form.serializeArray(),
+      data: JSON.stringify({"name": form.serializeArray()[0]["value"]}),
+      contentType: "application/json; charset=utf-8",
       dataType: "json",
       success: function () {
         location.href = window.location.href;;

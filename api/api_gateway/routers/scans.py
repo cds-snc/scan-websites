@@ -167,7 +167,7 @@ def start_scan(
 async def save_template(
     response: Response,
     request: Request,
-    template: TemplateCreate = Depends(TemplateCreate.as_form),
+    template: TemplateCreate,
     session: Session = Depends(get_session),
 ):
     try:
