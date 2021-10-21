@@ -327,7 +327,10 @@ async def login(request: Request, locale: str):
         if locale not in languages:
             locale = default_fallback
 
-        result = {"request": request}
+        result = {
+            "request": request,
+            "heroku": os.environ.get("HEROKU_PR_NUMBER", False),
+        }
         result.update(languages[locale])
         return templates.TemplateResponse("login.html", result)
     except Exception as e:
