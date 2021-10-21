@@ -1,1 +1,0 @@
-web: cd api && make heroku-run

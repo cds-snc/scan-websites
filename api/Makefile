@@ -1,4 +1,4 @@
-.PHONY: dev fmt install lint migrations test fmt-ci lint-ci build install-dev seed heroku-seed heroku-run
+.PHONY: dev fmt install lint migrations test fmt-ci lint-ci build install-dev seed
 
 build: ;
 
@@ -7,14 +7,6 @@ dev:
 
 fmt:
 	black . $(ARGS)
-
-heroku-seed:
-	make install &&\
-	SQLALCHEMY_DATABASE_URI=$DATABASE_URL make migrations &&\
-	SQLALCHEMY_DATABASE_URI=$DATABASE_URL make seed
-
-heroku-run:
-	SQLALCHEMY_DATABASE_URI=$DATABASE_URL uvicorn main:app --port $PORT
 
 install:
 	pip3 install --user -r requirements.txt
