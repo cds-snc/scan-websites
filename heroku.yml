@@ -1,6 +1,6 @@
 build:
   docker:
-    web: app/Dockerfile.heroku
+    web: api/Dockerfile.heroku
 run:
   web: |
     /function/bin/heroku_run.sh
