@@ -10,10 +10,11 @@ fmt:
 
 heroku-seed:
 	make install &&\
-	make migrations &&\
-	make seed
+	SQLALCHEMY_DATABASE_URI=$DATABASE_URL make migrations &&\
+	SQLALCHEMY_DATABASE_URI=$DATABASE_URL make seed
 
 heroku-run:
+	SQLALCHEMY_DATABASE_URI=$DATABASE_URL uvicorn main:app --port $PORT
 
 install:
 	pip3 install --user -r requirements.txt
