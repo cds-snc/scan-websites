@@ -1,4 +1,4 @@
-.PHONY: dev fmt install lint migrations test fmt-ci lint-ci build install-dev seed heroku-seed
+.PHONY: dev fmt install lint migrations test fmt-ci lint-ci build install-dev seed heroku-seed heroku-run
 
 build: ;
 
