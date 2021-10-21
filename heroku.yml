@@ -7,6 +7,6 @@ run:
 setup:
   addons:
     - plan: heroku-postgresql
-      as: SQLALCHEMY_DATABASE_URI
+      as: DATABASE
   config:
     FASTAPI_SECRET_KEY: "e8cb82f5-b966-4496-b96e-8c021892e265"

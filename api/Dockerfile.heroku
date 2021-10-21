@@ -47,6 +47,10 @@ COPY ./requirements.txt ${FUNCTION_DIR}
 
 RUN python3.9 -m pip install -r ${FUNCTION_DIR}/requirements.txt --target /pymodules
 
+COPY ./requirements_dev.txt ${FUNCTION_DIR}
+
+RUN python3.9 -m pip install -r ${FUNCTION_DIR}/requirements_dev.txt --target /pymodules
+
 # DO NOT INSTALL CHROMIUM
 # RUN playwright install chromium
 
@@ -58,3 +62,6 @@ ARG git_sha
 ENV GIT_SHA=$git_sha
 
 ARG PORT
+ARG DATABASE_URL
+ARG FASTAPI_SECRET_KEY
+ARG HEROKU_PR_NUMBER
