@@ -1,12 +1,21 @@
 from fastapi.testclient import TestClient
 from unittest.mock import ANY, MagicMock, patch
 
-
 from api_gateway import api
+from factories import (
+    OrganisationFactory,
+    ScanFactory,
+    ScanTypeFactory,
+    SecurityReportFactory,
+    SecurityViolationFactory,
+    TemplateFactory,
+    TemplateScanFactory,
+)
+
 from models.Scan import Scan
 from models.SecurityReport import SecurityReport
 from models.SecurityViolation import SecurityViolation
-from pub_sub import pub_sub
+from pub_sub.pub_sub import AvailableScans
 
 
 import os
@@ -21,14 +30,17 @@ def test_create_template_valid(logged_in_client):
     assert response.status_code == 200
 
 
-def test_create_template_scan_valid(
-    home_org_template_fixture_2, scan_type_fixture, logged_in_client
-):
+def test_create_template_scan_valid(session, authorized_request):
+    logged_in_client, _, organisation = authorized_request
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory()
+    session.commit()
+
     response = logged_in_client.post(
-        f"/scans/template/{str(home_org_template_fixture_2.id)}/scan",
+        f"/scans/template/{str(template.id)}/scan",
         json={
             "data": {"url": "https://www.example.com"},
-            "scan_types": [{"scanType": scan_type_fixture.name}],
+            "scan_types": [{"scanType": scan_type.name}],
         },
     )
     assert response.json() == {"id": ANY}
@@ -36,16 +48,21 @@ def test_create_template_scan_valid(
 
 
 def test_create_template_scan_when_already_exist(
-    home_org_template_fixture,
-    home_org_template_scan_fixture,
-    scan_type_fixture,
-    logged_in_client,
+    session,
+    authorized_request,
 ):
+    logged_in_client, _, organisation = authorized_request
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory()
+
+    TemplateScanFactory(template=template, scan_type=scan_type)
+    session.commit()
+
     response = logged_in_client.post(
-        f"/scans/template/{str(home_org_template_fixture.id)}/scan",
+        f"/scans/template/{str(template.id)}/scan",
         json={
             "data": {"url": "https://www.example.com"},
-            "scan_types": [{"scanType": scan_type_fixture.name}],
+            "scan_types": [{"scanType": scan_type.name}],
         },
     )
     assert response.json() == {"id": ANY}
@@ -53,23 +70,37 @@ def test_create_template_scan_when_already_exist(
 
 
 def test_create_template_scan_not_my_org(
-    template_fixture, scan_type_fixture, logged_in_client
+    session,
+    authorized_request,
 ):
+    logged_in_client, _, _ = authorized_request
+
+    organisation = OrganisationFactory()
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory()
+    session.commit()
+
     response = logged_in_client.post(
-        f"/scans/template/{str(template_fixture.id)}/scan",
+        f"/scans/template/{str(template.id)}/scan",
         json={
             "data": {"url": "https://www.example.com"},
-            "scan_types": [{"scanType": scan_type_fixture.name}],
+            "scan_types": [{"scanType": scan_type.name}],
         },
     )
     assert response.status_code == 401
 
 
 def test_create_template_scan_unknown_scan_type(
-    home_org_template_fixture, logged_in_client
+    session,
+    authorized_request,
 ):
+    logged_in_client, _, organisation = authorized_request
+
+    template = TemplateFactory(organisation=organisation)
+    session.commit()
+
     response = logged_in_client.post(
-        f"/scans/template/{str(home_org_template_fixture.id)}/scan",
+        f"/scans/template/{str(template.id)}/scan",
         json={
             "data": {"url": "https://www.example.com"},
             "scan_types": [{"scanType": "foo"}],
@@ -82,13 +113,20 @@ def test_create_template_scan_unknown_scan_type(
 
 
 def test_create_template_scan_invalid_url(
-    home_org_template_fixture, scan_type_fixture, logged_in_client
+    session,
+    authorized_request,
 ):
+    logged_in_client, _, organisation = authorized_request
+
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory()
+    session.commit()
+
     response = logged_in_client.post(
-        f"/scans/template/{str(home_org_template_fixture.id)}/scan",
+        f"/scans/template/{str(template.id)}/scan",
         json={
             "data": {"url": "ftp://www.example.com"},
-            "scan_types": [{"scanType": scan_type_fixture.name}],
+            "scan_types": [{"scanType": scan_type.name}],
         },
     )
 
@@ -96,9 +134,17 @@ def test_create_template_scan_invalid_url(
     assert response.status_code == 422
 
 
-def test_create_template_scan_url_missing(home_org_template_fixture, logged_in_client):
+def test_create_template_scan_url_missing(
+    session,
+    authorized_request,
+):
+    logged_in_client, _, organisation = authorized_request
+
+    template = TemplateFactory(organisation=organisation)
+    session.commit()
+
     response = logged_in_client.post(
-        f"/scans/template/{str(home_org_template_fixture.id)}/scan",
+        f"/scans/template/{str(template.id)}/scan",
         json={"data": {"foo": "bar"}, "scan_types": [{"scanType": "axe-core"}]},
     )
 
@@ -107,16 +153,21 @@ def test_create_template_scan_url_missing(home_org_template_fixture, logged_in_c
 
 
 def test_update_template_scan_valid(
-    home_org_template_fixture,
-    home_org_template_scan_fixture,
-    scan_type_fixture,
-    logged_in_client,
+    session,
+    authorized_request,
 ):
+    logged_in_client, _, organisation = authorized_request
+
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory()
+    template_scan = TemplateScanFactory(template=template, scan_type=scan_type)
+    session.commit()
+
     response = logged_in_client.put(
-        f"/scans/template/{str(home_org_template_fixture.id)}/scan/{str(home_org_template_scan_fixture.id)}",
+        f"/scans/template/{str(template.id)}/scan/{str(template_scan.id)}",
         json={
             "data": {"url": "https://other.example.com"},
-            "scan_types": [{"scanType": scan_type_fixture.name}],
+            "scan_types": [{"scanType": scan_type.name}],
         },
     )
     assert response.json() == {"id": ANY}
@@ -124,88 +175,112 @@ def test_update_template_scan_valid(
 
 
 def test_update_template_scan_not_my_template(
-    template_fixture,
-    home_org_template_scan_fixture,
-    template_scan_fixture,
-    scan_type_fixture,
-    logged_in_client,
+    session,
+    authorized_request,
 ):
+    logged_in_client, _, _ = authorized_request
+
+    organisation = OrganisationFactory()
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory()
+    template_scan = TemplateScanFactory(template=template, scan_type=scan_type)
+    session.commit()
+
     response = logged_in_client.put(
-        f"/scans/template/{str(template_fixture.id)}/scan/{str(template_scan_fixture.id)}",
+        f"/scans/template/{str(template.id)}/scan/{str(template_scan.id)}",
         json={
             "data": {"url": "https://other.example.com"},
-            "scan_types": [{"scanType": scan_type_fixture.name}],
+            "scan_types": [{"scanType": scan_type.name}],
         },
     )
     assert response.status_code == 401
 
 
 def test_update_template_scan_invalid_template(
-    template_fixture,
-    home_org_template_scan_fixture,
-    scan_type_fixture,
-    logged_in_client,
+    session,
+    authorized_request,
 ):
+    logged_in_client, _, _ = authorized_request
+
+    scan_type = ScanTypeFactory()
+    session.commit()
+
     response = logged_in_client.put(
         "/scans/template/foo/scan/bar",
         json={
             "data": {"url": "https://other.example.com"},
-            "scan_types": [{"scanType": scan_type_fixture.name}],
+            "scan_types": [{"scanType": scan_type.name}],
         },
     )
     assert response.status_code == 401
 
 
-@patch("database.db.get_session")
 @patch("pub_sub.pub_sub.get_session")
 def test_start_scan_valid_api_keys(
     mock_aws_session,
-    mock_db_session,
-    loggedin_user_fixture,
-    owasp_zap_fixture,
-    home_org_owasp_zap_template_fixture,
-    home_org_owasp_zap_template_scan_fixture,
+    session,
+    authorized_request,
 ):
     mock_client = MagicMock()
     mock_aws_session.return_value.client.return_value = mock_client
 
+    _, user, organisation = authorized_request
+
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.OWASP_ZAP.value,
+        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+    )
+    template_scan = TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    session.commit()
+
     response = client.get(
         "scans/start",
         headers={
-            "X-API-KEY": str(loggedin_user_fixture.access_token),
-            "X-TEMPLATE-TOKEN": str(home_org_owasp_zap_template_fixture.token),
+            "X-API-KEY": str(user.access_token),
+            "X-TEMPLATE-TOKEN": str(template.token),
         },
     )
 
     assert response.status_code == 200
     assert response.json() == {
-        "message": f"Scan start details: {home_org_owasp_zap_template_fixture.name}, successful: ['{home_org_owasp_zap_template_scan_fixture.scan_type.name}'], failed: []"
+        "message": f"Scan start details: {template.name}, successful: ['{template_scan.scan_type.name}'], failed: []"
     }
 
 
-@patch("database.db.get_session")
 @patch("pub_sub.pub_sub.dispatch")
 def test_start_scan_valid_api_keys_with_unknown_error(
     mock_dispatch,
-    mock_db_session,
-    loggedin_user_fixture,
-    owasp_zap_fixture,
-    home_org_owasp_zap_template_fixture,
-    home_org_owasp_zap_template_scan_fixture,
+    session,
+    authorized_request,
 ):
     mock_dispatch.side_effect = Exception()
+
+    _, user, organisation = authorized_request
+
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.OWASP_ZAP.value,
+        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+    )
+    template_scan = TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    session.commit()
 
     response = client.get(
         "scans/start",
         headers={
-            "X-API-KEY": str(loggedin_user_fixture.access_token),
-            "X-TEMPLATE-TOKEN": str(home_org_owasp_zap_template_fixture.token),
+            "X-API-KEY": str(user.access_token),
+            "X-TEMPLATE-TOKEN": str(template.token),
         },
     )
 
     assert response.status_code == 200
     assert response.json() == {
-        "message": f"Scan start details: {home_org_owasp_zap_template_fixture.name}, successful: [], failed: ['{home_org_owasp_zap_template_scan_fixture.scan_type.name}']"
+        "message": f"Scan start details: {template.name}, successful: [], failed: ['{template_scan.scan_type.name}']"
     }
 
 
@@ -213,18 +288,31 @@ def test_start_scan_valid_api_keys_with_unknown_error(
 @patch("database.db.get_session")
 @patch.dict(os.environ, {"OWASP_ZAP_URLS_TOPIC": "topic"}, clear=True)
 def test_start_scan_valid_api_keys_with_gitsha(
-    mock_db_session,
+    mock_aws_session,
     mock_send,
-    loggedin_user_fixture,
-    owasp_zap_fixture,
-    home_org_owasp_zap_template_fixture,
-    home_org_owasp_zap_template_scan_fixture,
+    session,
+    authorized_request,
 ):
+    mock_client = MagicMock()
+    mock_aws_session.return_value.client.return_value = mock_client
+
+    _, user, organisation = authorized_request
+
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.OWASP_ZAP.value,
+        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+    )
+    template_scan = TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    session.commit()
+
     response = client.get(
         "scans/start/revision/123456789",
         headers={
-            "X-API-KEY": str(loggedin_user_fixture.access_token),
-            "X-TEMPLATE-TOKEN": str(home_org_owasp_zap_template_fixture.token),
+            "X-API-KEY": str(user.access_token),
+            "X-TEMPLATE-TOKEN": str(template.token),
         },
     )
 
@@ -233,12 +321,12 @@ def test_start_scan_valid_api_keys_with_gitsha(
     mock_send.assert_called_once_with(
         "topic",
         {
-            "type": pub_sub.AvailableScans.OWASP_ZAP.value,
-            "product": home_org_owasp_zap_template_fixture.name,
+            "type": AvailableScans.OWASP_ZAP.value,
+            "product": template.name,
             "revision": "123456789",
-            "template_id": str(home_org_owasp_zap_template_fixture.id),
+            "template_id": str(template.id),
             "scan_id": ANY,
-            "url": "https://www.alpha.canada.ca",
+            "url": template_scan.data["url"],
             "crawl": False,
             "event": "sns",
             "queue": "topic",
@@ -252,23 +340,27 @@ def test_start_scan_valid_api_keys_with_gitsha(
 def test_start_scan_valid_api_keys_with_crawling(
     mock_add_task,
     session,
-    loggedin_user_fixture,
-    owasp_zap_fixture,
-    home_org_owasp_zap_template_fixture,
-    home_org_owasp_zap_template_scan_fixture,
+    authorized_request,
 ):
-    home_org_owasp_zap_template_scan_fixture.data = {
-        "crawl": "true",
-        "url": "https://www.alpha.canada.ca",
-    }
+    _, user, organisation = authorized_request
 
-    session.add(home_org_owasp_zap_template_scan_fixture)
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.OWASP_ZAP.value,
+        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+    )
+    template_scan = TemplateScanFactory(
+        template=template,
+        scan_type=scan_type,
+        data={"url": "http://www.example.com", "crawl": "true"},
+    )
     session.commit()
+
     response = client.get(
         "scans/start/revision/123456789",
         headers={
-            "X-API-KEY": str(loggedin_user_fixture.access_token),
-            "X-TEMPLATE-TOKEN": str(home_org_owasp_zap_template_fixture.token),
+            "X-API-KEY": str(user.access_token),
+            "X-TEMPLATE-TOKEN": str(template.token),
         },
     )
 
@@ -277,12 +369,12 @@ def test_start_scan_valid_api_keys_with_crawling(
     mock_add_task.assert_called_once_with(
         ANY,
         {
-            "type": pub_sub.AvailableScans.OWASP_ZAP.value,
-            "product": home_org_owasp_zap_template_fixture.name,
+            "type": AvailableScans.OWASP_ZAP.value,
+            "product": template.name,
             "revision": "123456789",
-            "template_id": str(home_org_owasp_zap_template_fixture.id),
+            "template_id": str(template.id),
             "scan_id": ANY,
-            "url": "https://www.alpha.canada.ca",
+            "url": template_scan.data["url"],
             "crawl": "true",
             "event": "sns",
             "queue": "topic",
@@ -294,19 +386,30 @@ def test_start_scan_valid_api_keys_with_crawling(
 @patch("pub_sub.pub_sub.get_session")
 def test_start_scan_valid_keys_wrong_org(
     mock_aws_session,
-    mock_db_session,
-    loggedin_user_fixture,
-    home_org_template_fixture,
-    template_fixture,
+    session,
+    authorized_request,
 ):
     mock_client = MagicMock()
     mock_aws_session.return_value.client.return_value = mock_client
 
+    _, user, _ = authorized_request
+
+    organisation = OrganisationFactory()
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.OWASP_ZAP.value,
+        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+    )
+    TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    session.commit()
+
     response = client.get(
         "scans/start",
         headers={
-            "X-API-KEY": str(loggedin_user_fixture.access_token),
-            "X-TEMPLATE-TOKEN": str(template_fixture.token),
+            "X-API-KEY": str(user.access_token),
+            "X-TEMPLATE-TOKEN": str(template.token),
         },
     )
 
@@ -314,12 +417,8 @@ def test_start_scan_valid_keys_wrong_org(
 
 
 @patch("database.db.get_session")
-@patch("pub_sub.pub_sub.get_session")
 def test_start_scan_no_api_keys(
     mock_aws_session,
-    mock_db_session,
-    loggedin_user_fixture,
-    home_org_template_fixture,
 ):
     mock_client = MagicMock()
     mock_aws_session.return_value.client.return_value = mock_client
@@ -332,31 +431,84 @@ def test_start_scan_no_api_keys(
 @patch("pub_sub.pub_sub.get_session")
 def test_start_scan_invalid_user_api_key(
     mock_aws_session,
-    mock_db_session,
-    loggedin_user_fixture,
-    home_org_template_fixture,
+    session,
+    authorized_request,
 ):
     mock_client = MagicMock()
     mock_aws_session.return_value.client.return_value = mock_client
+
+    _, _, organisation = authorized_request
+
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.OWASP_ZAP.value,
+        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+    )
+    TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    session.commit()
 
     response = client.get(
         "scans/start",
         headers={
             "X-API-KEY": "foo",
-            "X-TEMPLATE-TOKEN": str(home_org_template_fixture.token),
+            "X-TEMPLATE-TOKEN": str(template.token),
+        },
+    )
+    assert response.status_code == 401
+
+
+@patch("database.db.get_session")
+@patch("pub_sub.pub_sub.get_session")
+def test_start_scan_invalid_template_token(
+    mock_aws_session,
+    session,
+    authorized_request,
+):
+    mock_client = MagicMock()
+    mock_aws_session.return_value.client.return_value = mock_client
+
+    _, user, organisation = authorized_request
+
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.OWASP_ZAP.value,
+        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+    )
+    TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    session.commit()
+
+    response = client.get(
+        "scans/start",
+        headers={
+            "X-API-KEY": str(user.access_token),
+            "X-TEMPLATE-TOKEN": "bar",
         },
     )
     assert response.status_code == 401
 
 
 def test_delete_security_report_with_bad_id(
-    home_org_template_fixture,
-    home_org_template_scan_fixture_with_zap,
-    logged_in_client,
     session,
+    authorized_request,
 ):
+
+    logged_in_client, _, organisation = authorized_request
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.OWASP_ZAP.value,
+        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+    )
+    template_scan = TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    session.commit()
+
     response = logged_in_client.delete(
-        f"/scans/template/{str(home_org_template_fixture.id)}/scan/{str(home_org_template_scan_fixture_with_zap.id)}/security/foo"
+        f"/scans/template/{str(template.id)}/scan/{str(template_scan.id)}/security/foo"
     )
 
     assert response.json() == {"error": "error deleting report"}
@@ -364,13 +516,26 @@ def test_delete_security_report_with_bad_id(
 
 
 def test_delete_security_report_with_id_not_found(
-    home_org_template_fixture,
-    home_org_scan_fixture,
-    logged_in_client,
     session,
+    authorized_request,
 ):
+
+    logged_in_client, _, organisation = authorized_request
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.OWASP_ZAP.value,
+        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+    )
+    TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    scan = ScanFactory(
+        organisation=organisation, template=template, scan_type=scan_type
+    )
+    session.commit()
+
     response = logged_in_client.delete(
-        f"/scans/template/{str(home_org_template_fixture.id)}/scan/{str(home_org_scan_fixture.id)}/security/{str(uuid.uuid4())}"
+        f"/scans/template/{str(template.id)}/scan/{str(scan.id)}/security/{str(uuid.uuid4())}"
     )
 
     assert response.json() == {"error": "error deleting report"}
@@ -378,18 +543,30 @@ def test_delete_security_report_with_id_not_found(
 
 
 def test_delete_security_report_with_correct_id(
-    home_org_template_fixture,
-    home_org_scan_fixture,
-    home_org_security_report_fixture_2,
-    home_org_security_violation_fixture_2,
-    logged_in_client,
     session,
+    authorized_request,
 ):
 
-    deleted_security_report = home_org_security_report_fixture_2.id
-    deleted_security_violation = home_org_security_violation_fixture_2.id
+    logged_in_client, _, organisation = authorized_request
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.OWASP_ZAP.value,
+        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+    )
+    TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    scan = ScanFactory(
+        organisation=organisation, template=template, scan_type=scan_type
+    )
+    security_report = SecurityReportFactory(scan=scan)
+    security_violation = SecurityViolationFactory(security_report=security_report)
+    session.commit()
+
+    deleted_security_report = security_report.id
+    deleted_security_violation = security_violation.id
     response = logged_in_client.delete(
-        f"/scans/template/{str(home_org_template_fixture.id)}/scan/{str(home_org_scan_fixture.id)}/security/{str(home_org_security_report_fixture_2.id)}"
+        f"/scans/template/{str(template.id)}/scan/{str(scan.id)}/security/{str(security_report.id)}"
     )
 
     security_report = (
@@ -409,60 +586,47 @@ def test_delete_security_report_with_correct_id(
     assert len(security_violations) == 0
 
 
-@patch("database.db.get_session")
-@patch("pub_sub.pub_sub.get_session")
-def test_start_scan_invalid_template_token(
-    mock_aws_session,
-    mock_db_session,
-    loggedin_user_fixture,
-    home_org_template_fixture,
-):
-    mock_client = MagicMock()
-    mock_aws_session.return_value.client.return_value = mock_client
+def test_delete_template_scan_with_bad_id(session, authorized_request):
+    logged_in_client, _, organisation = authorized_request
 
-    response = client.get(
-        "scans/start",
-        headers={
-            "X-API-KEY": str(loggedin_user_fixture.access_token),
-            "X-TEMPLATE-TOKEN": "bar",
-        },
-    )
-    assert response.status_code == 401
+    template = TemplateFactory(organisation=organisation)
+    session.commit()
+
+    response = logged_in_client.delete(f"/scans/template/{str(template.id)}/scan/foo")
+    assert response.json() == {"error": "error deleting template"}
+    assert response.status_code == 500
 
 
-@patch("database.db.get_session")
-def test_delete_template_scan_with_bad_id(
-    mock_db_session, home_org_template_fixture, logged_in_client
-):
-    response = logged_in_client.delete(
-        f"/scans/template/{str(home_org_template_fixture.id)}/scan/foo"
+def test_delete_template_scan_with_id_not_found(session, authorized_request):
+    client, _, organisation = authorized_request
+
+    template = TemplateFactory(organisation=organisation)
+    session.commit()
+
+    response = client.delete(
+        f"/scans/template/{str(template.id)}/scan/{str(uuid.uuid4())}"
     )
     assert response.json() == {"error": "error deleting template"}
     assert response.status_code == 500
 
 
-@patch("database.db.get_session")
-def test_delete_template_scan_with_id_not_found(
-    mock_db_session, home_org_template_fixture, logged_in_client
-):
-    response = logged_in_client.delete(
-        f"/scans/template/{str(home_org_template_fixture.id)}/scan/{str(uuid.uuid4())}"
-    )
-    assert response.json() == {"error": "error deleting template"}
-    assert response.status_code == 500
-
-
-@patch("database.db.get_session")
 def test_delete_template_scan_with_correct_id(
-    mock_db_session,
-    home_org_template_fixture,
-    home_org_template_scan_fixture,
-    home_org_scan_fixture,
-    logged_in_client,
     session,
+    authorized_request,
 ):
+    logged_in_client, _, organisation = authorized_request
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.OWASP_ZAP.value,
+        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+    )
+    template_scan = TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    session.commit()
+
     response = logged_in_client.delete(
-        f"/scans/template/{str(home_org_template_fixture.id)}/scan/{str(home_org_template_scan_fixture.id)}"
+        f"/scans/template/{str(template.id)}/scan/{str(template_scan.id)}"
     )
 
     assert response.json() == {"status": "OK"}
@@ -470,20 +634,32 @@ def test_delete_template_scan_with_correct_id(
 
 
 def test_delete_template_scan_with_correct_id_has_reports(
-    home_org_template_fixture,
-    home_org_template_scan_fixture_with_zap,
-    home_org_scan_fixture,
-    home_org_security_report_fixture,
-    home_org_security_violation_fixture,
-    logged_in_client,
     session,
+    authorized_request,
 ):
-    deleted_scan_id = home_org_scan_fixture.id
-    deleted_security_report = home_org_security_report_fixture.id
-    deleted_security_violation = home_org_security_violation_fixture.id
+
+    logged_in_client, _, organisation = authorized_request
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.OWASP_ZAP.value,
+        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+    )
+    template_scan = TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    scan = ScanFactory(
+        organisation=organisation, template=template, scan_type=scan_type
+    )
+    security_report = SecurityReportFactory(scan=scan)
+    security_violation = SecurityViolationFactory(security_report=security_report)
+    session.commit()
+
+    deleted_scan_id = scan.id
+    deleted_security_report = security_report.id
+    deleted_security_violation = security_violation.id
 
     response = logged_in_client.delete(
-        f"/scans/template/{str(home_org_template_fixture.id)}/scan/{str(home_org_template_scan_fixture_with_zap.id)}"
+        f"/scans/template/{str(template.id)}/scan/{str(template_scan.id)}"
     )
 
     scan = session.query(Scan).filter(Scan.id == deleted_scan_id).one_or_none()
