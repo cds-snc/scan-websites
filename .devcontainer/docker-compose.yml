@@ -32,7 +32,11 @@ services:
       AXE_CORE_REPORT_DATA_BUCKET: axe-core-report-data 
       OWASP_ZAP_REPORT_DATA_BUCKET: oswasp-zap-report-data 
       <<: *db-connection-strings
-
+  scanner-github:
+    build:
+      context: ../scanners/github/
+    environment:
+      AWS_LOCALSTACK: "True"
   scanner-axe:
     build:
       context: ../scanners/axe-core/

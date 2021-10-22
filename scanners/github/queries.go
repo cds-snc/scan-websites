@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/google/uuid"
 	"github.com/shurcooL/githubv4"
 )
 
@@ -34,5 +33,5 @@ type complianceQuery struct {
 
 type complianceScan struct {
 	QueryResults complianceQuery
-	ScanId       uuid.UUID
+	ScanId       string
 }
