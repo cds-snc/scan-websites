@@ -5,97 +5,109 @@
     role="alert"
   >
     <ol class="list-reset flex text-grey-dark">
-      <li><a href="/{{ lang }}" class="font-bold">{{home_locale}}</a></li>
+      <li>
+        <a href="/{{ lang }}" class="font-bold">{{home_locale}}</a>
+      </li>
     </ol>
   </nav>
-  
   {% if request.session.user is defined %}
-  <a href="/{{ lang }}/template" class="button flex-shrink-0 bg-green-500 hover:bg-green-700 border-green-500 hover:border-green-700 text-sm border-4 text-black py-1 px-2 rounded float-right">{{ add_template_locale }}</a>
+    <a href="/{{ lang }}/template" class="button flex-shrink-0 bg-green-500 hover:bg-green-700 border-green-500 hover:border-green-700 text-sm border-4 text-black py-1 px-2 rounded float-right">{{ add_template_locale }}</a>
   {% endif %}
   <h1 class="text-gray-700 font-semibold uppercase text-xl mb-7">{{ list_of_products_locale }}</h1>
   <hr class="my-3"/>
   <div class="space-y-4">
     {% for template in template_list %}
-    <div class="shadow-lg p-4 bg-white relative overflow-hidden">
-      <div class="flex items-center border-b-2 mb-2 py-2">
-        <h2 class="text-gray-800 tracking-wider">{{ template.name }}</h2>
-      </div>  
-      <div class="container flex flex-row border-2 border-gray-300 space-y-6 p-5">
-          <div class="bg-gray-100 rounded-lg h-auto p-4 flex flex-row justify-between divide-x divide-solid divide-gray-400">
-              {% for scan in template.scans %}
+      <div class="shadow-lg p-4 bg-white relative overflow-hidden">
+        <div class="flex items-center border-b-2 mb-5 py-2">
+          <h2 class="text-gray-800 tracking-wider">{{ template.name }}</h2>
+        </div>
+        {% if template.scans | length > 0 %}
+          <div class="grid gap-6 mb-8 md:grid-cols-2 xl:grid-cols-4">
+            {% for scan in template.scans %}
               {% if scan.security_reports %}
-              <div class="relative flex-1 flex flex-col gap-2 px-4">
-                  <h3 class="text-gray-800 text-base font-semibold tracking-wider">
-                    {% if request.session.user is not defined %}
-                    <span>{{ scan.scan_type.name }}</span>
-                    {% else %}
-                    <a href="/{{ lang }}/results/{{ template.id }}/scan/{{ scan.id }}">{{ scan.scan_type.name }}</a>
-                    {% endif %}
-                  </h3>
-                  <div class="container flex flex-row gap-1">
-                    <div class="relative flex-1 flex flex-col gap-2">
-                      <span class="font-semibold">{{ revisions_locale }}</span>
-                      <div class="text-green-800 text-4xl font-bold">{{ scan.security_reports | length }}</div>
+                <div class="flex items-start p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800 border-2	">
+                  <div>
+                    <div class="p-3 mr-4 text-red-500 bg-red-100 rounded-full dark:text-red-100 dark:bg-red-500">
+                      <svg width="24px" height="24px" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path fill="#000" d="M20.72 19.34v39.72L151.6 132.9l94.9-45.12L151 19.34H20.72zm196.98.1L313 76.78C226.5 118 135.1 161.4 57.53 198.3l161.57 86.1 59.6-39.2-39.4-34.9c82.3-40.6 168.3-83.5 241.8-119.93l-93.6-70.93H217.7zM361.9 170.5l-76.5 37.9 44.9 25.3c-54.2 35.6-111.8 73.6-160.6 105.7l325.2 154.8L307.5 347c57.6-32.3 117.5-65.9 168.8-94.6l-114.4-81.9zm13.2 160.1l-33.9 18.9 139.3 74.3c-35.1-31.1-70.3-62.2-105.4-93.2z"/></svg>
                     </div>
-                    <div class="relative flex-1 flex flex-col gap-2">
-                      <span class="font-semibold">{{ violations_locale }}</span>
-                      <div class="text-green-800 text-4xl font-bold">{{ scan.security_reports[0].security_violations | length }}</div>
+                    <div class="text-green-500 mr-4 mt-3 font-semibold text-center		">
+                      -5 
                     </div>
-                    {% if scan.security_reports | length > 1 and scan.security_reports[0].security_violations | length > 0 %}
-                    {% set delta = (((scan.security_reports[0].security_violations | length - scan.security_reports[1].security_violations | length) / scan.security_reports[0].security_violations | length) * 100)|int %}
-                    <div class="absolute bg-red-400 rounded-md font-semibold text-xs text-gray-100 p-2 right-0 bottom-0">
-                      {% if delta > 0  %}
-                      +
-                      {% elif delta < 0 %}
-                      -
-                      {% endif %}
-                      {{ delta | abs }}%
-                    </div>
-                    {% endif %}
-                  </div>  
-              </div>
+                  </div>
+                  <div class="w-full">
+                    <table class="table-auto w-full">
+                      <tbody>
+                        <tr>
+                          <td class="py-1 text-sm font-medium text-gray-600 dark:text-gray-400 ">
+                            {% if request.session.user is not defined %}
+                              {{ scan.scan_type.name }}
+                            {% else %}
+                              <a href="/{{ lang }}/results/{{ template.id }}/scan/{{ scan.id }}">{{ scan.scan_type.name }}</a>
+                            {% endif %}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="py-1">{{ reports_locale }}</td>
+                          <td class="py-1">{{ scan.security_reports | length }}</td>
+                        </tr>
+                        <tr>
+                          <td class="py-1">{{ violations_locale }}</td>
+                          <td class="py-1">{{ scan.security_reports[0].security_violations | length }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
               {% endif %}
               {% if scan.a11y_reports %}
-              <div class="relative flex-1 flex flex-col gap-2 px-4">
-                <div class="text-gray-800 text-base font-semibold tracking-wider">
-                  {% if request.session.user is not defined %}
-                  <span>{{ scan.scan_type.name }}</span>
-                  {% else %}
-                  <a href="/{{ lang }}/results/{{ template.id }}/scan/{{ scan.id }}">{{ scan.scan_type.name }}</a>
-                  {% endif %}
+                <div class="flex items-start p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800 border-2	">
+                  <div>
+                    <div class="p-3 mr-4 text-blue-500 bg-blue-100 rounded-full dark:text-blue-100 dark:bg-blue-500">
+                      <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M7 9L12 10M17 9L12 10M12 10V13M12 13L10 18M12 13L14 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 7C11.7239 7 11.5 6.77614 11.5 6.5C11.5 6.22386 11.7239 6 12 6C12.2761 6 12.5 6.22386 12.5 6.5C12.5 6.77614 12.2761 7 12 7Z" fill="black" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                    <div class="text-red-500 mr-4 mt-3 font-semibold text-center">
+                      +10 
+                    </div>
+                  </div>
+                  <div class="w-full">
+                    <table class="table-auto w-full">
+                      <tbody>
+                        <tr>
+                          <td class="py-1 text-sm font-medium text-gray-600 dark:text-gray-400 ">
+                            {% if request.session.user is not defined %}
+                              {{ scan.scan_type.name }}
+                            {% else %}
+                              <a href="/{{ lang }}/results/{{ template.id }}/scan/{{ scan.id }}">{{ scan.scan_type.name }}</a>
+                            {% endif %}
+                          </td>
+                          <td class="py-1"></td>
+                        </tr>
+                        <tr>
+                          <td class="py-1">{{ reports_locale }}</td>
+                          <td class="py-1">{{ scan.a11y_reports | length }}</td>
+                        </tr>
+                        <tr>
+                          <td class="py-1">{{ violations_locale }}</td>
+                          <td class="py-1">{{ scan.a11y_reports[0].a11y_violations | length }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-                  <div class="container flex flex-row gap-1">
-                    <div class="relative flex-1 flex flex-col gap-2">
-                      <span class="font-semibold">{{ revisions_locale }}</span>
-                      <div class="text-green-800 text-4xl font-bold">{{ scan.a11y_reports | length }}</div>
-                    </div>
-                    <div class="relative flex-1 flex flex-col gap-2">
-                      <span class="font-semibold">{{ violations_locale }}</span>
-                      <div class="text-green-800 text-4xl font-bold">{{ scan.a11y_reports[0].a11y_violations | length }}</div>
-                    </div>
-                    {% if scan.a11y_reports | length > 1 and scan.a11y_reports[0].a11y_violations | length > 0 %}
-                    {% set a11y_delta = (((scan.a11y_reports[0].a11y_violations | length - scan.a11y_reports[1].a11y_violations | length) / scan.a11y_reports[0].a11y_violations | length) * 100)|int %}
-                    <div class="absolute bg-red-400 rounded-md font-semibold text-xs text-gray-100 p-2 right-0 bottom-0">
-                      {% if a11y_delta > 0  %}
-                      +
-                      {% elif a11y_delta < 0 %}
-                      -
-                      {% endif %}
-                      {{ a11y_delta | abs }}%
-                    </div>
-                    {% endif %}
-                  </div>  
-              </div>
               {% endif %}
-              {% endfor %}            
+            {% endfor %}
           </div>
+        {% endif %}
       </div>
-    </div>
-  {% endfor %}
+    {% endfor %}
   </div>
 </div>
 
-  {% block footer %}
+{% block footer %}
   {{super()}}
-  {% endblock %}
+{% endblock %}
 {% endblock %}
