@@ -84,31 +84,37 @@ if __name__ == "__main__":
     )
     session.add(axe_core_template)
 
+    combined_template = Template(
+        name="Combined template",
+        organisation=cds_org,
+    )
+    session.add(combined_template)
+
     owasp_zap_template_scan = TemplateScan(
         data={"url": "https://www.example.com"},
         scan_type=owasp_zap_scan_type,
-        template=owasp_zap_template,
+        template=combined_template,
     )
     session.add(owasp_zap_template_scan)
 
     axe_core_template_scan = TemplateScan(
         data={"url": "https://www.alpha.canada.ca"},
         scan_type=axe_core_scan_type,
-        template=axe_core_template,
+        template=combined_template,
     )
     session.add(axe_core_template_scan)
 
     owasp_zap_scan = Scan(
         organisation=cds_org,
         scan_type=owasp_zap_scan_type,
-        template=owasp_zap_template,
+        template=combined_template,
     )
     session.add(owasp_zap_scan)
 
     axe_core_scan = Scan(
         organisation=cds_org,
         scan_type=axe_core_scan_type,
-        template=axe_core_template,
+        template=combined_template,
     )
     session.add(axe_core_scan)
 
