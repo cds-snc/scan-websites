@@ -49,3 +49,11 @@ output "sns_topic_critical_arn" {
 output "sns_topic_warning_arn" {
   value = aws_sns_topic.warning.arn
 }
+
+output "github_report_data_bucket_id" {
+  value = module.github-report-data.s3_bucket_id
+}
+
+output "github_report_data_bucket_arn" {
+  value = module.github-report-data.s3_bucket_arn
+}
