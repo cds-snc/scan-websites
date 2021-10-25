@@ -377,9 +377,9 @@ async def save_scan_ignore(
         )
 
         session.add(new_ignore)
+        session.commit()
         return {"id": new_ignore.id}
     except Exception as err:
-        print(err)
         log.error(err)
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {"error": "error creating scan ignore"}
