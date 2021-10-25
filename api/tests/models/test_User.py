@@ -2,30 +2,36 @@ import pytest
 
 from sqlalchemy.exc import IntegrityError
 
-
+from factories import (
+    OrganisationFactory,
+)
 from models.User import User
 
 
-def test_user_belongs_to_an_organisation(organisation_fixture, session):
+def test_user_belongs_to_an_organisation(session):
+    organisation = OrganisationFactory()
+
     user = User(
         name="name",
         email_address="email",
         password="password",
-        organisation=organisation_fixture,
+        organisation=organisation,
     )
     session.add(user)
     session.commit()
-    assert organisation_fixture.users[-1].id == user.id
+    assert organisation.users[-1].id == user.id
     session.delete(user)
     session.commit()
 
 
-def test_user_model(organisation_fixture):
+def test_user_model():
+    organisation = OrganisationFactory()
+
     user = User(
         name="name",
         email_address="email_address",
         password="password",
-        organisation=organisation_fixture,
+        organisation=organisation,
     )
     assert user.name == "name"
     assert user.email_address == "email_address"
@@ -35,12 +41,14 @@ def test_user_model(organisation_fixture):
         user.password
 
 
-def test_user_model_saved(assert_new_model_saved, organisation_fixture, session):
+def test_user_model_saved(assert_new_model_saved, session):
+    organisation = OrganisationFactory()
+
     user = User(
         name="name",
         email_address="email",
         password="password",
-        organisation=organisation_fixture,
+        organisation=organisation,
     )
     session.add(user)
     session.commit()
@@ -51,11 +59,13 @@ def test_user_model_saved(assert_new_model_saved, organisation_fixture, session)
     session.commit()
 
 
-def test_user_empty_name_fails(organisation_fixture, session):
+def test_user_empty_name_fails(session):
+    organisation = OrganisationFactory()
+
     user = User(
         email_address="email",
         password="password",
-        organisation=organisation_fixture,
+        organisation=organisation,
     )
     session.add(user)
     with pytest.raises(IntegrityError):
@@ -63,11 +73,13 @@ def test_user_empty_name_fails(organisation_fixture, session):
     session.rollback()
 
 
-def test_user_empty_email_address_fails(organisation_fixture, session):
+def test_user_empty_email_address_fails(session):
+    organisation = OrganisationFactory()
+
     user = User(
         name="name",
         password="password",
-        organisation=organisation_fixture,
+        organisation=organisation,
     )
     session.add(user)
     with pytest.raises(IntegrityError):
@@ -87,14 +99,14 @@ def test_user_empty_organisation_fails(session):
     session.rollback()
 
 
-def test_user_duplicate_email_fails(
-    assert_new_model_saved, organisation_fixture, session
-):
+def test_user_duplicate_email_fails(assert_new_model_saved, session):
+    organisation = OrganisationFactory()
+
     user = User(
         name="name",
         email_address="email",
         password="password",
-        organisation=organisation_fixture,
+        organisation=organisation,
     )
 
     session.add(user)
@@ -107,7 +119,7 @@ def test_user_duplicate_email_fails(
         name="name_two",
         email_address="email",
         password="password",
-        organisation=organisation_fixture,
+        organisation=organisation,
     )
 
     session.add(user_two)

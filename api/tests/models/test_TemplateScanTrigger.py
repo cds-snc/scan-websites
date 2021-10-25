@@ -23,7 +23,7 @@ def test_template_scan_trigger_model_saved(assert_new_model_saved, session):
     session.commit()
 
 
-def test_template_scan_trigger_empty_data_fails(template_scan_fixture, session):
+def test_template_scan_trigger_empty_data_fails(session):
     template_scan_trigger = TemplateScanTrigger()
     session.add(template_scan_trigger)
     with pytest.raises(IntegrityError):
