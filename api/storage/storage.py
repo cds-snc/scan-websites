@@ -7,6 +7,7 @@ from boto3wrapper.wrapper import get_session
 
 from models.A11yReport import A11yReport
 from models.A11yViolation import A11yViolation
+from models.ScanIgnore import ScanIgnore
 from models.SecurityReport import SecurityReport
 from models.SecurityViolation import SecurityViolation
 
@@ -106,6 +107,15 @@ def sum_impact(violations):
     return d
 
 
+def filter_owasp_zap_results(instance, violation, scan_ignores):
+    for ignore in scan_ignores:
+        if ignore.violation == violation:
+            if ignore.location in instance:
+                if instance[ignore.location] == ignore.condition:
+                    return False
+    return True
+
+
 def store_owasp_zap_record(session, payload):
     security_report = session.query(SecurityReport).get(payload["id"])
 
@@ -120,6 +130,13 @@ def store_owasp_zap_record(session, payload):
             SecurityViolation.security_report_id == security_report.id
         ).delete()
         session.commit()
+
+        scan_ignores = (
+            session.query(ScanIgnore)
+            .filter(ScanIgnore.scan_id == security_report.scan_id)
+            .all()
+        )
+
         for alert in report["alerts"]:
             if "riskdesc" in alert:
                 if alert["riskdesc"] in summary:
@@ -162,7 +179,16 @@ def store_owasp_zap_record(session, payload):
                     url=report["@name"],
                     security_report=security_report,
                 )
-                session.add(security_violation)
+
+                security_violation.data[:] = (
+                    itm
+                    for itm in security_violation.data
+                    if filter_owasp_zap_results(
+                        itm, security_violation.violation, scan_ignores
+                    )
+                )
+                if len(security_violation.data) > 0:
+                    session.add(security_violation)
 
         security_report.summary = summary
     session.commit()

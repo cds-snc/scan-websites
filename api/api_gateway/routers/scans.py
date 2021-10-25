@@ -9,6 +9,7 @@ from fastapi import (
     status,
 )
 
+
 from logger import log
 from crawler.crawler import crawl
 from sqlalchemy.exc import SQLAlchemyError
@@ -25,9 +26,11 @@ from models.Template import Template
 from models.TemplateScan import TemplateScan
 from models.User import User
 from models.Scan import Scan
+from models.ScanIgnore import ScanIgnore
 from models.ScanType import ScanType
 from models.SecurityReport import SecurityReport
 from schemas.Template import TemplateCreate, TemplateScanCreateList
+from schemas.ScanIgnore import ScanIgnoreCreate
 from pub_sub import pub_sub
 
 
@@ -338,3 +341,45 @@ async def delete_security_report(
         log.error(err)
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {"error": "error deleting report"}
+
+
+@router.post(
+    "/template/{template_id}/scan/{scan_id}/type/{scan_type}",
+    dependencies=[Depends(is_authenticated), Depends(template_belongs_to_org)],
+)
+async def save_scan_ignore(
+    request: Request,
+    response: Response,
+    template_id: uuid.UUID,
+    scan_id: uuid.UUID,
+    scan_type: uuid.UUID,
+    scan_ignore: ScanIgnoreCreate,
+    session: Session = Depends(get_session),
+):
+    try:
+        scan = (
+            session.query(Scan)
+            .filter(
+                Scan.id == scan_id,
+                Scan.template_id == template_id,
+                Scan.scan_type_id == scan_type,
+            )
+            .one_or_none()
+        )
+
+        scan_type = session.query(ScanType).filter(ScanType.id == scan_type).one()
+
+        new_ignore = ScanIgnore(
+            scan_id=scan.id,
+            violation=scan_ignore.violation,
+            location=scan_ignore.location,
+            condition=scan_ignore.condition,
+        )
+
+        session.add(new_ignore)
+        return {"id": new_ignore.id}
+    except Exception as err:
+        print(err)
+        log.error(err)
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {"error": "error creating scan ignore"}

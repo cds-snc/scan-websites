@@ -14,7 +14,8 @@ class ScanIgnore(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     violation = Column(String, nullable=False)
-    ignore_condition = Column(String, nullable=False)
+    location = Column(String, nullable=False)
+    condition = Column(String, nullable=False)
     created_at = Column(
         DateTime,
         index=False,

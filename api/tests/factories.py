@@ -6,6 +6,7 @@ from models.Organisation import Organisation
 from models.SecurityReport import SecurityReport
 from models.SecurityViolation import SecurityViolation
 from models.Scan import Scan
+from models.ScanIgnore import ScanIgnore
 from models.ScanType import ScanType
 from models.Template import Template
 from models.TemplateScan import TemplateScan
@@ -154,3 +155,16 @@ class SecurityViolationFactory(factory.alchemy.SQLAlchemyModelFactory):
 
     security_report_id = SecurityReportFactory.id
     security_report = factory.SubFactory(SecurityReportFactory)
+
+
+class ScanIgnoreFactory(factory.alchemy.SQLAlchemyModelFactory):
+    class Meta:
+        model = ScanIgnore
+
+    id = factory.Faker("uuid4")
+    violation = factory.Faker("text")
+    location = factory.Faker("text")
+    condition = factory.Faker("text")
+
+    scan_id = ScanFactory.id
+    scan = factory.SubFactory(ScanFactory)
