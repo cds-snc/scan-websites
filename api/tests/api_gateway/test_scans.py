@@ -24,7 +24,8 @@ import uuid
 client = TestClient(api.app)
 
 
-def test_create_template_valid(logged_in_client):
+def test_create_template_valid(authorized_request):
+    logged_in_client, _, _ = authorized_request
     response = logged_in_client.post("/scans/template", json={"name": "foo"})
     assert response.json() == {"id": ANY}
     assert response.status_code == 200

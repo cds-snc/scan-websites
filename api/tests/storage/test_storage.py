@@ -1,11 +1,22 @@
 import json
 import os
 
+from factories import (
+    A11yReportFactory,
+    OrganisationFactory,
+    ScanFactory,
+    ScanTypeFactory,
+    SecurityReportFactory,
+    TemplateFactory,
+    TemplateScanFactory,
+)
+
 from models.A11yReport import A11yReport
 from models.A11yViolation import A11yViolation
 from models.SecurityReport import SecurityReport
 from models.SecurityViolation import SecurityViolation
 
+from pub_sub.pub_sub import AvailableScans
 from storage import storage
 from unittest.mock import MagicMock, patch, call
 
@@ -99,12 +110,27 @@ def test_store_axe_core_record_returns_false_on_missing_record(mock_session):
     assert storage.store_axe_core_record(mock_session, payload) is False
 
 
-def test_store_axe_core_record_updates_record(session, a11y_report_fixture):
+def test_store_axe_core_record_updates_record(session):
+    organisation = OrganisationFactory()
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.AXE_CORE.value,
+        callback={"event": "sns", "topic_env": "AXE_CORE_URLS_TOPIC"},
+    )
+    TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    scan = ScanFactory(
+        organisation=organisation, template=template, scan_type=scan_type
+    )
+    a11y_report = A11yReportFactory(scan=scan)
+    session.commit()
+
     payload = json.loads(load_fixture("axe_core_report.json"))
-    payload["id"] = a11y_report_fixture.id
+    payload["id"] = a11y_report.id
     assert storage.store_axe_core_record(session, payload) is True
-    session.refresh(a11y_report_fixture)
-    assert a11y_report_fixture.summary == {
+    session.refresh(a11y_report)
+    assert a11y_report.summary == {
         "inapplicable": 72,
         "incomplete": 0,
         "passes": 12,
@@ -113,13 +139,27 @@ def test_store_axe_core_record_updates_record(session, a11y_report_fixture):
     }
 
 
-def test_store_axe_core_record_creates_violations(session, scan_fixture):
+def test_store_axe_core_record_creates_violations(session):
+    organisation = OrganisationFactory()
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.AXE_CORE.value,
+        callback={"event": "sns", "topic_env": "AXE_CORE_URLS_TOPIC"},
+    )
+    TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    scan = ScanFactory(
+        organisation=organisation, template=template, scan_type=scan_type
+    )
+    session.commit()
+
     a11y_report = A11yReport(
         product="product",
         revision="revision",
         url="url",
         summary={"jsonb": "data"},
-        scan=scan_fixture,
+        scan=scan,
     )
     session.add(a11y_report)
     session.commit()
@@ -167,12 +207,25 @@ def test_store_owasp_zap_record_returns_false_on_missing_record(mock_session):
     assert storage.store_owasp_zap_record(mock_session, payload) is False
 
 
-def test_store_owasp_zap_record_updates_record(session, security_report_fixture):
+def test_store_owasp_zap_record_updates_record(session):
+    organisation = OrganisationFactory()
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.OWASP_ZAP.value,
+        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+    )
+    TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    scan = ScanFactory(
+        organisation=organisation, template=template, scan_type=scan_type
+    )
+    security_report = SecurityReportFactory(scan=scan)
     payload = json.loads(load_fixture("owasp_zap_report.json"))
-    payload["id"] = security_report_fixture.id
+    payload["id"] = security_report.id
     assert storage.store_owasp_zap_record(session, payload) is True
-    session.refresh(security_report_fixture)
-    assert security_report_fixture.summary == {
+    session.refresh(security_report)
+    assert security_report.summary == {
         "status": "completed",
         "total": 116,
         "Low (Medium)": 76,
@@ -180,13 +233,25 @@ def test_store_owasp_zap_record_updates_record(session, security_report_fixture)
     }
 
 
-def test_store_owasp_zap_record_creates_violations(session, scan_fixture):
+def test_store_owasp_zap_record_creates_violations(session):
+    organisation = OrganisationFactory()
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.OWASP_ZAP.value,
+        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+    )
+    TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    scan = ScanFactory(
+        organisation=organisation, template=template, scan_type=scan_type
+    )
     security_report = SecurityReport(
         product="product",
         revision="revision",
         url="url",
         summary={"jsonb": "data"},
-        scan=scan_fixture,
+        scan=scan,
     )
     session.add(security_report)
     session.commit()

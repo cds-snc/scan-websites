@@ -1,5 +1,7 @@
 import factory
 
+from models.A11yReport import A11yReport
+from models.A11yViolation import A11yViolation
 from models.Organisation import Organisation
 from models.SecurityReport import SecurityReport
 from models.SecurityViolation import SecurityViolation
@@ -10,6 +12,7 @@ from models.TemplateScan import TemplateScan
 from models.User import User
 
 
+# When adding new factories ensure you add the factory to the conftest session fixture so that they can be linked to the test db session
 class OrganisationFactory(factory.alchemy.SQLAlchemyModelFactory):
     class Meta:
         model = Organisation
@@ -85,6 +88,39 @@ class ScanFactory(factory.alchemy.SQLAlchemyModelFactory):
     scan_type = factory.SubFactory(ScanTypeFactory)
 
 
+class A11yReportFactory(factory.alchemy.SQLAlchemyModelFactory):
+    class Meta:
+        model = A11yReport
+
+    id = factory.Faker("uuid4")
+    product = factory.Faker("text")
+    revision = factory.Faker("text")
+    url = factory.Faker("url")
+    ci = factory.Faker("boolean")
+    summary = factory.Faker("json")
+
+    scan_id = ScanFactory.id
+    scan = factory.SubFactory(ScanFactory)
+
+
+class A11yViolationFactory(factory.alchemy.SQLAlchemyModelFactory):
+    class Meta:
+        model = A11yViolation
+
+    id = factory.Faker("uuid4")
+    violation = factory.Faker("text")
+    impact = factory.Faker("text")
+    target = factory.Faker("text")
+    html = factory.Faker("text")
+    data = factory.Faker("json")
+    tags = factory.Faker("json")
+    message = factory.Faker("text")
+    url = factory.Faker("url")
+
+    a11y_report_id = A11yReportFactory.id
+    a11y_report = factory.SubFactory(A11yReportFactory)
+
+
 class SecurityReportFactory(factory.alchemy.SQLAlchemyModelFactory):
     class Meta:
         model = SecurityReport
@@ -114,7 +150,7 @@ class SecurityViolationFactory(factory.alchemy.SQLAlchemyModelFactory):
     data = factory.Faker("json")
     tags = factory.Faker("json")
     message = factory.Faker("text")
-    url = factory.Faker("text")
+    url = factory.Faker("url")
 
     security_report_id = SecurityReportFactory.id
     security_report = factory.SubFactory(SecurityReportFactory)

@@ -17,7 +17,8 @@ def test_landing_page_displays_templates_not_logged_in():
     assert response.template.name == "index.html"
 
 
-def test_landing_page_displays_templates_logged_in(logged_in_client):
+def test_landing_page_displays_templates_logged_in(authorized_request):
+    logged_in_client, _, _ = authorized_request
     response = logged_in_client.get("/en")
     assert response.status_code == 200
     assert response.template.name == "index.html"
