@@ -15,6 +15,7 @@ from factories import (
     A11yViolationFactory,
     OrganisationFactory,
     ScanFactory,
+    ScanIgnoreFactory,
     ScanTypeFactory,
     SecurityReportFactory,
     SecurityViolationFactory,
@@ -67,6 +68,7 @@ def session():
     SecurityReportFactory._meta.sqlalchemy_session = session
     SecurityViolationFactory._meta.sqlalchemy_session = session
     ScanFactory._meta.sqlalchemy_session = session
+    ScanIgnoreFactory._meta.sqlalchemy_session = session
     ScanTypeFactory._meta.sqlalchemy_session = session
     TemplateFactory._meta.sqlalchemy_session = session
     TemplateScanFactory._meta.sqlalchemy_session = session

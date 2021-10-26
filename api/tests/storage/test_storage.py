@@ -5,6 +5,7 @@ from factories import (
     A11yReportFactory,
     OrganisationFactory,
     ScanFactory,
+    ScanIgnoreFactory,
     ScanTypeFactory,
     SecurityReportFactory,
     TemplateFactory,
@@ -265,3 +266,139 @@ def test_store_owasp_zap_record_creates_violations(session):
         .all()
     )
     assert len(violations) == 4
+
+
+def test_store_owasp_zap_record_creates_violations_and_ignores(session):
+    organisation = OrganisationFactory()
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.OWASP_ZAP.value,
+        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+    )
+    TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    scan = ScanFactory(
+        organisation=organisation, template=template, scan_type=scan_type
+    )
+    security_report = SecurityReport(
+        product="product",
+        revision="revision",
+        url="url",
+        summary={"jsonb": "data"},
+        scan=scan,
+    )
+    session.add(security_report)
+
+    payload = json.loads(load_fixture("owasp_zap_report.json"))
+    first_violation = payload["report"]["site"][0]["alerts"][0]
+    scan_ignore = ScanIgnoreFactory(
+        violation=first_violation["alert"],
+        location="evidence",
+        condition=first_violation["instances"][0]["evidence"],
+        scan=scan,
+    )
+
+    session.add(scan_ignore)
+    session.commit()
+
+    payload["id"] = security_report.id
+    assert storage.store_owasp_zap_record(session, payload) is True
+    violation = (
+        session.query(SecurityViolation)
+        .filter(
+            SecurityViolation.security_report_id == security_report.id,
+            SecurityViolation.violation == first_violation["alert"],
+        )
+        .one()
+    )
+    assert len(violation.data) == 0
+
+
+def test_filter_owasp_zap_results():
+    organisation = OrganisationFactory()
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.OWASP_ZAP.value,
+        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+    )
+    TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    scan = ScanFactory(
+        organisation=organisation, template=template, scan_type=scan_type
+    )
+
+    scan_ignore = ScanIgnoreFactory(
+        violation="foo",
+        location="evidence",
+        condition="X-Powered-By: Next.js",
+        scan=scan,
+    )
+
+    exclude_condition = {
+        "uri": "https://example.com/fr/id/25",
+        "method": "POST",
+        "evidence": "X-Powered-By: Next.js",
+    }
+    include_condition = {
+        "uri": "https://example.com/fr/id/25",
+        "method": "POST",
+        "evidence": "X-Powered-By: foo",
+    }
+    assert (
+        storage.filter_ignored_results(exclude_condition, "foo", [scan_ignore]) is False
+    )
+    assert (
+        storage.filter_ignored_results(include_condition, "foo", [scan_ignore]) is True
+    )
+    assert (
+        storage.filter_ignored_results(exclude_condition, "bar", [scan_ignore]) is True
+    )
+
+
+def test_store_owasp_zap_record_creates_violations_and_ignores_mixed_condition(session):
+    organisation = OrganisationFactory()
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.OWASP_ZAP.value,
+        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+    )
+    TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    scan = ScanFactory(
+        organisation=organisation, template=template, scan_type=scan_type
+    )
+    security_report = SecurityReport(
+        product="product",
+        revision="revision",
+        url="url",
+        summary={"jsonb": "data"},
+        scan=scan,
+    )
+    session.add(security_report)
+
+    payload = json.loads(load_fixture("owasp_zap_report_mixed_evidence.json"))
+    first_violation = payload["report"]["site"][0]["alerts"][0]
+    scan_ignore = ScanIgnoreFactory(
+        violation=first_violation["alert"],
+        location="evidence",
+        condition=first_violation["instances"][0]["evidence"],
+        scan=scan,
+    )
+
+    session.add(scan_ignore)
+    session.commit()
+
+    payload["id"] = security_report.id
+    assert storage.store_owasp_zap_record(session, payload) is True
+    violation = (
+        session.query(SecurityViolation)
+        .filter(
+            SecurityViolation.security_report_id == security_report.id,
+            SecurityViolation.violation == first_violation["alert"],
+        )
+        .one()
+    )
+    assert len(violation.data) == 1

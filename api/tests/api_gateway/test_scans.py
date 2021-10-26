@@ -680,3 +680,53 @@ def test_delete_template_scan_with_correct_id_has_reports(
     assert scan is None
     assert security_report is None
     assert len(security_violations) == 0
+
+
+def test_ignore_security_violation(
+    session,
+    authorized_request,
+):
+
+    logged_in_client, _, organisation = authorized_request
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.OWASP_ZAP.value,
+        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+    )
+    scan = ScanFactory(
+        organisation=organisation, template=template, scan_type=scan_type
+    )
+    security_report = SecurityReportFactory(scan=scan)
+
+    violation_data = [
+        {
+            "uri": "https://example.com/fr/id/19",
+            "method": "GET",
+            "param": "",
+            "attack": "",
+            "evidence": '<form id="form" data-testid="form" method="POST" encType="multipart/form-data" novalidate="">',
+        },
+        {
+            "uri": "https://example.com/fr/id/21",
+            "method": "GET",
+            "param": "",
+            "attack": "",
+            "evidence": '<form id="form" data-testid="form" method="POST" encType="multipart/form-data" novalidate="">',
+        },
+    ]
+    security_violation = SecurityViolationFactory(
+        security_report=security_report, data=violation_data
+    )
+    session.commit()
+
+    response = logged_in_client.post(
+        f"/scans/template/{str(template.id)}/scan/{str(scan.id)}/type/{str(scan_type.id)}",
+        json={
+            "violation": security_violation.violation,
+            "location": "evidence",
+            "condition": '<form id="form" data-testid="form" method="POST" encType="multipart/form-data" novalidate="">',
+        },
+    )
+
+    assert response.json() == {"id": ANY}
+    assert response.status_code == 200
