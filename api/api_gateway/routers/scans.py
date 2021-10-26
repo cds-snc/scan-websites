@@ -367,16 +367,30 @@ async def save_scan_ignore(
             .one_or_none()
         )
 
-        new_ignore = ScanIgnore(
-            scan_id=scan.id,
-            violation=scan_ignore.violation,
-            location=scan_ignore.location,
-            condition=scan_ignore.condition,
+        existing_ignore = (
+            session.query(ScanIgnore)
+            .filter(
+                ScanIgnore.violation == scan_ignore.violation,
+                ScanIgnore.location == scan_ignore.location,
+                ScanIgnore.condition == scan_ignore.condition,
+            )
+            .one_or_none()
         )
 
-        session.add(new_ignore)
-        session.commit()
-        return {"id": new_ignore.id}
+        if existing_ignore is None:
+            new_ignore = ScanIgnore(
+                scan_id=scan.id,
+                violation=scan_ignore.violation,
+                location=scan_ignore.location,
+                condition=scan_ignore.condition,
+            )
+
+            session.add(new_ignore)
+            session.commit()
+            return {"id": new_ignore.id}
+
+        return {"id": existing_ignore.id}
+        existing_ignore
     except Exception as err:
         log.error(err)
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR

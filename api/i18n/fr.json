@@ -17,6 +17,8 @@
   "goc_locale": "Gouvernement du Canada",
   "goc_banner_locale": "https://ssl-templates.services.gc.ca/app/cls/wet/gcintranet/v4_0_20/assets/sig-blk-fr.svg",
   "home_locale": "Accueil",
+  "ignore_locale": "Ignorer",
+  "ignore_confirm_locale": "Etes-vous sûr de vouloir ignorer cela dans les futurs scans ?",
   "key_locale": "Clé",
   "lang": "fr",
   "list_of_products_locale": "Liste de tous les produits",
