@@ -347,16 +347,13 @@ def test_filter_owasp_zap_results():
         "evidence": "X-Powered-By: foo",
     }
     assert (
-        storage.filter_ignored_results(exclude_condition, "foo", [scan_ignore])
-        is False
+        storage.filter_ignored_results(exclude_condition, "foo", [scan_ignore]) is False
     )
     assert (
-        storage.filter_ignored_results(include_condition, "foo", [scan_ignore])
-        is True
+        storage.filter_ignored_results(include_condition, "foo", [scan_ignore]) is True
     )
     assert (
-        storage.filter_ignored_results(exclude_condition, "bar", [scan_ignore])
-        is True
+        storage.filter_ignored_results(exclude_condition, "bar", [scan_ignore]) is True
     )
 
 
