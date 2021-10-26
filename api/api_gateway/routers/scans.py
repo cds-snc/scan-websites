@@ -367,8 +367,6 @@ async def save_scan_ignore(
             .one_or_none()
         )
 
-        scan_type = session.query(ScanType).filter(ScanType.id == scan_type).one()
-
         new_ignore = ScanIgnore(
             scan_id=scan.id,
             violation=scan_ignore.violation,
