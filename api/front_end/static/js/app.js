@@ -37,40 +37,38 @@ $(document).ready(function() {
     });
   });
 
-  function getFormData($form){
-    var unindexed_array = $form.serializeArray();
-    var indexed_array = {};
-
-    $.map(unindexed_array, function(n, i){
-        indexed_array[n['name']] = n['value'];
-    });
-
-    return indexed_array;
-  }
-
-  function submitJSON(event, form){
-    event.preventDefault();
-    event.stopPropagation();   
-
-    form = $(this);
-
-    if (confirm(form.data("confirm"))) {
-      $.ajax({
-        url: form.attr("action"),
-        type: form.attr("method"),
-        data: JSON.stringify(getFormData(form)),
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        success: function () {
-          location.href = window.location.href;
-        },
-      });
-    }
-  }
+  
 
   $("#deleteIgnoreForm").on("submit", submitJSON);
-  $("#methodForm").on("submit", submitJSON);
-  $("#paramForm").on("submit", submitJSON);
-  $("#evidenceForm").on("submit", submitJSON);
-  $("#allForm").on("submit", submitJSON);
 });
+
+function getFormData($form){
+  var unindexed_array = $form.serializeArray();
+  var indexed_array = {};
+
+  $.map(unindexed_array, function(n, i){
+      indexed_array[n['name']] = n['value'];
+  });
+
+  return indexed_array;
+} 
+
+function submitJSON(element, event){
+
+  event.preventDefault();
+  form = $(element);
+
+  if (confirm(form.data("confirm"))) {
+    $.ajax({
+      url: form.attr("action"),
+      type: form.attr("method"),
+      data: JSON.stringify(getFormData(form)),
+      contentType: "application/json; charset=utf-8",
+      dataType: "json",
+      success: function () {
+        location.href = window.location.href;
+      },
+    });
+  }
+  return false;
+}
