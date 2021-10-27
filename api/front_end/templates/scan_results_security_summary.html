@@ -7,6 +7,8 @@
   <ol class="list-reset flex text-grey-dark">
     <li><a href="/{{ lang }}" class="font-bold">{{home_locale}}</a></li>
     <li><span class="mx-2">/</span></li>
+    <li><a href="/{{ lang }}/results/{{report.scan.template.id}}/scan/{{ report.scan.id }}" class="font-bold">{{ report.scan.template.name }}</a></li>
+    <li><span class="mx-2">/</span></li>
     <li>{{ report.scan.template.name }}: {{ report.revision }} - {{ report.url }}</li>
   </ol>
 </nav>

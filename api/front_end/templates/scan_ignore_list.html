@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block includes %}
+<script src="{{ url_for('static', path='js/template.js') }}"></script>
+
+{% endblock %}
+{% block body %}
+<nav
+  class="block text-sm text-left text-green-800 h-12 flex items-center p-4 mb-5 border-2 border-gray-500"
+  role="alert"
+>
+  <ol class="list-reset flex text-grey-dark">
+    <li><a href="/{{ lang }}" class="font-bold">{{home_locale}}</a></li>
+    <li><span class="mx-2">/</span></li>
+    <li><a href="/{{ lang }}/results/{{scan.template.id}}/scan/{{ scan.id }}" class="font-bold">{{ scan.template.name }}</a></li>
+    <li><span class="mx-2">/</span></li>
+    <li>{{ ignored_results_locale }}</li>
+  </ol>
+</nav>
+<h1 class="text-gray-700 font-semibold uppercase text-xl mb-7">{{ ignored_results_locale }}</h1>
+<hr class="my-3"/>
+<div class="container">
+  <div class="row mb-8 my-8">
+    <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+      <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+        <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {{ violation_locale }}
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {{ location_locale }}
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {{ condition_locale }}
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {{ remove_ignore_locale }}
+                </th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              {% for scan_ignore in scan_ignores %}
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900" lang="en">
+                      {{ scan_ignore.violation }}
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900" lang="en">
+                      {{ scan_ignore.location | prettier_array }}
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900" lang="en">
+                      {{ scan_ignore.condition | prettier_array }}
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900">
+                    <form id="deleteIgnoreForm" action= "/scans/template/{{ scan.template.id }}/scan/{{ scan.id}}/type/{{ scan.scan_type.id}}" method="delete" data-confirm="{{ignore_delete_confirm_locale}}">
+                      <input type="hidden" name="violation" value="{{ scan_ignore.violation }}">
+                      <input type="hidden" name="location" value="{{ scan_ignore.location }}">
+                      <input type="hidden" name="condition" value="{{ scan_ignore.condition }}">
+                      <button type="submit" name="submit" class="text-green-600 hover:text-indigo-900"><span class="material-icons" aria-label="{{ remove_ignore_locale }}"> task_alt </span></button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% block footer %}
+{{super()}}
+{% endblock %}
+{% endblock %}

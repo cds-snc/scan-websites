@@ -110,9 +110,34 @@ def sum_impact(violations):
 def filter_ignored_results(in_or_out, instance, violation, scan_ignores):
     for ignore in scan_ignores:
         if ignore.violation == violation:
-            if ignore.location in instance:
-                if instance[ignore.location] == ignore.condition:
+            if "§" in ignore.location and "§" in ignore.condition:
+                # Evaluate ignore using § seperated list of locations and conditions
+                # § is being used a seperator since it has lower probability of being in results
+                locations = ignore.location.split("§")
+                conditions = ignore.condition.split("§")
+                if len(locations) != len(conditions):
+                    raise ValueError(
+                        "Array of ignore locations and conditions must be the same size"
+                    )
+                matches = 0
+                for idx, location in enumerate(locations):
+                    # Remove leading and trailing single quotes
+                    condition = conditions[idx].lstrip("'")
+                    condition = condition.rstrip("'")
+                    if condition == "":
+                        matches += 1
+                    else:
+                        if instance[location] == condition:
+                            matches += 1
+
+                if matches == len(locations):
                     return in_or_out
+
+                return not in_or_out
+            else:
+                if ignore.location in instance:
+                    if instance[ignore.location] == ignore.condition:
+                        return in_or_out
     return not in_or_out
 
 
@@ -180,13 +205,17 @@ def store_owasp_zap_record(session, payload):
                     security_report=security_report,
                 )
 
-                security_violation.data[:] = (
-                    itm
-                    for itm in security_violation.data
-                    if filter_ignored_results(
-                        False, itm, security_violation.violation, scan_ignores
+                try:
+                    security_violation.data[:] = (
+                        itm
+                        for itm in security_violation.data
+                        if filter_ignored_results(
+                            False, itm, security_violation.violation, scan_ignores
+                        )
                     )
-                )
+                except ValueError as err:
+                    log.error(f"Error filtering results: {err}")
+
                 if len(security_violation.data) > 0:
                     session.add(security_violation)
 

@@ -120,21 +120,27 @@ async def get_security_violation(
             included_data = copy(violation.data)
             excluded_data = copy(violation.data)
 
-            included_data[:] = (
-                itm
-                for itm in included_data
-                if storage.filter_ignored_results(
-                    False, itm, violation.violation, scan_ignores
+            try:
+                included_data[:] = (
+                    itm
+                    for itm in included_data
+                    if storage.filter_ignored_results(
+                        False, itm, violation.violation, scan_ignores
+                    )
                 )
-            )
 
-            excluded_data[:] = (
-                itm
-                for itm in excluded_data
-                if storage.filter_ignored_results(
-                    True, itm, violation.violation, scan_ignores
+                excluded_data[:] = (
+                    itm
+                    for itm in excluded_data
+                    if storage.filter_ignored_results(
+                        True, itm, violation.violation, scan_ignores
+                    )
                 )
-            )
+            except ValueError as err:
+                log.error(f"Error filtering results: {err}")
+                included_data = violation.data
+                excluded_data = []
+
         else:
             included_data = violation.data
             excluded_data = []
@@ -196,3 +202,40 @@ async def get_scan(
             status_code=500,
             detail=f"Scan type {scan.scan_type.name} has no associated layout",
         )
+
+
+@router.get(
+    "/{locale}/ignored/{template_id}/scan/{scan_id}",
+    dependencies=[Depends(is_authenticated), Depends(template_belongs_to_org)],
+    response_class=HTMLResponse,
+)
+async def get_scan_ignores(
+    request: Request,
+    locale: str,
+    template_id: uuid.UUID,
+    scan_id: uuid.UUID,
+    session: Session = Depends(get_db),
+):
+    try:
+        if locale not in languages:
+            locale = default_fallback
+
+        scan = (
+            session.query(Scan)
+            .filter(Scan.id == scan_id, Scan.template_id == template_id)
+            .one()
+        )
+
+        scan_ignores = (
+            session.query(ScanIgnore).filter(ScanIgnore.scan_id == str(scan.id)).all()
+        )
+
+        result = {"request": request}
+        result.update(languages[locale])
+        result.update({"scan": scan})
+        result.update({"scan_ignores": scan_ignores})
+    except Exception as e:
+        log.error(e)
+        raise HTTPException(status_code=500, detail=str(e))
+
+    return templates.TemplateResponse("scan_ignore_list.html", result)

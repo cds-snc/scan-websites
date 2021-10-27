@@ -47,13 +47,14 @@ $(document).ready(function() {
 
     return indexed_array;
   }
-  
-  $("#jsonForm").on("submit", function(event) {
+
+  function submitJSON(event, form){
     event.preventDefault();
     event.stopPropagation();   
-    const form = $("#jsonForm")
 
-    if (confirm($(this).data("confirm"))) {
+    form = $(this);
+
+    if (confirm(form.data("confirm"))) {
       $.ajax({
         url: form.attr("action"),
         type: form.attr("method"),
@@ -65,5 +66,11 @@ $(document).ready(function() {
         },
       });
     }
-  });
+  }
+
+  $("#deleteIgnoreForm").on("submit", submitJSON);
+  $("#methodForm").on("submit", submitJSON);
+  $("#paramForm").on("submit", submitJSON);
+  $("#evidenceForm").on("submit", submitJSON);
+  $("#allForm").on("submit", submitJSON);
 });

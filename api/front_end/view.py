@@ -93,10 +93,18 @@ def get_risk_colour(riskcode):
         return "bg-gray-500"
 
 
+def prettier_array(data):
+    if "§" in data:
+        return data.replace("§", ", ")
+    else:
+        return data
+
+
 # assign filter to Jinja2
 templates.env.filters["plural_formatting"] = plural_formatting
 templates.env.filters["date"] = format_date
 templates.env.filters["risk_colour"] = get_risk_colour
+templates.env.filters["prettier_array"] = prettier_array
 
 
 @router.get("/", response_class=HTMLResponse, include_in_schema=False)

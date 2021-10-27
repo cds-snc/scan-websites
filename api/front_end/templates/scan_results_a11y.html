@@ -10,6 +10,7 @@
     <li>{{ scan.template.name }}: {{ scan.scan_type.name }}</li>
   </ol>
 </nav>
+<a href="/{{ lang }}/ignored/{{ scan.template.id }}/scan/{{ scan.id }}" class="button flex-shrink-0 bg-green-500 hover:bg-green-700 border-green-500 hover:border-green-700 text-sm border-4 text-black py-1 px-2 rounded float-right">{{ ignored_results_locale }}</a>
 <h1 class="text-gray-700 font-semibold uppercase text-xl mb-7">{{ scan.template.name }}: {{ scan.scan_type.name }} - {{ revision_locale }}</h1>
 <hr class="my-3"/>
 <div class="container">
