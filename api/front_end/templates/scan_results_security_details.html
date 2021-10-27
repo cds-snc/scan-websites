@@ -96,7 +96,7 @@
                       {{ violation.param }}
                       {% if violation.param %}
                       <span class="text-sm font-medium text-gray-900">
-                        <form class="display: inline align-middle" action= "/scans/template/{{ report.scan.template.id }}/scan/{{ report.scan.id}}/type/{{ report.scan.scan_type.id}}" method="post" data-confirm="{{ignore_confirm_locale}}"  onsubmit="return submitJSON(this, event)">
+                        <form class="display: inline align-middle" action= "/scans/template/{{ report.scan.template.id }}/scan/{{ report.scan.id}}/type/{{ report.scan.scan_type.id}}" method="post" data-confirm="{{ignore_confirm_locale}}" onsubmit="return submitJSON(this, event)">
                           <input type="hidden" name="violation" value="{{ security_violation.violation }}">
                           <input type="hidden" name="location" value="param">
                           <input type="hidden" name="condition" value="{{ violation.param }}">
@@ -111,7 +111,7 @@
                       {{ violation.attack }}
                       {% if violation.attack %}
                       <span class="text-sm font-medium text-gray-900">
-                        <form class="display: inline align-middle" action= "/scans/template/{{ report.scan.template.id }}/scan/{{ report.scan.id}}/type/{{ report.scan.scan_type.id}}" method="post" data-confirm="{{ignore_confirm_locale}}"  onsubmit="return submitJSON(this, event)">
+                        <form class="display: inline align-middle" action= "/scans/template/{{ report.scan.template.id }}/scan/{{ report.scan.id}}/type/{{ report.scan.scan_type.id}}" method="post" data-confirm="{{ignore_confirm_locale}}" onsubmit="return submitJSON(this, event)">
                           <input type="hidden" name="violation" value="{{ security_violation.violation }}">
                           <input type="hidden" name="location" value="attack">
                           <input type="hidden" name="condition" value="{{ violation.attack }}">
@@ -126,7 +126,7 @@
                       <span>{{ violation.evidence }}</span>
                       {% if violation.evidence %}
                       <span class="text-gray-900">
-                        <form class="display: inline align-middle" action= "/scans/template/{{ report.scan.template.id }}/scan/{{ report.scan.id}}/type/{{ report.scan.scan_type.id}}" method="post" data-confirm="{{ignore_confirm_locale}}"  onsubmit="return submitJSON(this, event)">
+                        <form class="display: inline align-middle" action= "/scans/template/{{ report.scan.template.id }}/scan/{{ report.scan.id}}/type/{{ report.scan.scan_type.id}}" method="post" data-confirm="{{ignore_confirm_locale}}" onsubmit="return submitJSON(this, event)">
                           <input type="hidden" name="violation" value="{{ security_violation.violation }}">
                           <input type="hidden" name="location" value="evidence">
                           <input type="hidden" name="condition" value="{{ violation.evidence }}">
@@ -138,7 +138,7 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span class="text-sm font-medium text-gray-900">
-                    <form action= "/scans/template/{{ report.scan.template.id }}/scan/{{ report.scan.id}}/type/{{ report.scan.scan_type.id}}" method="post" data-confirm="{{ignore_confirm_locale}}"  onsubmit="return submitJSON(this, event)">
+                    <form action= "/scans/template/{{ report.scan.template.id }}/scan/{{ report.scan.id}}/type/{{ report.scan.scan_type.id}}" method="post" data-confirm="{{ignore_confirm_locale}}" onsubmit="return submitJSON(this, event)">
                       <input type="hidden" name="violation" value="{{ security_violation.violation }}">
                       <input type="hidden" name="location" value="method§param§attack§evidence">
                       <input type="hidden" name="condition" value="'{{ violation.method }}'§'{{ violation.param }}'§'{{ violation.attack }}'§'{{ violation.evidence }}'">
