@@ -107,13 +107,13 @@ def sum_impact(violations):
     return d
 
 
-def filter_ignored_results(instance, violation, scan_ignores):
+def filter_ignored_results(in_or_out, instance, violation, scan_ignores):
     for ignore in scan_ignores:
         if ignore.violation == violation:
             if ignore.location in instance:
                 if instance[ignore.location] == ignore.condition:
-                    return False
-    return True
+                    return in_or_out
+    return not in_or_out
 
 
 def store_owasp_zap_record(session, payload):
@@ -184,7 +184,7 @@ def store_owasp_zap_record(session, payload):
                     itm
                     for itm in security_violation.data
                     if filter_ignored_results(
-                        itm, security_violation.violation, scan_ignores
+                        False, itm, security_violation.violation, scan_ignores
                     )
                 )
                 if len(security_violation.data) > 0:

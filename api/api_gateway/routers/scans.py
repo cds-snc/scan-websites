@@ -367,17 +367,78 @@ async def save_scan_ignore(
             .one_or_none()
         )
 
-        new_ignore = ScanIgnore(
-            scan_id=scan.id,
-            violation=scan_ignore.violation,
-            location=scan_ignore.location,
-            condition=scan_ignore.condition,
+        existing_ignore = (
+            session.query(ScanIgnore)
+            .filter(
+                ScanIgnore.violation == scan_ignore.violation,
+                ScanIgnore.location == scan_ignore.location,
+                ScanIgnore.condition == scan_ignore.condition,
+            )
+            .one_or_none()
         )
 
-        session.add(new_ignore)
-        session.commit()
-        return {"id": new_ignore.id}
+        if existing_ignore is None:
+            new_ignore = ScanIgnore(
+                scan_id=scan.id,
+                violation=scan_ignore.violation,
+                location=scan_ignore.location,
+                condition=scan_ignore.condition,
+            )
+
+            session.add(new_ignore)
+            session.commit()
+            return {"id": new_ignore.id}
+
+        return {"id": existing_ignore.id}
     except Exception as err:
         log.error(err)
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {"error": "error creating scan ignore"}
+
+
+@router.delete(
+    "/template/{template_id}/scan/{scan_id}/type/{scan_type}",
+    dependencies=[Depends(is_authenticated), Depends(template_belongs_to_org)],
+)
+async def delete_scan_ignore(
+    request: Request,
+    response: Response,
+    template_id: uuid.UUID,
+    scan_id: uuid.UUID,
+    scan_type: uuid.UUID,
+    scan_ignore: ScanIgnoreCreate,
+    session: Session = Depends(get_session),
+):
+    try:
+        scan = (
+            session.query(Scan)
+            .filter(
+                Scan.id == scan_id,
+                Scan.template_id == template_id,
+                Scan.scan_type_id == scan_type,
+            )
+            .one_or_none()
+        )
+
+        existing_ignore = (
+            session.query(ScanIgnore)
+            .filter(
+                ScanIgnore.scan_id == str(scan.id),
+                ScanIgnore.violation == scan_ignore.violation,
+                ScanIgnore.location == scan_ignore.location,
+                ScanIgnore.condition == scan_ignore.condition,
+            )
+            .one_or_none()
+        )
+
+        if existing_ignore:
+            session.delete(existing_ignore)
+            session.commit()
+            return {"status": "OK"}
+        else:
+            response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+            return {"error": "error deleting ignore"}
+    except Exception as err:
+        log.error(err)
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {"error": "error deleting scan ignore"}
