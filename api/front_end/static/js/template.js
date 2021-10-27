@@ -4,12 +4,13 @@ $(document).ready(function() {
     event.stopPropagation();   
 
     let requestType = "DELETE";
+    const link = $(this);
 
-    if ($(this).data("method")){
-      requestType = $(this).data("method");
+    if (link.data("method")){
+      requestType = link.data("method");
     }
 
-    if (confirm($(this).data("confirm"))) {
+    if (confirm(link.data("confirm"))) {
       $.ajax({
         url:this.href,
         type:requestType,
@@ -48,7 +49,6 @@ $(document).ready(function() {
   }
   
   $("#jsonForm").on("submit", function(event) {
-    console.log('cheese');
     event.preventDefault();
     event.stopPropagation();   
     const form = $("#jsonForm")
