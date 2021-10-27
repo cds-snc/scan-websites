@@ -788,3 +788,33 @@ def test_delete_scan_ignore(
 
     assert response.json() == {"status": "OK"}
     assert response.status_code == 200
+
+
+def test_delete_scan_ignore_doesnt_exist(
+    session,
+    authorized_request,
+):
+
+    logged_in_client, _, organisation = authorized_request
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.OWASP_ZAP.value,
+        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+    )
+    scan = ScanFactory(
+        organisation=organisation, template=template, scan_type=scan_type
+    )
+
+    session.commit()
+
+    response = logged_in_client.delete(
+        f"/scans/template/{str(template.id)}/scan/{str(scan.id)}/type/{str(scan_type.id)}",
+        json={
+            "violation": "foo",
+            "location": "bar",
+            "condition": "baz",
+        },
+    )
+
+    assert response.json() == {"error": "error deleting ignore"}
+    assert response.status_code == 500
