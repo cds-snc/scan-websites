@@ -53,15 +53,17 @@ $(document).ready(function() {
     event.stopPropagation();   
     const form = $("#jsonForm")
 
-    $.ajax({
-      url: form.attr("action"),
-      type: form.attr("method"),
-      data: JSON.stringify(getFormData(form)),
-      contentType: "application/json; charset=utf-8",
-      dataType: "json",
-      success: function () {
-        location.href = window.location.href;
-      },
-    });
+    if (confirm($(this).data("confirm"))) {
+      $.ajax({
+        url: form.attr("action"),
+        type: form.attr("method"),
+        data: JSON.stringify(getFormData(form)),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function () {
+          location.href = window.location.href;
+        },
+      });
+    }
   });
 });

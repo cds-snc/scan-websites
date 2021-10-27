@@ -100,7 +100,7 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="text-sm font-medium text-gray-900">
-                    <form id="jsonForm" action= "/scans/template/{{ report.scan.template.id }}/scan/{{ report.scan.id}}/type/{{ report.scan.scan_type.id}}" method="post">
+                    <form id="jsonForm" action= "/scans/template/{{ report.scan.template.id }}/scan/{{ report.scan.id}}/type/{{ report.scan.scan_type.id}}" method="post" data-confirm="{{ignore_confirm_locale}}">
                       <input type="hidden" name="violation" value="{{ security_violation.violation }}">
                       <input type="hidden" name="location" value="evidence">
                       <input type="hidden" name="condition" value="{{ violation.evidence }}">
