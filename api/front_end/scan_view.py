@@ -1,3 +1,4 @@
+from copy import copy
 from fastapi import APIRouter, Depends, Request, HTTPException
 from fastapi.responses import HTMLResponse
 from database.db import db_session
@@ -8,10 +9,11 @@ from .view import languages, default_fallback, templates
 from api_gateway.routers.auth import is_authenticated
 from api_gateway.routers.scans import template_belongs_to_org
 from models.Scan import Scan
+from models.ScanIgnore import ScanIgnore
 from models.SecurityReport import SecurityReport
 from models.SecurityViolation import SecurityViolation
 from pub_sub import pub_sub
-
+from storage import storage
 
 import uuid
 
@@ -108,10 +110,43 @@ async def get_security_violation(
             .one()
         )
 
+        scan_ignores = (
+            session.query(ScanIgnore)
+            .filter(ScanIgnore.violation == violation.violation)
+            .all()
+        )
+
+        if scan_ignores:
+            included_data = copy(violation.data)
+            excluded_data = copy(violation.data)
+
+            included_data[:] = (
+                itm
+                for itm in included_data
+                if storage.filter_ignored_results(
+                    False, itm, violation.violation, scan_ignores
+                )
+            )
+
+            excluded_data[:] = (
+                itm
+                for itm in excluded_data
+                if storage.filter_ignored_results(
+                    True, itm, violation.violation, scan_ignores
+                )
+            )
+        else:
+            included_data = violation.data
+            excluded_data = []
+
         result = {"request": request}
         result.update(languages[locale])
         result.update({"report": report})
         result.update({"security_violation": violation})
+        result.update({"included_data": included_data})
+        result.update({"excluded_data": excluded_data})
+        result.update({"scan_ignores": scan_ignores})
+
     except Exception as e:
         log.error(e)
         raise HTTPException(status_code=500, detail=str(e))

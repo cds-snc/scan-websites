@@ -43,10 +43,15 @@
       <p lang="en">{{ security_violation.solution | safe }}</p>
     </div>
   </div>
+
+  {% if included_data|length > 0 %}
   <div class="row mb-8 my-8">
     <div class="">
       <div class="py-2 align-middle inline-block min-w-full ">
         <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+          <div class="bg-green-500 flex items-center justify-between">
+            <h2 class="mr-0 text-white text-lg pl-5">Instances</p>
+          </div>
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
@@ -71,7 +76,7 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              {% for violation in security_violation.data %}
+              {% for violation in included_data %}
               <tr>
                 <td class="px-6 py-4">
                   <div class="text-sm font-medium text-gray-900" lang="en">
@@ -115,8 +120,86 @@
         </div>
       </div>
     </div>
-
   </div>
+  {% endif %}
+  {% if excluded_data|length > 0 %}
+  <div class="row mb-8 my-8">
+    <div class="">
+      <div class="py-2 align-middle inline-block min-w-full ">
+        <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+          <div class="bg-gray-500 flex items-center justify-between">
+            <h2 class="mr-0 text-white text-lg pl-5">Ignored Instances</p>
+          </div>
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <abbr title="{{ uri_locale }}">uri</abbr>
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {{ method_locale }}
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  param
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {{ attack_locale }}
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {{ evidence_locale }}
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {{ remove_ignore_locale }}
+                </th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              {% for violation in excluded_data %}
+              <tr>
+                <td class="px-6 py-4">
+                  <div class="text-sm font-medium text-gray-900" lang="en">
+                      {{ violation.uri }}
+                  </div>
+                </td>
+                <td class="px-6 py-4">
+                  <div class="text-sm font-medium text-gray-900" lang="en">
+                      {{ violation.method }}
+                  </div>
+                </td>
+                <td class="px-6 py-4">
+                  <div class="text-sm font-medium text-gray-900" lang="en">
+                      {{ violation.param }}
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900" lang="en">
+                      {{ violation.attack }}
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900" lang="en">
+                      {{ violation.evidence }}
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900">
+                    <form id="jsonForm" action= "/scans/template/{{ report.scan.template.id }}/scan/{{ report.scan.id}}/type/{{ report.scan.scan_type.id}}" method="delete" data-confirm="{{ignore_delete_confirm_locale}}">
+                      <input type="hidden" name="violation" value="{{ security_violation.violation }}">
+                      <input type="hidden" name="location" value="evidence">
+                      <input type="hidden" name="condition" value="{{ violation.evidence }}">
+                      <button type="submit" name="submit" class="text-green-600 hover:text-indigo-900"><span class="material-icons" aria-label="{{ remove_ignore_locale }}"> task_alt </span></button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
 </div>
 
   {% block footer %}

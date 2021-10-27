@@ -732,6 +732,7 @@ def test_ignore_security_violation_already_ignored(
 
     security_violation = SecurityViolationFactory(security_report=security_report)
     scan_ignore = ScanIgnoreFactory(
+        scan=scan,
         violation=security_violation.violation,
         location="evidence",
         condition='<form id="form" data-testid="form" method="POST" encType="multipart/form-data" novalidate="">',
@@ -748,4 +749,42 @@ def test_ignore_security_violation_already_ignored(
     )
 
     assert response.json() == {"id": str(scan_ignore.id)}
+    assert response.status_code == 200
+
+
+def test_delete_scan_ignore(
+    session,
+    authorized_request,
+):
+
+    logged_in_client, _, organisation = authorized_request
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.OWASP_ZAP.value,
+        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+    )
+    scan = ScanFactory(
+        organisation=organisation, template=template, scan_type=scan_type
+    )
+    security_report = SecurityReportFactory(scan=scan)
+
+    security_violation = SecurityViolationFactory(security_report=security_report)
+    scan_ignore = ScanIgnoreFactory(
+        scan=scan,
+        violation=security_violation.violation,
+        location="evidence",
+        condition='<form id="form" data-testid="form" method="POST" encType="multipart/form-data" novalidate="">',
+    )
+    session.commit()
+
+    response = logged_in_client.delete(
+        f"/scans/template/{str(template.id)}/scan/{str(scan.id)}/type/{str(scan_type.id)}",
+        json={
+            "violation": scan_ignore.violation,
+            "location": scan_ignore.location,
+            "condition": scan_ignore.condition,
+        },
+    )
+
+    assert response.json() == {"status": "OK"}
     assert response.status_code == 200
