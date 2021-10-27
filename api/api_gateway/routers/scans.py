@@ -390,7 +390,6 @@ async def save_scan_ignore(
             return {"id": new_ignore.id}
 
         return {"id": existing_ignore.id}
-        existing_ignore
     except Exception as err:
         log.error(err)
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
