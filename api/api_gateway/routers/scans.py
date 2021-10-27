@@ -440,6 +440,5 @@ async def delete_scan_ignore(
             return {"error": "error deleting ignore"}
     except Exception as err:
         log.error(err)
-        print(err)
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {"error": "error deleting scan ignore"}
