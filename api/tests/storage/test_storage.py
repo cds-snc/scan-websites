@@ -1,5 +1,6 @@
 import json
 import os
+import pytest
 
 from factories import (
     A11yReportFactory,
@@ -452,3 +453,35 @@ def test_filter_owasp_zap_results_multiple_columns():
         storage.filter_ignored_results(False, exclude_condition, "bar", [scan_ignore])
         is True
     )
+
+
+def test_filter_results_location_condition_mismatch():
+    organisation = OrganisationFactory()
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.OWASP_ZAP.value,
+        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+    )
+    TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    scan = ScanFactory(
+        organisation=organisation, template=template, scan_type=scan_type
+    )
+
+    scan_ignore = ScanIgnoreFactory(
+        violation="foo",
+        location="method§param",
+        condition="'POST'§'bar'§'X-Powered-By: Next.js'",
+        scan=scan,
+    )
+
+    exclude_condition = {
+        "uri": "https://example.com/fr/id/25",
+        "method": "POST",
+        "param": "bar",
+        "evidence": "X-Powered-By: Next.js",
+    }
+
+    with pytest.raises(ValueError):
+        storage.filter_ignored_results(False, exclude_condition, "foo", [scan_ignore])
