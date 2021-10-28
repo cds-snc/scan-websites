@@ -1,5 +1,5 @@
-resource "aws_ecs_cluster" "scanning_tools" {
-  name = "scanning-tools"
+resource "aws_ecs_cluster" "owasp_zap_cluster" {
+  name = "owasp-zap"
 
   capacity_providers = ["FARGATE", "FARGATE_SPOT"]
 

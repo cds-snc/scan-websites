@@ -25,6 +25,7 @@ jobs:
             scanners/axe-core: 'scanners/axe-core/**'
             scanners/owasp-zap: 'scanners/owasp-zap/**'
             runners/owasp-zap: 'runners/owasp-zap/**'
+            runners/nuclei: 'runners/nuclei/**'
 
   build:
     if: needs.changes.outputs.images != '[]'

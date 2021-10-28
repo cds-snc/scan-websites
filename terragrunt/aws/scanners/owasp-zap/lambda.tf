@@ -16,7 +16,7 @@ resource "aws_lambda_function" "scanners-owasp-zap" {
   environment {
     variables = {
       REPORT_DATA_BUCKET = var.owasp_zap_report_data_bucket_id
-      CLUSTER            = aws_ecs_cluster.scanning_tools.arn
+      CLUSTER            = aws_ecs_cluster.owasp_zap_cluster.arn
       TASK_DEF_ARN       = aws_ecs_task_definition.runners-owasp-zap.arn
       PRIVATE_SUBNETS    = join(",", var.private_subnet_ids)
       SECURITY_GROUP     = aws_security_group.security_tools_web_scanning.id
