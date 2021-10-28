@@ -12,8 +12,8 @@ import uuid
 
 
 # revision identifiers, used by Alembic.
-revision = '4ca6527d0034'
-down_revision = 'b77929e07997'
+revision = "4ca6527d0034"
+down_revision = "b77929e07997"
 branch_labels = None
 depends_on = None
 
@@ -29,7 +29,7 @@ def upgrade():
             {
                 "id": str(uuid.uuid4()),
                 "name": "Nuclei",
-                "callback": {"event":"sns","topic_env":"NUCLEI_URLS_TOPIC"},
+                "callback": {"event": "sns", "topic_env": "NUCLEI_URLS_TOPIC"},
                 "created_at": datetime.now(),
                 "updated_at": datetime.now(),
             },
