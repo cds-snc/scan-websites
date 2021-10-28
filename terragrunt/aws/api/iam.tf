@@ -64,7 +64,8 @@ data "aws_iam_policy_document" "api_policies" {
     ]
     resources = [
       aws_sns_topic.axe-core-urls.arn,
-      aws_sns_topic.owasp-zap-urls.arn
+      aws_sns_topic.owasp-zap-urls.arn,
+      aws_sns_topic.nuclei-urls.arn,
     ]
   }
 
@@ -93,11 +94,13 @@ data "aws_iam_policy_document" "api_policies" {
     ]
     resources = [
       module.owasp-zap-report-data.s3_bucket_arn,
-      module.axe-core-report-data.s3_bucket_arn,
       "${module.owasp-zap-report-data.s3_bucket_arn}/*",
+      module.axe-core-report-data.s3_bucket_arn,
       "${module.axe-core-report-data.s3_bucket_arn}/*",
       module.github-report-data.s3_bucket_arn,
-      "${module.github-report-data.s3_bucket_arn}/*"
+      "${module.github-report-data.s3_bucket_arn}/*",
+      module.nuclei-report-data.s3_bucket_arn,
+      "${module.nuclei-report-data.s3_bucket_arn}/*"
     ]
   }
 }

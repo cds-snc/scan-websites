@@ -15,6 +15,8 @@ resource "aws_lambda_function" "api" {
       AXE_CORE_REPORT_DATA_BUCKET  = module.axe-core-report-data.s3_bucket_id
       OWASP_ZAP_URLS_TOPIC         = aws_sns_topic.owasp-zap-urls.arn
       OWASP_ZAP_REPORT_DATA_BUCKET = module.owasp-zap-report-data.s3_bucket_id
+      NUCLEI_URLS_TOPIC            = aws_sns_topic.nuclei-urls.arn
+      NUCLEI_REPORT_DATA_BUCKET    = module.nuclei-report-data.s3_bucket_id
       SQLALCHEMY_DATABASE_URI      = module.rds.proxy_connection_string_value
       FASTAPI_SECRET_KEY           = var.fastapi_secret_key
       GOOGLE_CLIENT_ID             = var.google_client_id
