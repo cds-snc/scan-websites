@@ -1,5 +1,7 @@
 import json
 import os
+import pytest
+import scan_websites_constants
 
 from factories import (
     A11yReportFactory,
@@ -405,3 +407,82 @@ def test_store_owasp_zap_record_creates_violations_and_ignores_mixed_condition(s
         .one()
     )
     assert len(violation.data) == 1
+
+
+def test_filter_owasp_zap_results_multiple_columns():
+    organisation = OrganisationFactory()
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.OWASP_ZAP.value,
+        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+    )
+    TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    scan = ScanFactory(
+        organisation=organisation, template=template, scan_type=scan_type
+    )
+
+    scan_ignore = ScanIgnoreFactory(
+        violation="foo",
+        location=f"method{scan_websites_constants.UNIQUE_SEPARATOR}param{scan_websites_constants.UNIQUE_SEPARATOR}evidence",
+        condition=f"'POST'{scan_websites_constants.UNIQUE_SEPARATOR}'bar'{scan_websites_constants.UNIQUE_SEPARATOR}'X-Powered-By: Next.js'",
+        scan=scan,
+    )
+
+    exclude_condition = {
+        "uri": "https://example.com/fr/id/25",
+        "method": "POST",
+        "param": "bar",
+        "evidence": "X-Powered-By: Next.js",
+    }
+    include_condition = {
+        "uri": "https://example.com/fr/id/25",
+        "method": "PUT",
+        "param": "bar",
+        "evidence": "X-Powered-By: Next.js",
+    }
+    assert (
+        storage.filter_ignored_results(False, exclude_condition, "foo", [scan_ignore])
+        is False
+    )
+    assert (
+        storage.filter_ignored_results(False, include_condition, "foo", [scan_ignore])
+        is True
+    )
+    assert (
+        storage.filter_ignored_results(False, exclude_condition, "bar", [scan_ignore])
+        is True
+    )
+
+
+def test_filter_results_location_condition_mismatch():
+    organisation = OrganisationFactory()
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.OWASP_ZAP.value,
+        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+    )
+    TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    scan = ScanFactory(
+        organisation=organisation, template=template, scan_type=scan_type
+    )
+
+    scan_ignore = ScanIgnoreFactory(
+        violation="foo",
+        location=f"method{scan_websites_constants.UNIQUE_SEPARATOR}param",
+        condition=f"'POST'{scan_websites_constants.UNIQUE_SEPARATOR}'bar'{scan_websites_constants.UNIQUE_SEPARATOR}'X-Powered-By: Next.js'",
+        scan=scan,
+    )
+
+    exclude_condition = {
+        "uri": "https://example.com/fr/id/25",
+        "method": "POST",
+        "param": "bar",
+        "evidence": "X-Powered-By: Next.js",
+    }
+
+    with pytest.raises(ValueError):
+        storage.filter_ignored_results(False, exclude_condition, "foo", [scan_ignore])

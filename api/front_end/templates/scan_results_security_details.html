@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block includes %}
-<script src="{{ url_for('static', path='js/template.js') }}"></script>
-
+<script src="{{ url_for('static', path='js/app.js') }}"></script>
 {% endblock %}
 {% block body %}
 <nav
@@ -10,6 +9,10 @@
 >
   <ol class="list-reset flex text-grey-dark">
     <li><a href="/{{ lang }}" class="font-bold">{{home_locale}}</a></li>
+    <li><span class="mx-2">/</span></li>
+    <li><a href="/{{ lang }}/results/{{report.scan.template.id}}/scan/{{ report.scan.id }}" class="font-bold">{{ report.scan.template.name }}: {{ report.scan.scan_type.name }}</a></li>
+    <li><span class="mx-2">/</span></li>
+    <li><a href="/{{ lang }}/results/{{report.scan.template.id}}/security/{{ report.scan.id }}/{{ report.id }}" class="font-bold">{{ report.scan.template.name }}</a></li>
     <li><span class="mx-2">/</span></li>
     <li>{{ report.scan.template.name }}: {{ report.revision }} - {{ report.url }}</li>
   </ol>
@@ -91,27 +94,57 @@
                 <td class="px-6 py-4">
                   <div class="text-sm font-medium text-gray-900" lang="en">
                       {{ violation.param }}
+                      {% if violation.param %}
+                      <span class="text-sm font-medium text-gray-900">
+                        <form class="inline align-middle submitFormAsJSON" action= "/scans/template/{{ report.scan.template.id }}/scan/{{ report.scan.id}}/type/{{ report.scan.scan_type.id}}" method="post" data-confirm="{{ignore_confirm_locale}}">
+                          <input type="hidden" name="violation" value="{{ security_violation.violation }}">
+                          <input type="hidden" name="location" value="param">
+                          <input type="hidden" name="condition" value="{{ violation.param }}">
+                          <button type="submit" name="submit" class="text-red-600 hover:text-indigo-900"><span class="material-icons" aria-label="{{ remove_ignore_locale }}"> remove </span></button>
+                        </form>
+                      </span>
+                      {% endif %}
                   </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="text-sm font-medium text-gray-900" lang="en">
                       {{ violation.attack }}
+                      {% if violation.attack %}
+                      <span class="text-sm font-medium text-gray-900">
+                        <form class="inline align-middle submitFormAsJSON" action= "/scans/template/{{ report.scan.template.id }}/scan/{{ report.scan.id}}/type/{{ report.scan.scan_type.id}}" method="post" data-confirm="{{ignore_confirm_locale}}">
+                          <input type="hidden" name="violation" value="{{ security_violation.violation }}">
+                          <input type="hidden" name="location" value="attack">
+                          <input type="hidden" name="condition" value="{{ violation.attack }}">
+                          <button type="submit" name="submit" class="text-red-600 hover:text-indigo-900"><span class="material-icons" aria-label="{{ ignore_locale }}"> remove </span></button>
+                        </form>
+                      </span>
+                      {% endif %}
                   </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="text-sm font-medium text-gray-900" lang="en">
-                      {{ violation.evidence }}
+                      <span>{{ violation.evidence }}</span>
+                      {% if violation.evidence %}
+                      <span class="text-gray-900">
+                        <form class="inline align-middle submitFormAsJSON" action= "/scans/template/{{ report.scan.template.id }}/scan/{{ report.scan.id}}/type/{{ report.scan.scan_type.id}}" method="post" data-confirm="{{ignore_confirm_locale}}">
+                          <input type="hidden" name="violation" value="{{ security_violation.violation }}">
+                          <input type="hidden" name="location" value="evidence">
+                          <input type="hidden" name="condition" value="{{ violation.evidence }}">
+                          <button type="submit" name="submit" class="text-red-600 hover:text-indigo-900"><span class="material-icons" aria-label="{{ ignore_locale }}"> remove </span></button>
+                        </form>
+                      </span>
+                      {% endif %}
                   </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm font-medium text-gray-900">
-                    <form id="jsonForm" action= "/scans/template/{{ report.scan.template.id }}/scan/{{ report.scan.id}}/type/{{ report.scan.scan_type.id}}" method="post" data-confirm="{{ignore_confirm_locale}}">
+                  <span class="text-sm font-medium text-gray-900">
+                    <form class="submitFormAsJSON" action= "/scans/template/{{ report.scan.template.id }}/scan/{{ report.scan.id}}/type/{{ report.scan.scan_type.id}}" method="post" data-confirm="{{ignore_confirm_locale}}">
                       <input type="hidden" name="violation" value="{{ security_violation.violation }}">
-                      <input type="hidden" name="location" value="evidence">
-                      <input type="hidden" name="condition" value="{{ violation.evidence }}">
+                      <input type="hidden" name="location" value="method{{get_seperator()}}param{{get_seperator()}}attack{{get_seperator()}}evidence">
+                      <input type="hidden" name="condition" value="'{{ violation.method }}'{{get_seperator()}}'{{ violation.param }}'{{get_seperator()}}'{{ violation.attack }}'{{get_seperator()}}'{{ violation.evidence }}'">
                       <button type="submit" name="submit" class="text-red-600 hover:text-indigo-900"><span class="material-icons" aria-label="{{ ignore_locale }}"> hide_source </span></button>
                     </form>
-                  </div>
+                  </span>
                 </td>
               </tr>
               {% endfor %}
@@ -148,9 +181,6 @@
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {{ evidence_locale }}
                 </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {{ remove_ignore_locale }}
-                </th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
@@ -179,16 +209,6 @@
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="text-sm font-medium text-gray-900" lang="en">
                       {{ violation.evidence }}
-                  </div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm font-medium text-gray-900">
-                    <form id="jsonForm" action= "/scans/template/{{ report.scan.template.id }}/scan/{{ report.scan.id}}/type/{{ report.scan.scan_type.id}}" method="delete" data-confirm="{{ignore_delete_confirm_locale}}">
-                      <input type="hidden" name="violation" value="{{ security_violation.violation }}">
-                      <input type="hidden" name="location" value="evidence">
-                      <input type="hidden" name="condition" value="{{ violation.evidence }}">
-                      <button type="submit" name="submit" class="text-green-600 hover:text-indigo-900"><span class="material-icons" aria-label="{{ remove_ignore_locale }}"> task_alt </span></button>
-                    </form>
                   </div>
                 </td>
               </tr>

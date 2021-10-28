@@ -19,6 +19,7 @@ import glob
 import json
 import os
 import uuid
+import scan_websites_constants
 
 router = APIRouter()
 
@@ -93,10 +94,23 @@ def get_risk_colour(riskcode):
         return "bg-gray-500"
 
 
+def prettier_array(data):
+    if scan_websites_constants.UNIQUE_SEPARATOR in data:
+        return data.replace(scan_websites_constants.UNIQUE_SEPARATOR, ", ")
+    else:
+        return data
+
+
+def get_seperator():
+    return scan_websites_constants.UNIQUE_SEPARATOR
+
+
 # assign filter to Jinja2
 templates.env.filters["plural_formatting"] = plural_formatting
 templates.env.filters["date"] = format_date
 templates.env.filters["risk_colour"] = get_risk_colour
+templates.env.filters["prettier_array"] = prettier_array
+templates.env.globals["get_seperator"] = get_seperator
 
 
 @router.get("/", response_class=HTMLResponse, include_in_schema=False)
