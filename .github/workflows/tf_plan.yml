@@ -28,6 +28,7 @@ jobs:
           - module: alarms
           - module: api
           - module: hosted_zone
+          - module: ecs
           - module: scanners/axe-core
           - module: scanners/owasp-zap
 
