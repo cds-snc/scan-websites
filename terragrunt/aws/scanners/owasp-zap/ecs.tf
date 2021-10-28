@@ -1,19 +1,3 @@
-resource "aws_ecs_cluster" "owasp_zap_cluster" {
-  name = "owasp-zap"
-
-  capacity_providers = ["FARGATE", "FARGATE_SPOT"]
-
-  default_capacity_provider_strategy {
-    capacity_provider = "FARGATE_SPOT"
-  }
-
-  setting {
-    name  = "containerInsights"
-    value = "enabled"
-  }
-
-}
-
 resource "aws_ecs_task_definition" "runners-owasp-zap" {
   family       = "runners-owasp-zap"
   cpu          = 2048
