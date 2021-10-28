@@ -96,7 +96,7 @@
                       {{ violation.param }}
                       {% if violation.param %}
                       <span class="text-sm font-medium text-gray-900">
-                        <form class="display: inline align-middle" action= "/scans/template/{{ report.scan.template.id }}/scan/{{ report.scan.id}}/type/{{ report.scan.scan_type.id}}" method="post" data-confirm="{{ignore_confirm_locale}}" onsubmit="return submitJSON(this, event)">
+                        <form class="submitFormAsJSON" class="inline align-middle" action= "/scans/template/{{ report.scan.template.id }}/scan/{{ report.scan.id}}/type/{{ report.scan.scan_type.id}}" method="post" data-confirm="{{ignore_confirm_locale}}">
                           <input type="hidden" name="violation" value="{{ security_violation.violation }}">
                           <input type="hidden" name="location" value="param">
                           <input type="hidden" name="condition" value="{{ violation.param }}">
@@ -111,7 +111,7 @@
                       {{ violation.attack }}
                       {% if violation.attack %}
                       <span class="text-sm font-medium text-gray-900">
-                        <form class="display: inline align-middle" action= "/scans/template/{{ report.scan.template.id }}/scan/{{ report.scan.id}}/type/{{ report.scan.scan_type.id}}" method="post" data-confirm="{{ignore_confirm_locale}}" onsubmit="return submitJSON(this, event)">
+                        <form class="inline align-middle submitFormAsJSON" action= "/scans/template/{{ report.scan.template.id }}/scan/{{ report.scan.id}}/type/{{ report.scan.scan_type.id}}" method="post" data-confirm="{{ignore_confirm_locale}}">
                           <input type="hidden" name="violation" value="{{ security_violation.violation }}">
                           <input type="hidden" name="location" value="attack">
                           <input type="hidden" name="condition" value="{{ violation.attack }}">
@@ -126,7 +126,7 @@
                       <span>{{ violation.evidence }}</span>
                       {% if violation.evidence %}
                       <span class="text-gray-900">
-                        <form class="display: inline align-middle" action= "/scans/template/{{ report.scan.template.id }}/scan/{{ report.scan.id}}/type/{{ report.scan.scan_type.id}}" method="post" data-confirm="{{ignore_confirm_locale}}" onsubmit="return submitJSON(this, event)">
+                        <form class="inline align-middle submitFormAsJSON" action= "/scans/template/{{ report.scan.template.id }}/scan/{{ report.scan.id}}/type/{{ report.scan.scan_type.id}}" method="post" data-confirm="{{ignore_confirm_locale}}">
                           <input type="hidden" name="violation" value="{{ security_violation.violation }}">
                           <input type="hidden" name="location" value="evidence">
                           <input type="hidden" name="condition" value="{{ violation.evidence }}">
@@ -138,10 +138,10 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span class="text-sm font-medium text-gray-900">
-                    <form action= "/scans/template/{{ report.scan.template.id }}/scan/{{ report.scan.id}}/type/{{ report.scan.scan_type.id}}" method="post" data-confirm="{{ignore_confirm_locale}}" onsubmit="return submitJSON(this, event)">
+                    <form class="submitFormAsJSON" action= "/scans/template/{{ report.scan.template.id }}/scan/{{ report.scan.id}}/type/{{ report.scan.scan_type.id}}" method="post" data-confirm="{{ignore_confirm_locale}}">
                       <input type="hidden" name="violation" value="{{ security_violation.violation }}">
-                      <input type="hidden" name="location" value="method§param§attack§evidence">
-                      <input type="hidden" name="condition" value="'{{ violation.method }}'§'{{ violation.param }}'§'{{ violation.attack }}'§'{{ violation.evidence }}'">
+                      <input type="hidden" name="location" value="method{{get_seperator()}}param{{get_seperator()}}attack{{get_seperator()}}evidence">
+                      <input type="hidden" name="condition" value="'{{ violation.method }}'{{get_seperator()}}'{{ violation.param }}'{{get_seperator()}}'{{ violation.attack }}'{{get_seperator()}}'{{ violation.evidence }}'">
                       <button type="submit" name="submit" class="text-red-600 hover:text-indigo-900"><span class="material-icons" aria-label="{{ ignore_locale }}"> hide_source </span></button>
                     </form>
                   </span>

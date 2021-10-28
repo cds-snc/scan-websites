@@ -1,6 +1,7 @@
 import json
 import os
 import pytest
+import scan_websites_constants
 
 from factories import (
     A11yReportFactory,
@@ -424,8 +425,8 @@ def test_filter_owasp_zap_results_multiple_columns():
 
     scan_ignore = ScanIgnoreFactory(
         violation="foo",
-        location="method§param§evidence",
-        condition="'POST'§'bar'§'X-Powered-By: Next.js'",
+        location=f"method{scan_websites_constants.UNIQUE_SEPARATOR}param{scan_websites_constants.UNIQUE_SEPARATOR}evidence",
+        condition=f"'POST'{scan_websites_constants.UNIQUE_SEPARATOR}'bar'{scan_websites_constants.UNIQUE_SEPARATOR}'X-Powered-By: Next.js'",
         scan=scan,
     )
 
@@ -471,8 +472,8 @@ def test_filter_results_location_condition_mismatch():
 
     scan_ignore = ScanIgnoreFactory(
         violation="foo",
-        location="method§param",
-        condition="'POST'§'bar'§'X-Powered-By: Next.js'",
+        location=f"method{scan_websites_constants.UNIQUE_SEPARATOR}param",
+        condition=f"'POST'{scan_websites_constants.UNIQUE_SEPARATOR}'bar'{scan_websites_constants.UNIQUE_SEPARATOR}'X-Powered-By: Next.js'",
         scan=scan,
     )
 

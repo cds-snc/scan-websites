@@ -1,5 +1,6 @@
 import json
 import os
+import scan_websites_constants
 
 from database.db import db_session
 from logger import log
@@ -110,11 +111,18 @@ def sum_impact(violations):
 def filter_ignored_results(in_or_out, instance, violation, scan_ignores):
     for ignore in scan_ignores:
         if ignore.violation == violation:
-            if "§" in ignore.location and "§" in ignore.condition:
+            if (
+                scan_websites_constants.UNIQUE_SEPARATOR in ignore.location
+                and scan_websites_constants.UNIQUE_SEPARATOR in ignore.condition
+            ):
                 # Evaluate ignore using § seperated list of locations and conditions
                 # § is being used a seperator since it has lower probability of being in results
-                locations = ignore.location.split("§")
-                conditions = ignore.condition.split("§")
+                locations = ignore.location.split(
+                    scan_websites_constants.UNIQUE_SEPARATOR
+                )
+                conditions = ignore.condition.split(
+                    scan_websites_constants.UNIQUE_SEPARATOR
+                )
                 if len(locations) != len(conditions):
                     raise ValueError(
                         "Array of ignore locations and conditions must be the same size"
@@ -126,9 +134,8 @@ def filter_ignored_results(in_or_out, instance, violation, scan_ignores):
                     condition = condition.rstrip("'")
                     if condition == "":
                         matches += 1
-                    else:
-                        if instance[location] == condition:
-                            matches += 1
+                    elif instance[location] == condition:
+                        matches += 1
 
                 if matches == len(locations):
                     return in_or_out
