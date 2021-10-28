@@ -2,6 +2,25 @@
 
 On-demand scanning of websites for accessibility and security vulnerabilities/compliance / Analyse à la demande des sites Web pour les vulnérabilités/conformité en matière d'accessibilité et de sécurité
 
+## Adding new scans
+
+- Create new alembic database migration to insert new scan_type
+- Add new scan_type to AvailableScans class in `/pub_sub/`
+- Add new SNS topic for the new scan (api terraform)
+- Add new S3 report bucket via terraform + IAM permissions to store results for processing by the api (api terraform)
+- Add new lambda function via terraform + IAM permissions to be invoked by SNS
+- Update api terraform `outputs.tf` to include newly created items
+- Create a new lambda nodejs project in `/scanners/`
+   - If using ECS
+     - Create a runner under `/runners/`. This will be invoked by your nodejs lambda.
+     - Create ECS task definition TF and associated container definition `.json`
+- Create new entries for your scanner under the various actions in `/.github/`
+   - TF plan (CI only)
+   - TF apply (Make changes to Production)
+   - Build container to test dockerbuild (CI only)
+   - Build and push container to ECR (Push to Production)
+- Profit :tada:
+
 ## Run Locally
 
 Run this in a dev container. 
