@@ -36,10 +36,6 @@ $(document).ready(function() {
       },
     });
   });
-
-  
-
-  $("#deleteIgnoreForm").on("submit", submitJSON);
 });
 
 function getFormData($form){
