@@ -96,7 +96,7 @@
                       {{ violation.param }}
                       {% if violation.param %}
                       <span class="text-sm font-medium text-gray-900">
-                        <form class="submitFormAsJSON" class="inline align-middle" action= "/scans/template/{{ report.scan.template.id }}/scan/{{ report.scan.id}}/type/{{ report.scan.scan_type.id}}" method="post" data-confirm="{{ignore_confirm_locale}}">
+                        <form class="inline align-middle submitFormAsJSON" action= "/scans/template/{{ report.scan.template.id }}/scan/{{ report.scan.id}}/type/{{ report.scan.scan_type.id}}" method="post" data-confirm="{{ignore_confirm_locale}}">
                           <input type="hidden" name="violation" value="{{ security_violation.violation }}">
                           <input type="hidden" name="location" value="param">
                           <input type="hidden" name="condition" value="{{ violation.param }}">
