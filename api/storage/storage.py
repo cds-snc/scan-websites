@@ -109,6 +109,7 @@ def sum_impact(violations):
 
 
 def filter_ignored_results(in_or_out, instance, violation, scan_ignores):
+    filter_result = not in_or_out
     for ignore in scan_ignores:
         if ignore.violation == violation:
             if (
@@ -138,14 +139,12 @@ def filter_ignored_results(in_or_out, instance, violation, scan_ignores):
                         matches += 1
 
                 if matches == len(locations):
-                    return in_or_out
-
-                return not in_or_out
+                    filter_result = in_or_out
             else:
                 if ignore.location in instance:
                     if instance[ignore.location] == ignore.condition:
-                        return in_or_out
-    return not in_or_out
+                        filter_result = in_or_out
+    return filter_result
 
 
 def store_owasp_zap_record(session, payload):

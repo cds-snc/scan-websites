@@ -456,6 +456,79 @@ def test_filter_owasp_zap_results_multiple_columns():
     )
 
 
+def test_filter_owasp_zap_results_multiple_ignores():
+    organisation = OrganisationFactory()
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.OWASP_ZAP.value,
+        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+    )
+    TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    scan = ScanFactory(
+        organisation=organisation, template=template, scan_type=scan_type
+    )
+
+    scan_ignore_1 = ScanIgnoreFactory(
+        violation="foo",
+        location=f"method{scan_websites_constants.UNIQUE_SEPARATOR}param{scan_websites_constants.UNIQUE_SEPARATOR}evidence",
+        condition=f"'POST'{scan_websites_constants.UNIQUE_SEPARATOR}'bar'{scan_websites_constants.UNIQUE_SEPARATOR}'X-Powered-By: Next.js'",
+        scan=scan,
+    )
+
+    scan_ignore_2 = ScanIgnoreFactory(
+        violation="foo",
+        location=f"method{scan_websites_constants.UNIQUE_SEPARATOR}param{scan_websites_constants.UNIQUE_SEPARATOR}evidence",
+        condition=f"'GET'{scan_websites_constants.UNIQUE_SEPARATOR}'bar'{scan_websites_constants.UNIQUE_SEPARATOR}'X-Powered-By: Next.js'",
+        scan=scan,
+    )
+
+    exclude_condition_1 = {
+        "uri": "https://example.com/fr/id/25",
+        "method": "POST",
+        "param": "bar",
+        "evidence": "X-Powered-By: Next.js",
+    }
+    exclude_condition_2 = {
+        "uri": "https://example.com/fr/id/25",
+        "method": "GET",
+        "param": "bar",
+        "evidence": "X-Powered-By: Next.js",
+    }
+
+    include_condition = {
+        "uri": "https://example.com/fr/id/25",
+        "method": "PUT",
+        "param": "bar",
+        "evidence": "X-Powered-By: Next.js",
+    }
+    assert (
+        storage.filter_ignored_results(
+            False, exclude_condition_1, "foo", [scan_ignore_1, scan_ignore_2]
+        )
+        is False
+    )
+    assert (
+        storage.filter_ignored_results(
+            False, include_condition, "foo", [scan_ignore_1, scan_ignore_2]
+        )
+        is True
+    )
+    assert (
+        storage.filter_ignored_results(
+            False, exclude_condition_1, "bar", [scan_ignore_1, scan_ignore_2]
+        )
+        is True
+    )
+    assert (
+        storage.filter_ignored_results(
+            False, exclude_condition_2, "foo", [scan_ignore_1, scan_ignore_2]
+        )
+        is False
+    )
+
+
 def test_filter_results_location_condition_mismatch():
     organisation = OrganisationFactory()
     template = TemplateFactory(organisation=organisation)
