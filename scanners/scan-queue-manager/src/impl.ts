@@ -18,45 +18,51 @@ export async function Impl(
           Type: "Task",
           Resource: "arn:aws:states:::ecs:runTask.sync",
           Parameters: {
-            capacityProviderStrategy: [
+            CapacityProviderStrategy: [
               {
-                base: parseInt(process.env.MIN_ECS_CAPACITY),
-                capacityProvider: "FARGATE_SPOT",
-                weight: parseInt(process.env.MAX_ECS_CAPACITY),
+                Base: parseInt(process.env.MIN_ECS_CAPACITY),
+                CapacityProvider: "FARGATE_SPOT",
+                Weight: parseInt(process.env.MAX_ECS_CAPACITY),
               },
               {
-                base: 0,
-                capacityProvider: "FARGATE",
-                weight: parseInt(process.env.MIN_ECS_CAPACITY),
+                Base: 0,
+                CapacityProvider: "FARGATE",
+                Weight: parseInt(process.env.MIN_ECS_CAPACITY),
               },
             ],
-            cluster: process.env.CLUSTER,
-            taskDefinition: process.env.TASK_DEF_ARN,
-            overrides: {
-              containerOverrides: [
+            Cluster: process.env.CLUSTER,
+            TaskDefinition: process.env.TASK_DEF_ARN,
+            Overrides: {
+              ContainerOverrides: [
                 {
-                  name: "runners-owasp-zap",
-                  environment: [
-                    { name: "SCAN_URL", value: record.payload.url },
-                    { name: "SCAN_ID", value: record.payload.id },
-                    { name: "SCAN_THREADS", value: process.env.SCAN_THREADS },
+                  Name: "runners-owasp-zap",
+                  Environment: [
+                    { Name: "SCAN_URL", Value: record.payload.url },
+                    { Name: "SCAN_ID", Value: record.payload.id },
+                    { Name: "SCAN_THREADS", Value: process.env.SCAN_THREADS },
                   ],
                 },
               ],
             },
-            networkConfiguration: {
-              awsvpcConfiguration: {
-                securityGroups: [process.env.SECURITY_GROUP],
-                subnets: process.env.PRIVATE_SUBNETS.split(","),
+            NetworkConfiguration: {
+              AwsvpcConfiguration: {
+                SecurityGroups: [process.env.SECURITY_GROUP],
+                Subnets: process.env.PRIVATE_SUBNETS.split(","),
               },
             },
           },
-          End: true
+          Next: "",
+          End: false
         }
       };
 
+      // Reached the end of the state machine sequence
       if (stepCount == records.length) {
         state[stepCount.toString()]["End"] = true;
+        delete state[stepCount.toString()]["Next"]; 
+      }else{
+        state[stepCount.toString()]["Next"] = (stepCount+1).toString();
+        delete state[stepCount.toString()]["End"]; 
       }
       states.push(state);
       stepCount++;
@@ -66,12 +72,12 @@ export async function Impl(
       Version: "1.0",
       Comment: "Run ECS/Fargate tasks",
       TimeoutSeconds: 7200 * records.length,
-      StartAt: "0",
-      States: states
+      StartAt: "1",
+      States: Object.assign({}, ...states)
     }
 
     const req: CreateStateMachineInput = {
-      name: 'Active scan',
+      name: 'active_scan',
       definition: JSON.stringify(definition),
       roleArn: process.env.STEP_FUNC_ROLE_ARN
     };
