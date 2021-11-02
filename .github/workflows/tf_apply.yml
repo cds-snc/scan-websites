@@ -58,9 +58,9 @@ jobs:
             scanners-axe-core:
               - 'terragrunt/aws/scanners/axe-core/**'
               - 'terragrunt/env/scanners/axe-core/**'
-            scanners-owasp-zap:
-              - 'terragrunt/aws/scanners/owasp-zap/**'
-              - 'terragrunt/env/scanners/owasp-zap/**'
+            orchestrator:
+              - 'terragrunt/aws/orchestrator/**'
+              - 'terragrunt/env/orchestrator/**'
 
       - name: Apply hosted_zone
         if: ${{ steps.filter.outputs.hosted_zone == 'true' }}
@@ -92,8 +92,8 @@ jobs:
         run: |
           terragrunt apply --terragrunt-non-interactive -auto-approve
 
-      - name: Apply scanners/owasp-zap
-        if: ${{ steps.filter.outputs.scanners-owasp-zap == 'true' }}
-        working-directory: terragrunt/env/scanners/owasp-zap
+      - name: Apply orchestrator
+        if: ${{ steps.filter.outputs.orchestrator == 'true' }}
+        working-directory: terragrunt/env/orchestrator
         run: |
           terragrunt apply --terragrunt-non-interactive -auto-approve

@@ -1,0 +1,39 @@
+[
+	{
+		"cpu": 0,
+		"environment": [
+			{
+				"name": "S3_BUCKET",
+				"value": "${s3_name}"
+			}
+		],
+		"essential": true,
+		"image": "${image}",
+		"linuxParameters": {
+			"capabilities": {
+				"drop": null,
+				"add": [
+					"SYS_PTRACE"
+				]
+			}
+		},
+		"logConfiguration": {
+			"logDriver": "awslogs",
+			"options": {
+				"awslogs-group": "${awslogs-group}",
+				"awslogs-region": "${awslogs-region}",
+				"awslogs-stream-prefix": "${awslogs-stream-prefix}"
+			}
+		},
+		"mountPoints": [],
+		"name": "${name}",
+		"portMappings": [
+			{
+				"hostPort": 8001,
+				"protocol": "tcp",
+				"containerPort": 8001
+			}
+		],
+		"volumesFrom": []
+	}
+]

@@ -6,7 +6,11 @@ export type HtmlPayload = {
 export type Payload = {
   html?: HtmlPayload;
   id: string;
+  name: string;
   url?: string;
+  image?: string;
+  taskDef?: string;
+  reportBucket?: string;
 };
 
 export type Record = {

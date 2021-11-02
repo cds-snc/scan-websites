@@ -40,8 +40,10 @@ data "aws_iam_policy_document" "zap_runner_container_policies" {
     ]
 
     resources = [
-      aws_cloudwatch_log_group.log.arn,
-      "${aws_cloudwatch_log_group.log.arn}:log-group:${aws_cloudwatch_log_group.log.name}:log-stream:*"
+      aws_cloudwatch_log_group.owasp-zap-log.arn,
+      "${aws_cloudwatch_log_group.owasp-zap-log.arn}:log-group:${aws_cloudwatch_log_group.owasp-zap-log.name}:log-stream:*",
+      aws_cloudwatch_log_group.nuclei-log.arn,
+      "${aws_cloudwatch_log_group.nuclei-log.arn}:log-group:${aws_cloudwatch_log_group.nuclei-log.name}:log-stream:*"
     ]
   }
 

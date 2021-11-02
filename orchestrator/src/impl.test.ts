@@ -12,15 +12,17 @@ const mockResponse = {
 };
 
 jest.mock("aws-sdk", () => {
-  const mockECS = {
-    runTask: jest.fn().mockReturnThis(),
+  const mockStepFunctions = {
+    createStateMachine: jest.fn().mockReturnThis(),
+    listStateMachines: jest.fn().mockReturnThis(),
+    startExecution: jest.fn().mockReturnThis(),
     promise: jest.fn(() => {
       return { Body: JSON.stringify(mockResponse) };
     }),
   };
   return {
     __esModule: true,
-    ECS: jest.fn(() => mockECS),
+    StepFunctions: jest.fn(() => mockStepFunctions),
   };
 });
 
@@ -31,10 +33,12 @@ describe("Impl", () => {
     process.env = { ...OLD_ENV }; // Make a copy
   });
   describe("is trigged by SNS", () => {
-    const ecs = new AWS.ECS();
+    const stepfunctions = new AWS.StepFunctions();
     test("Launches ecs task and returns true", async () => {
       process.env.PRIVATE_SUBNETS = "10.0.0.0/16,10.0.0.0/16";
       process.env.TASK_DEF_ARN =
+        "arn:aws:ecs:us-west-2:123456789012:task-definition/TaskDefinitionFamily:1";
+      process.env.STEP_FUNC_ROLE_ARN =
         "arn:aws:ecs:us-west-2:123456789012:task-definition/TaskDefinitionFamily:1";
       process.env.CLUSTER = "zap";
       process.env.MIN_ECS_CAPACITY = "1";
@@ -44,42 +48,27 @@ describe("Impl", () => {
         {
           payload: {
             id: "bar",
+            name: "owasp-zap",
+            url: "https://example.com/",
+          },
+          html: "",
+        },
+        {
+          payload: {
+            id: "baz",
+            name: "nuclei",
             url: "https://example.com/",
           },
           html: "",
         },
       ];
 
-      const response = await Impl(records, ecs);
+      const response = await Impl(records, stepfunctions);
 
-      expect(ecs.runTask).toHaveBeenCalledWith({
-        capacityProviderStrategy: [
-          {
-            base: parseInt(process.env.MIN_ECS_CAPACITY),
-            capacityProvider: "FARGATE_SPOT",
-            weight: parseInt(process.env.MAX_ECS_CAPACITY),
-          },
-          {
-            base: 0,
-            capacityProvider: "FARGATE",
-            weight: parseInt(process.env.MIN_ECS_CAPACITY),
-          },
-        ],
-        cluster: process.env.CLUSTER,
-        taskDefinition: process.env.TASK_DEF_ARN,
-        overrides: {
-          containerOverrides: [
-            {
-              name: "runners-owasp-zap",
-              environment: [
-                { name: "SCAN_URL", value: "https://example.com/" },
-                { name: "SCAN_ID", value: "bar" },
-                { name: "SCAN_THREADS", value: process.env.SCAN_THREADS },
-              ],
-            },
-          ],
-        },
-        networkConfiguration: expect.any(Object),
+      expect(stepfunctions.createStateMachine).toHaveBeenCalledWith({
+        name: "owasp-zap_nuclei",
+        definition: expect.any(String),
+        roleArn: process.env.STEP_FUNC_ROLE_ARN,
       });
       expect(response).toBe(true);
     });

@@ -1,7 +1,7 @@
 {
-  "name": "zap-lambda",
+  "name": "orchestrator",
   "version": "1.0.0",
-  "description": "Zap ECS launcher on AWS lambda",
+  "description": "ECS scan launcher via Step Functions on AWS lambda",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",

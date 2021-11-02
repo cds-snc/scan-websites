@@ -11,8 +11,8 @@ data "aws_iam_policy_document" "service_principal" {
   }
 }
 
-resource "aws_iam_role" "scanners-owasp-zap" {
-  name               = "${var.product_name}-scanners-owasp-zap"
+resource "aws_iam_role" "orchestrator" {
+  name               = "${var.product_name}-orchestrator"
   assume_role_policy = data.aws_iam_policy_document.service_principal.json
 }
 
@@ -21,11 +21,11 @@ data "aws_iam_policy" "lambda_insights" {
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_insights" {
-  role       = aws_iam_role.scanners-owasp-zap.name
+  role       = aws_iam_role.orchestrator.name
   policy_arn = data.aws_iam_policy.lambda_insights.arn
 }
 
-data "aws_iam_policy_document" "zap_runner_policies" {
+data "aws_iam_policy_document" "scan_runner_policies" {
 
   statement {
 
@@ -38,8 +38,10 @@ data "aws_iam_policy_document" "zap_runner_policies" {
     ]
 
     resources = [
-      aws_cloudwatch_log_group.log.arn,
-      "${aws_cloudwatch_log_group.log.arn}:log-group:${aws_cloudwatch_log_group.log.name}:log-stream:*"
+      aws_cloudwatch_log_group.owasp-zap-log.arn,
+      "${aws_cloudwatch_log_group.owasp-zap-log.arn}:log-group:${aws_cloudwatch_log_group.owasp-zap-log.name}:log-stream:*",
+      aws_cloudwatch_log_group.nuclei-log.arn,
+      "${aws_cloudwatch_log_group.nuclei-log.arn}:log-group:${aws_cloudwatch_log_group.nuclei-log.name}:log-stream:*"
     ]
   }
 
@@ -52,7 +54,7 @@ data "aws_iam_policy_document" "zap_runner_policies" {
       "ecr:BatchGetImage"
     ]
     resources = [
-      aws_ecr_repository.scanners-owasp-zap.arn
+      aws_ecr_repository.orchestrator.arn
     ]
   }
 
@@ -75,6 +77,39 @@ data "aws_iam_policy_document" "zap_runner_policies" {
     effect = "Allow"
 
     actions = [
+      "states:ListStateMachines",
+      "states:ListActivities",
+      "states:CreateStateMachine",
+      "states:CreateActivity",
+      "states:DescribeExecution",
+      "states:StopExecution"
+    ]
+
+    resources = [
+      "arn:aws:states:${var.region}:${var.account_id}:*"
+    ]
+  }
+
+  statement {
+
+    effect = "Allow"
+
+    actions = [
+      "events:PutTargets",
+      "events:PutRule",
+      "events:DescribeRule"
+    ]
+
+    resources = [
+      "arn:aws:events:${var.region}:${var.account_id}:*"
+    ]
+  }
+
+  statement {
+
+    effect = "Allow"
+
+    actions = [
       "iam:PassRole"
     ]
 
@@ -86,15 +121,15 @@ data "aws_iam_policy_document" "zap_runner_policies" {
 
 }
 
-resource "aws_iam_policy" "scanners-owasp-zap" {
-  name   = "${var.product_name}-scanners-owasp-zap"
+resource "aws_iam_policy" "orchestrator" {
+  name   = "${var.product_name}-orchestrator"
   path   = "/"
-  policy = data.aws_iam_policy_document.zap_runner_policies.json
+  policy = data.aws_iam_policy_document.scan_runner_policies.json
 }
 
-resource "aws_iam_role_policy_attachment" "zap_runner" {
-  role       = aws_iam_role.scanners-owasp-zap.name
-  policy_arn = aws_iam_policy.scanners-owasp-zap.arn
+resource "aws_iam_role_policy_attachment" "scan_runner" {
+  role       = aws_iam_role.orchestrator.name
+  policy_arn = aws_iam_policy.orchestrator.arn
 }
 
 # Use AWS managed IAM policy
@@ -104,6 +139,6 @@ resource "aws_iam_role_policy_attachment" "zap_runner" {
 # interfaces and write permissions to CloudWatch Logs.
 ####
 resource "aws_iam_role_policy_attachment" "AWSLambdaVPCAccessExecutionRole" {
-  role       = aws_iam_role.scanners-owasp-zap.name
+  role       = aws_iam_role.orchestrator.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
 }

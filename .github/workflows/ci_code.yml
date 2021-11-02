@@ -4,8 +4,8 @@ on:
   pull_request:
     paths:
       - api/**
+      - orchestrator/**
       - scanners/axe-core/**
-      - scanners/owasp-zap/**
       - terragrunt/**
       - .github/workflows/ci_code.yml
 
@@ -29,7 +29,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-          folder: ["api", "scanners/axe-core", "scanners/owasp-zap", "terragrunt"]
+          folder: ["api", "orchestrator", "scanners/axe-core", "terragrunt"]
 
     steps:
       - name: Checkout

@@ -1,4 +1,4 @@
-# OWASP Zap scan initiator Lambda
+# Scan initiator Lambda
 
 ## Running locally
 
