@@ -33,7 +33,7 @@ export async function Impl(
               },
             ],
             Cluster: process.env.CLUSTER,
-            "TaskDefinition.$": "$.payload.task_def",
+            "TaskDefinition.$": "$.payload.taskDef",
             Overrides: {
               ContainerOverrides: [
                 {
@@ -41,10 +41,10 @@ export async function Impl(
                   Environment: [
                     { Name: "SCAN_URL", "Value.$": "$.payload.url" },
                     { Name: "SCAN_ID", "Value.$": "$.payload.id" },
-                    { Name: "SCAN_THREADS", Value: process.env.SCAN_THREADS },
+                    { Name: "SCAN_THREADS", Value: process.env.OWASP_ZAP_SCAN_THREADS },
                     {
                       Name: "REPORT_DATA_BUCKET",
-                      "Value.$": "$.payload.report_bucket",
+                      "Value.$": "$.payload.reportBucket",
                     },
                     {
                       Name: "TASK_TOKEN_ENV_VARIABLE",
