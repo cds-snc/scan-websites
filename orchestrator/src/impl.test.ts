@@ -38,7 +38,8 @@ describe("Impl", () => {
       process.env.PRIVATE_SUBNETS = "10.0.0.0/16,10.0.0.0/16";
       process.env.TASK_DEF_ARN =
         "arn:aws:ecs:us-west-2:123456789012:task-definition/TaskDefinitionFamily:1";
-      process.env.STEP_FUNC_ROLE_ARN = "arn:aws:ecs:us-west-2:123456789012:task-definition/TaskDefinitionFamily:1";
+      process.env.STEP_FUNC_ROLE_ARN =
+        "arn:aws:ecs:us-west-2:123456789012:task-definition/TaskDefinitionFamily:1";
       process.env.CLUSTER = "zap";
       process.env.MIN_ECS_CAPACITY = "1";
       process.env.MAX_ECS_CAPACITY = "5";
@@ -64,10 +65,8 @@ describe("Impl", () => {
 
       const response = await Impl(records, stepfunctions);
 
-
-
       expect(stepfunctions.createStateMachine).toHaveBeenCalledWith({
-        name: 'owasp-zap_nuclei',
+        name: "owasp-zap_nuclei",
         definition: expect.any(String),
         roleArn: process.env.STEP_FUNC_ROLE_ARN,
       });
