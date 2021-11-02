@@ -11,6 +11,7 @@ export async function Impl(
 ): Promise<boolean> {
   try {
     const states: any[] = [];
+    const machine_name: any[] = [];
     let stepCount = 1;
     await asyncForEach(records, async (record: Record) => {
       let state = {
@@ -35,10 +36,10 @@ export async function Impl(
             Overrides: {
               ContainerOverrides: [
                 {
-                  Name: "runners-owasp-zap",
+                  "Name.$": "$.image",
                   Environment: [
-                    { Name: "SCAN_URL", Value: record.payload.url },
-                    { Name: "SCAN_ID", Value: record.payload.id },
+                    { Name: "SCAN_URL", "Value.$": "$.url" },
+                    { Name: "SCAN_ID", "Value.$": "$.id" },
                     { Name: "SCAN_THREADS", Value: process.env.SCAN_THREADS },
                   ],
                 },
@@ -65,6 +66,7 @@ export async function Impl(
         delete state[stepCount.toString()]["End"]; 
       }
       states.push(state);
+      machine_name.push(`${record.payload.name}`)
       stepCount++;
     });
 
@@ -77,7 +79,7 @@ export async function Impl(
     }
 
     const req: CreateStateMachineInput = {
-      name: 'active_scan',
+      name: machine_name.join("_"),
       definition: JSON.stringify(definition),
       roleArn: process.env.STEP_FUNC_ROLE_ARN
     };
@@ -98,10 +100,19 @@ export async function convertEventToRecords(
   await asyncForEach(event.Records, async (record: SNSEventRecord) => {
     // Parse the SNS
     // eslint-disable-next-line no-prototype-builtins
-    records.push({
-      payload: JSON.parse(record.Sns.Message),
-      html: "",
-    });
+    const messagePayload = JSON.parse(record.Sns.Message)
+    if (Array.isArray(messagePayload)){
+      messagePayload.forEach(message => records.push({
+        payload: message,
+        html: "",
+      }));
+    }else{
+      records.push({
+        payload: messagePayload,
+        html: "",
+      });
+    }
+    
   });
   return records;
 }

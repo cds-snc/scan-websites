@@ -63,7 +63,7 @@ describe("Impl", () => {
       const response = await Impl(records, stepfunctions);
 
       expect(stepfunctions.createStateMachine).toHaveBeenCalledWith({
-        name: 'active_scan',
+        name: 'owasp-zap_nuclei',
         definition: expect.any(String),
         roleArn: process.env.STEP_FUNC_ROLE_ARN,
       });
