@@ -31,7 +31,17 @@ data "aws_iam_policy_document" "container_execution_role" {
 
     principals {
       type        = "Service"
+      identifiers = ["ecs.amazonaws.com"]
+    }
+
+    principals {
+      type        = "Service"
       identifiers = ["ecs-tasks.amazonaws.com"]
+    }
+
+    principals {
+      type        = "Service"
+      identifiers = ["states.${var.region}.amazonaws.com"]
     }
   }
 }

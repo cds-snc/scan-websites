@@ -4,8 +4,8 @@ on:
   pull_request:
     paths:
       - api/**
+      - orchestrator/**
       - scanners/axe-core/**
-      - scanners/owasp-zap/**
       - terragrunt/**
       - .github/workflows/ci_code.yml
 

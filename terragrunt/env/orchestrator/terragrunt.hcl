@@ -1,13 +1,13 @@
 terraform {
-  source = "../../../aws//scanners/owasp-zap"
+  source = "../../aws//orchestrator"
 }
 
 dependencies {
-  paths = ["../../api", "../../ecs"]
+  paths = ["../api", "../ecs"]
 }
 
 dependency "api" {
-  config_path = "../../api"
+  config_path = "../api"
 
   mock_outputs_allowed_terraform_commands = ["validate", "plan"]
   mock_outputs = {
@@ -17,7 +17,7 @@ dependency "api" {
 }
 
 dependency "ecs" {
-  config_path = "../../ecs"
+  config_path = "../ecs"
 
   mock_outputs_allowed_terraform_commands = ["validate", "plan"]
   mock_outputs = {
