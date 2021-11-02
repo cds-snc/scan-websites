@@ -45,8 +45,10 @@ def test_healthcheck_failure(mock_log, mock_get_db_version):
 def test_hsts_in_response(hsts_middleware_client):
     response = hsts_middleware_client.get("/ops/version")
     assert response.status_code == 200
-    pattern = re.compile("max-age=[0-9]+ ; includeSubDomains")
-    assert pattern.match(response.headers["Strict-Transport-Security"])
+    assert (
+        response.headers["Strict-Transport-Security"]
+        == "max-age=63072000; includeSubDomains; preload"
+    )
 
 
 def test_accessing_protected_route_not_logged_in():
