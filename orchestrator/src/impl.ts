@@ -41,7 +41,10 @@ export async function Impl(
                   Environment: [
                     { Name: "SCAN_URL", "Value.$": "$.payload.url" },
                     { Name: "SCAN_ID", "Value.$": "$.payload.id" },
-                    { Name: "SCAN_THREADS", Value: process.env.OWASP_ZAP_SCAN_THREADS },
+                    {
+                      Name: "SCAN_THREADS",
+                      Value: process.env.OWASP_ZAP_SCAN_THREADS,
+                    },
                     {
                       Name: "REPORT_DATA_BUCKET",
                       "Value.$": "$.payload.reportBucket",
