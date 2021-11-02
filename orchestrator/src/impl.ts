@@ -10,7 +10,8 @@ export async function Impl(
   runner: Runner
 ): Promise<boolean> {
   try {
-    const states: string[] = [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const states: any[] = [];
     const machineName: string[] = [];
     let stepCount = 1;
     await asyncForEach(records, async (record: Record) => {
@@ -72,7 +73,7 @@ export async function Impl(
       } else {
         state[stepCount.toString()].Next = (stepCount + 1).toString();
       }
-      states.push(JSON.stringify(state));
+      states.push(state);
       machineName.push(`${record.payload.name}`);
       stepCount++;
     });

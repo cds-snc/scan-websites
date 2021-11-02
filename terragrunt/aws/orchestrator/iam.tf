@@ -82,6 +82,7 @@ data "aws_iam_policy_document" "scan_runner_policies" {
       "states:CreateStateMachine",
       "states:CreateActivity",
       "states:DescribeExecution",
+      "states:StartExecution",
       "states:StopExecution"
     ]
 
