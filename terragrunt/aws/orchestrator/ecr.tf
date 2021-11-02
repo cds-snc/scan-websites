@@ -1,5 +1,5 @@
 resource "aws_ecr_repository" "orchestrator" {
-  name                 = "${var.product_name}/scanners/owasp-zap"
+  name                 = "${var.product_name}/orchestrator"
   image_tag_mutability = "MUTABLE"
 
   image_scanning_configuration {
