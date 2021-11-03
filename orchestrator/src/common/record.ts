@@ -11,6 +11,7 @@ export type Payload = {
   image?: string;
   taskDef?: string;
   reportBucket?: string;
+  resultPath?: string | null;
 };
 
 export type Record = {

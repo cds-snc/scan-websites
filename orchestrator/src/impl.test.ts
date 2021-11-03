@@ -43,7 +43,7 @@ describe("Impl", () => {
         "arn:aws:ecs:us-west-2:123456789012:task-definition/TaskDefinitionFamily:1";
       process.env.STEP_FUNC_ROLE_ARN =
         "arn:aws:ecs:us-west-2:123456789012:task-definition/TaskDefinitionFamily:1";
-      process.env.CLUSTER = "zap";
+      process.env.CLUSTER = "scanning";
       process.env.MIN_ECS_CAPACITY = "1";
       process.env.MAX_ECS_CAPACITY = "5";
       process.env.OWASP_ZAP_SCAN_THREADS = "3";
@@ -72,18 +72,19 @@ describe("Impl", () => {
         Version: "1.0",
         Comment: "Run ECS/Fargate tasks",
         TimeoutSeconds: 7200 * records.length,
-        StartAt: "1",
+        StartAt: "nuclei",
         States: {
-          "1": {
+          nuclei: {
             Type: "Task",
             Resource: "arn:aws:states:::ecs:runTask.waitForTaskToken",
-            InputPath: "$.1",
+            InputPath: "$.nuclei",
+            ResultPath: "$.resultPath",
             Parameters: {
               CapacityProviderStrategy: [
                 { Base: 1, CapacityProvider: "FARGATE_SPOT", Weight: 5 },
                 { Base: 0, CapacityProvider: "FARGATE", Weight: 1 },
               ],
-              Cluster: "zap",
+              Cluster: "scanning",
               "TaskDefinition.$": "$.taskDef",
               Overrides: {
                 ContainerOverrides: [
@@ -116,19 +117,19 @@ describe("Impl", () => {
               },
             },
             TimeoutSeconds: 7200,
-            HeartbeatSeconds: 120,
-            Next: "2",
+            HeartbeatSeconds: 300,
+            Next: "owasp-zap",
           },
-          "2": {
+          "owasp-zap": {
             Type: "Task",
             Resource: "arn:aws:states:::ecs:runTask.waitForTaskToken",
-            InputPath: "$.2",
+            InputPath: "$.owasp-zap",
             Parameters: {
               CapacityProviderStrategy: [
                 { Base: 1, CapacityProvider: "FARGATE_SPOT", Weight: 5 },
                 { Base: 0, CapacityProvider: "FARGATE", Weight: 1 },
               ],
-              Cluster: "zap",
+              Cluster: "scanning",
               "TaskDefinition.$": "$.taskDef",
               Overrides: {
                 ContainerOverrides: [
@@ -158,7 +159,7 @@ describe("Impl", () => {
               },
             },
             TimeoutSeconds: 7200,
-            HeartbeatSeconds: 120,
+            HeartbeatSeconds: 300,
             End: true,
           },
         },
