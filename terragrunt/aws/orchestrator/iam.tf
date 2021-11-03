@@ -85,6 +85,7 @@ data "aws_iam_policy_document" "scan_runner_policies" {
     ]
 
     resources = [
+      aws_ecs_task_definition.runners-nuclei.arn,
       aws_ecs_task_definition.runners-owasp-zap.arn
     ]
   }
