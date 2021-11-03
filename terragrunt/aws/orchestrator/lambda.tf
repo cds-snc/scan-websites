@@ -16,6 +16,7 @@ resource "aws_lambda_function" "orchestrator" {
   environment {
     variables = {
       OWASP_ZAP_REPORT_DATA_BUCKET = var.owasp_zap_report_data_bucket_id
+      NUCLEI_REPORT_DATA_BUCKET    = var.nuclei_report_data_bucket_id
       CLUSTER                      = var.scanning_tools_cluster_arn
       STEP_FUNC_ROLE_ARN           = aws_iam_role.orchestrator.arn
       OWASP_ZAP_TASK_DEF_ARN       = aws_ecs_task_definition.runners-owasp-zap.arn
