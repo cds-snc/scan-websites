@@ -9,16 +9,22 @@ export async function Impl(
   records: Record[],
   runner: Runner
 ): Promise<boolean> {
+  // Sort so that dynamic items will always be generated in the same order
+  records.sort((a: Record, b: Record) => {
+    return a.payload.name.localeCompare(b.payload.name);
+  });
+
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const states: any[] = [];
+    const states: any[] = []; // eslint-disable-line @typescript-eslint/no-explicit-any
     const machineName: string[] = [];
+    const scanInputs: any[] = []; // eslint-disable-line @typescript-eslint/no-explicit-any
     let stepCount = 1;
     await asyncForEach(records, async (record: Record) => {
       const state = {
         [stepCount.toString()]: {
           Type: "Task",
           Resource: "arn:aws:states:::ecs:runTask.waitForTaskToken",
+          InputPath: `$.${stepCount.toString()}`,
           Parameters: {
             CapacityProviderStrategy: [
               {
@@ -33,21 +39,21 @@ export async function Impl(
               },
             ],
             Cluster: process.env.CLUSTER,
-            "TaskDefinition.$": "$.payload.taskDef",
+            "TaskDefinition.$": "$.taskDef",
             Overrides: {
               ContainerOverrides: [
                 {
-                  "Name.$": "$.payload.image",
+                  "Name.$": "$.image",
                   Environment: [
-                    { Name: "SCAN_URL", "Value.$": "$.payload.url" },
-                    { Name: "SCAN_ID", "Value.$": "$.payload.id" },
+                    { Name: "SCAN_URL", "Value.$": "$.url" },
+                    { Name: "SCAN_ID", "Value.$": "$.id" },
                     {
                       Name: "SCAN_THREADS",
                       Value: process.env.OWASP_ZAP_SCAN_THREADS,
                     },
                     {
                       Name: "REPORT_DATA_BUCKET",
-                      "Value.$": "$.payload.reportBucket",
+                      "Value.$": "$.reportBucket",
                     },
                     {
                       Name: "TASK_TOKEN_ENV_VARIABLE",
@@ -81,6 +87,17 @@ export async function Impl(
       }
       states.push(state);
       machineName.push(`${record.payload.name}`);
+
+      // Scan inputs for this step
+      record.payload.image = `runners-${record.payload.name}`;
+      record.payload.taskDef = (scanTaskArns as { [index: string]: string })[
+        record.payload.name
+      ];
+      record.payload.reportBucket = (
+        scanReportBuckets as { [index: string]: string }
+      )[record.payload.name];
+      scanInputs.push({ [stepCount.toString()]: record.payload });
+
       stepCount++;
     });
 
@@ -93,7 +110,6 @@ export async function Impl(
     };
 
     // Sort the list of scans so that each group of scans consistently generate the same name
-    machineName.sort();
     const stateMachineName: string = machineName.join("_");
     const req: CreateStateMachineInput = {
       name: stateMachineName,
@@ -114,21 +130,12 @@ export async function Impl(
       stateMachineArn = response.stateMachineArn;
     }
 
-    await asyncForEach(records, async (record: Record) => {
-      record.payload.image = `runners-${record.payload.name}`;
-      record.payload.taskDef = (scanTaskArns as { [index: string]: string })[
-        record.payload.name
-      ];
-      record.payload.reportBucket = (
-        scanReportBuckets as { [index: string]: string }
-      )[record.payload.name];
+    const params = {
+      stateMachineArn: stateMachineArn,
+      input: JSON.stringify(Object.assign({}, ...scanInputs)),
+    };
 
-      const params = {
-        stateMachineArn: stateMachineArn,
-        input: JSON.stringify({ ...record }),
-      };
-      await runner.startExecution(params).promise();
-    });
+    await runner.startExecution(params).promise();
   } catch (error) {
     console.log(error);
     return false;

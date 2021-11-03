@@ -77,27 +77,28 @@ describe("Impl", () => {
           "1": {
             Type: "Task",
             Resource: "arn:aws:states:::ecs:runTask.waitForTaskToken",
+            InputPath: "$.1",
             Parameters: {
               CapacityProviderStrategy: [
                 { Base: 1, CapacityProvider: "FARGATE_SPOT", Weight: 5 },
                 { Base: 0, CapacityProvider: "FARGATE", Weight: 1 },
               ],
               Cluster: "zap",
-              "TaskDefinition.$": "$.payload.taskDef",
+              "TaskDefinition.$": "$.taskDef",
               Overrides: {
                 ContainerOverrides: [
                   {
-                    "Name.$": "$.payload.image",
+                    "Name.$": "$.image",
                     Environment: [
-                      { Name: "SCAN_URL", "Value.$": "$.payload.url" },
-                      { Name: "SCAN_ID", "Value.$": "$.payload.id" },
+                      { Name: "SCAN_URL", "Value.$": "$.url" },
+                      { Name: "SCAN_ID", "Value.$": "$.id" },
                       {
                         Name: "SCAN_THREADS",
                         Value: process.env.OWASP_ZAP_SCAN_THREADS,
                       },
                       {
                         Name: "REPORT_DATA_BUCKET",
-                        "Value.$": "$.payload.reportBucket",
+                        "Value.$": "$.reportBucket",
                       },
                       {
                         Name: "TASK_TOKEN_ENV_VARIABLE",
@@ -121,24 +122,25 @@ describe("Impl", () => {
           "2": {
             Type: "Task",
             Resource: "arn:aws:states:::ecs:runTask.waitForTaskToken",
+            InputPath: "$.2",
             Parameters: {
               CapacityProviderStrategy: [
                 { Base: 1, CapacityProvider: "FARGATE_SPOT", Weight: 5 },
                 { Base: 0, CapacityProvider: "FARGATE", Weight: 1 },
               ],
               Cluster: "zap",
-              "TaskDefinition.$": "$.payload.taskDef",
+              "TaskDefinition.$": "$.taskDef",
               Overrides: {
                 ContainerOverrides: [
                   {
-                    "Name.$": "$.payload.image",
+                    "Name.$": "$.image",
                     Environment: [
-                      { Name: "SCAN_URL", "Value.$": "$.payload.url" },
-                      { Name: "SCAN_ID", "Value.$": "$.payload.id" },
+                      { Name: "SCAN_URL", "Value.$": "$.url" },
+                      { Name: "SCAN_ID", "Value.$": "$.id" },
                       { Name: "SCAN_THREADS", Value: "3" },
                       {
                         Name: "REPORT_DATA_BUCKET",
-                        "Value.$": "$.payload.reportBucket",
+                        "Value.$": "$.reportBucket",
                       },
                       {
                         Name: "TASK_TOKEN_ENV_VARIABLE",
