@@ -10,7 +10,8 @@ export async function Impl(
   runner: Runner
 ): Promise<boolean> {
   try {
-    const states: string[] = [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const states: any[] = [];
     const machineName: string[] = [];
     let stepCount = 1;
     await asyncForEach(records, async (record: Record) => {
@@ -32,7 +33,7 @@ export async function Impl(
               },
             ],
             Cluster: process.env.CLUSTER,
-            "TaskDefinition.$": "$.payload.task_def",
+            "TaskDefinition.$": "$.payload.taskDef",
             Overrides: {
               ContainerOverrides: [
                 {
@@ -40,10 +41,13 @@ export async function Impl(
                   Environment: [
                     { Name: "SCAN_URL", "Value.$": "$.payload.url" },
                     { Name: "SCAN_ID", "Value.$": "$.payload.id" },
-                    { Name: "SCAN_THREADS", Value: process.env.SCAN_THREADS },
+                    {
+                      Name: "SCAN_THREADS",
+                      Value: process.env.OWASP_ZAP_SCAN_THREADS,
+                    },
                     {
                       Name: "REPORT_DATA_BUCKET",
-                      "Value.$": "$.payload.report_bucket",
+                      "Value.$": "$.payload.reportBucket",
                     },
                     {
                       Name: "TASK_TOKEN_ENV_VARIABLE",
@@ -60,6 +64,8 @@ export async function Impl(
               },
             },
           },
+          TimeoutSeconds: 7200,
+          HeartbeatSeconds: 120,
           Next: "",
           End: false,
         },
@@ -71,8 +77,9 @@ export async function Impl(
         delete state[stepCount.toString()].Next;
       } else {
         state[stepCount.toString()].Next = (stepCount + 1).toString();
+        delete state[stepCount.toString()].End;
       }
-      states.push(JSON.stringify(state));
+      states.push(state);
       machineName.push(`${record.payload.name}`);
       stepCount++;
     });
@@ -85,29 +92,24 @@ export async function Impl(
       States: Object.assign({}, ...states),
     };
 
-    const stateMachineName = machineName.join("_");
+    // Sort the list of scans so that each group of scans consistently generate the same name
+    machineName.sort();
+    const stateMachineName: string = machineName.join("_");
     const req: CreateStateMachineInput = {
       name: stateMachineName,
       definition: JSON.stringify(definition),
       roleArn: process.env.STEP_FUNC_ROLE_ARN,
     };
 
-    let stateMachineArn = "";
     // Check if state machine already exists that can process this workload
-    runner.listStateMachines({}, function (err, data) {
-      if (err) console.log(err, err.stack);
-      // an error occurred
-      else {
-        data.stateMachines.forEach((stateMachine) => {
-          if (stateMachine.name === stateMachineName) {
-            stateMachineArn = stateMachine.stateMachineArn;
-          }
-        });
-      }
-    });
+    const listMachinesResult = await runner.listStateMachines({}).promise();
+    const machines = listMachinesResult.stateMachines;
+    let stateMachineArn = machines.find(
+      (machine) => machine.name === stateMachineName
+    )?.stateMachineArn;
 
     // If state machine doesn't exist create a new one that can process this scan sequence
-    if (stateMachineArn === "") {
+    if (stateMachineArn === undefined) {
       const response = await runner.createStateMachine(req).promise();
       stateMachineArn = response.stateMachineArn;
     }

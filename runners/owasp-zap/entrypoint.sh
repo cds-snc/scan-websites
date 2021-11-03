@@ -3,6 +3,9 @@
 trap 'aws stepfunctions send-task-failure --task-token "${TASK_TOKEN_ENV_VARIABLE}" --task-output "Caught SIGTERM signal"' TERM
 trap 'aws stepfunctions send-task-failure --task-token "${TASK_TOKEN_ENV_VARIABLE}" --task-output "Caught SIGINT signal"' INT
 
+heartbeat_cmd="while sleep 60; do aws stepfunctions send-task-heartbeat --task-token ${TASK_TOKEN_ENV_VARIABLE}; done"
+eval "$heartbeat_cmd" &
+
 # Check if running locally or in ECS
 if [[ -z "${ECS_CONTAINER_METADATA_URI}" ]]; then
   # ECS environment variable not detected so use local docker networking
@@ -73,4 +76,4 @@ fi
 jq "{ \"messageType\": \"ScanReport\", \"reportType\": \"OWASP-Zap\", \"createdAt\": $(date +\"%Y-%m-%dT%H:%M:%S\"),\"importToSecurityhub\": \"$IMPORTVULTOSECURITYHUB\",\"id\": \"$SCAN_ID\",\"url\": \"$SCAN_URL\",\"s3Bucket\": \"${S3_BUCKET}\",\"key\": \"Reports/$FILENAME.xml\", \"report\": . }" zap-scan-results.json > payload.json
 
 aws s3 cp payload.json s3://"${S3_BUCKET}"/Reports/"$FILENAME".json
-aws stepfunctions send-task-success --task-token "${TASK_TOKEN_ENV_VARIABLE}" --task-output s3://"${S3_BUCKET}"/Reports/"$FILENAME".json
+aws stepfunctions send-task-success --task-token "${TASK_TOKEN_ENV_VARIABLE}" --task-output file://payload.json

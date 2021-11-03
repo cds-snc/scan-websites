@@ -91,4 +91,19 @@ data "aws_iam_policy_document" "zap_runner_container_policies" {
 
   }
 
+  statement {
+
+    effect = "Allow"
+
+    actions = [
+      "states:SendTaskSuccess",
+      "states:SendTaskFailure",
+      "states:SendTaskHeartbeat"
+    ]
+
+    resources = [
+      "arn:aws:states:${var.region}:${var.account_id}:*"
+    ]
+  }
+
 }

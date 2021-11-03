@@ -1,15 +1,7 @@
 import { Impl, convertEventToRecords } from "./impl";
 import { SNSEvent, SNSEventRecord, SNSMessage } from "aws-lambda";
+import { CreateStateMachineInput } from "aws-sdk/clients/stepfunctions";
 import AWS = require("aws-sdk");
-
-const mockResponse = {
-  failures: [{}],
-  tasks: [
-    {
-      clusterArn: "12345",
-    },
-  ],
-};
 
 jest.mock("aws-sdk", () => {
   const mockStepFunctions = {
@@ -17,7 +9,17 @@ jest.mock("aws-sdk", () => {
     listStateMachines: jest.fn().mockReturnThis(),
     startExecution: jest.fn().mockReturnThis(),
     promise: jest.fn(() => {
-      return { Body: JSON.stringify(mockResponse) };
+      return {
+        nextToken: "string",
+        stateMachines: [
+          {
+            creationDate: 123,
+            name: "foo",
+            stateMachineArn: "123",
+            type: "STANDARD",
+          },
+        ],
+      };
     }),
   };
   return {
@@ -36,6 +38,7 @@ describe("Impl", () => {
     const stepfunctions = new AWS.StepFunctions();
     test("Launches ecs task and returns true", async () => {
       process.env.PRIVATE_SUBNETS = "10.0.0.0/16,10.0.0.0/16";
+      process.env.SECURITY_GROUP = "foo,bar";
       process.env.TASK_DEF_ARN =
         "arn:aws:ecs:us-west-2:123456789012:task-definition/TaskDefinitionFamily:1";
       process.env.STEP_FUNC_ROLE_ARN =
@@ -43,7 +46,7 @@ describe("Impl", () => {
       process.env.CLUSTER = "zap";
       process.env.MIN_ECS_CAPACITY = "1";
       process.env.MAX_ECS_CAPACITY = "5";
-      process.env.SCAN_THREADS = "3";
+      process.env.OWASP_ZAP_SCAN_THREADS = "3";
       const records = [
         {
           payload: {
@@ -65,11 +68,107 @@ describe("Impl", () => {
 
       const response = await Impl(records, stepfunctions);
 
-      expect(stepfunctions.createStateMachine).toHaveBeenCalledWith({
-        name: "owasp-zap_nuclei",
-        definition: expect.any(String),
+      const definition = {
+        Version: "1.0",
+        Comment: "Run ECS/Fargate tasks",
+        TimeoutSeconds: 7200 * records.length,
+        StartAt: "1",
+        States: {
+          "1": {
+            Type: "Task",
+            Resource: "arn:aws:states:::ecs:runTask.waitForTaskToken",
+            Parameters: {
+              CapacityProviderStrategy: [
+                { Base: 1, CapacityProvider: "FARGATE_SPOT", Weight: 5 },
+                { Base: 0, CapacityProvider: "FARGATE", Weight: 1 },
+              ],
+              Cluster: "zap",
+              "TaskDefinition.$": "$.payload.taskDef",
+              Overrides: {
+                ContainerOverrides: [
+                  {
+                    "Name.$": "$.payload.image",
+                    Environment: [
+                      { Name: "SCAN_URL", "Value.$": "$.payload.url" },
+                      { Name: "SCAN_ID", "Value.$": "$.payload.id" },
+                      {
+                        Name: "SCAN_THREADS",
+                        Value: process.env.OWASP_ZAP_SCAN_THREADS,
+                      },
+                      {
+                        Name: "REPORT_DATA_BUCKET",
+                        "Value.$": "$.payload.reportBucket",
+                      },
+                      {
+                        Name: "TASK_TOKEN_ENV_VARIABLE",
+                        "Value.$": "$$.Task.Token",
+                      },
+                    ],
+                  },
+                ],
+              },
+              NetworkConfiguration: {
+                AwsvpcConfiguration: {
+                  SecurityGroups: ["foo,bar"],
+                  Subnets: ["10.0.0.0/16", "10.0.0.0/16"],
+                },
+              },
+            },
+            TimeoutSeconds: 7200,
+            HeartbeatSeconds: 120,
+            Next: "2",
+          },
+          "2": {
+            Type: "Task",
+            Resource: "arn:aws:states:::ecs:runTask.waitForTaskToken",
+            Parameters: {
+              CapacityProviderStrategy: [
+                { Base: 1, CapacityProvider: "FARGATE_SPOT", Weight: 5 },
+                { Base: 0, CapacityProvider: "FARGATE", Weight: 1 },
+              ],
+              Cluster: "zap",
+              "TaskDefinition.$": "$.payload.taskDef",
+              Overrides: {
+                ContainerOverrides: [
+                  {
+                    "Name.$": "$.payload.image",
+                    Environment: [
+                      { Name: "SCAN_URL", "Value.$": "$.payload.url" },
+                      { Name: "SCAN_ID", "Value.$": "$.payload.id" },
+                      { Name: "SCAN_THREADS", Value: "3" },
+                      {
+                        Name: "REPORT_DATA_BUCKET",
+                        "Value.$": "$.payload.reportBucket",
+                      },
+                      {
+                        Name: "TASK_TOKEN_ENV_VARIABLE",
+                        "Value.$": "$$.Task.Token",
+                      },
+                    ],
+                  },
+                ],
+              },
+              NetworkConfiguration: {
+                AwsvpcConfiguration: {
+                  SecurityGroups: ["foo,bar"],
+                  Subnets: ["10.0.0.0/16", "10.0.0.0/16"],
+                },
+              },
+            },
+            TimeoutSeconds: 7200,
+            HeartbeatSeconds: 120,
+            End: true,
+          },
+        },
+      };
+
+      const req: CreateStateMachineInput = {
+        name: "nuclei_owasp-zap",
+        definition: JSON.stringify(definition),
         roleArn: process.env.STEP_FUNC_ROLE_ARN,
-      });
+      };
+
+      expect(stepfunctions.createStateMachine).toHaveBeenCalledWith(req);
       expect(response).toBe(true);
     });
   });
@@ -80,6 +179,7 @@ describe("convertEventToRecords", () => {
     const payload = JSON.stringify({
       key: "bar",
       url: "https://example.com/",
+      name: "owasp-zap",
     });
 
     const msg = { Message: payload } as SNSMessage;
@@ -88,5 +188,27 @@ describe("convertEventToRecords", () => {
 
     const records = await convertEventToRecords(event);
     expect(records.length).toBe(1);
+  });
+
+  it("handles sns with multiple scans", async () => {
+    const payload = JSON.stringify([
+      {
+        key: "bar",
+        url: "https://example.com/",
+        name: "owasp-zap",
+      },
+      {
+        key: "baz",
+        url: "https://example.com/",
+        name: "nuclei",
+      },
+    ]);
+
+    const msg = { Message: payload } as SNSMessage;
+    const record = { Sns: msg } as SNSEventRecord;
+    const event = { Records: [record] } as SNSEvent;
+
+    const records = await convertEventToRecords(event);
+    expect(records.length).toBe(2);
   });
 });

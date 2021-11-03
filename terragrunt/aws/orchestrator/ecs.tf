@@ -32,7 +32,7 @@ data "template_file" "runners-owasp-zap" {
 }
 
 resource "aws_ecs_task_definition" "runners-nuclei" {
-  family       = "runners-owasp-zap"
+  family       = "runners-nuclei"
   cpu          = 2048
   memory       = 16384
   network_mode = "awsvpc"

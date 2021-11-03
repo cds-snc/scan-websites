@@ -31,6 +31,7 @@ laws s3api put-bucket-acl --bucket owasp-zap-report-data --acl public-read-write
 
 printf "Creating SNS topic..."
 laws sns create-topic --name axe-core-urls-topic
+laws sns create-topic --name dynamic-scan-urls-topic
 laws sns create-topic --name s3-event-topic
 
 printf "Create a pass through topic"
@@ -39,6 +40,7 @@ laws s3api put-bucket-notification-configuration --bucket owasp-zap-report-data 
 
 printf "Add subscriptions to topics"
 laws sns subscribe --topic-arn arn:aws:sns:ca-central-1:000000000000:axe-core-urls-topic --protocol http --notification-endpoint "http://scanner-axe:8080/2015-03-31/functions/function/invocations"
+laws sns subscribe --topic-arn arn:aws:sns:ca-central-1:000000000000:dynamic-scan-urls-topic --protocol http --notification-endpoint "http://scanner-axe:8080/2015-03-31/functions/function/invocations"
 laws sns subscribe --topic-arn arn:aws:sns:ca-central-1:000000000000:s3-event-topic --protocol http --notification-endpoint "http://app:8000/dev/handle_s3_event"
 
 set +x
