@@ -117,7 +117,6 @@ describe("Impl", () => {
             TimeoutSeconds: 7200,
             HeartbeatSeconds: 120,
             Next: "2",
-            End: false,
           },
           "2": {
             Type: "Task",
