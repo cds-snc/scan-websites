@@ -77,6 +77,7 @@ export async function Impl(
         delete state[stepCount.toString()].Next;
       } else {
         state[stepCount.toString()].Next = (stepCount + 1).toString();
+        delete state[stepCount.toString()].End;
       }
       states.push(state);
       machineName.push(`${record.payload.name}`);
