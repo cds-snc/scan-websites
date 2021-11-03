@@ -3,22 +3,23 @@ import { SNSEvent, SNSEventRecord, SNSMessage } from "aws-lambda";
 import { CreateStateMachineInput } from "aws-sdk/clients/stepfunctions";
 import AWS = require("aws-sdk");
 
-const mockResponse = {
-  failures: [{}],
-  tasks: [
-    {
-      clusterArn: "12345",
-    },
-  ],
-};
-
 jest.mock("aws-sdk", () => {
   const mockStepFunctions = {
     createStateMachine: jest.fn().mockReturnThis(),
     listStateMachines: jest.fn().mockReturnThis(),
     startExecution: jest.fn().mockReturnThis(),
     promise: jest.fn(() => {
-      return { Body: JSON.stringify(mockResponse) };
+      return {
+        nextToken: "string",
+        stateMachines: [
+          {
+            creationDate: 123,
+            name: "foo",
+            stateMachineArn: "123",
+            type: "STANDARD",
+          },
+        ],
+      };
     }),
   };
   return {
@@ -45,7 +46,7 @@ describe("Impl", () => {
       process.env.CLUSTER = "zap";
       process.env.MIN_ECS_CAPACITY = "1";
       process.env.MAX_ECS_CAPACITY = "5";
-      process.env.SCAN_THREADS = "3";
+      process.env.OWASP_ZAP_SCAN_THREADS = "3";
       const records = [
         {
           payload: {
@@ -82,7 +83,7 @@ describe("Impl", () => {
                 { Base: 0, CapacityProvider: "FARGATE", Weight: 1 },
               ],
               Cluster: "zap",
-              "TaskDefinition.$": "$.payload.task_def",
+              "TaskDefinition.$": "$.payload.taskDef",
               Overrides: {
                 ContainerOverrides: [
                   {
@@ -90,10 +91,13 @@ describe("Impl", () => {
                     Environment: [
                       { Name: "SCAN_URL", "Value.$": "$.payload.url" },
                       { Name: "SCAN_ID", "Value.$": "$.payload.id" },
-                      { Name: "SCAN_THREADS", Value: process.env.SCAN_THREADS },
+                      {
+                        Name: "SCAN_THREADS",
+                        Value: process.env.OWASP_ZAP_SCAN_THREADS,
+                      },
                       {
                         Name: "REPORT_DATA_BUCKET",
-                        "Value.$": "$.payload.report_bucket",
+                        "Value.$": "$.payload.reportBucket",
                       },
                       {
                         Name: "TASK_TOKEN_ENV_VARIABLE",
@@ -110,6 +114,8 @@ describe("Impl", () => {
                 },
               },
             },
+            TimeoutSeconds: 7200,
+            HeartbeatSeconds: 120,
             Next: "2",
             End: false,
           },
@@ -122,7 +128,7 @@ describe("Impl", () => {
                 { Base: 0, CapacityProvider: "FARGATE", Weight: 1 },
               ],
               Cluster: "zap",
-              "TaskDefinition.$": "$.payload.task_def",
+              "TaskDefinition.$": "$.payload.taskDef",
               Overrides: {
                 ContainerOverrides: [
                   {
@@ -133,7 +139,7 @@ describe("Impl", () => {
                       { Name: "SCAN_THREADS", Value: "3" },
                       {
                         Name: "REPORT_DATA_BUCKET",
-                        "Value.$": "$.payload.report_bucket",
+                        "Value.$": "$.payload.reportBucket",
                       },
                       {
                         Name: "TASK_TOKEN_ENV_VARIABLE",
@@ -150,13 +156,15 @@ describe("Impl", () => {
                 },
               },
             },
+            TimeoutSeconds: 7200,
+            HeartbeatSeconds: 120,
             End: true,
           },
         },
       };
 
       const req: CreateStateMachineInput = {
-        name: "owasp-zap_nuclei",
+        name: "nuclei_owasp-zap",
         definition: JSON.stringify(definition),
         roleArn: process.env.STEP_FUNC_ROLE_ARN,
       };

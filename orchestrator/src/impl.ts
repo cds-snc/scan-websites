@@ -64,6 +64,8 @@ export async function Impl(
               },
             },
           },
+          TimeoutSeconds: 7200,
+          HeartbeatSeconds: 120,
           Next: "",
           End: false,
         },
@@ -89,29 +91,24 @@ export async function Impl(
       States: Object.assign({}, ...states),
     };
 
-    const stateMachineName = machineName.join("_");
+    // Sort the list of scans so that each group of scans consistently generate the same name
+    machineName.sort();
+    const stateMachineName: string = machineName.join("_");
     const req: CreateStateMachineInput = {
       name: stateMachineName,
       definition: JSON.stringify(definition),
       roleArn: process.env.STEP_FUNC_ROLE_ARN,
     };
 
-    let stateMachineArn = "";
     // Check if state machine already exists that can process this workload
-    runner.listStateMachines({}, function (err, data) {
-      if (err) console.log(err, err.stack);
-      // an error occurred
-      else {
-        data.stateMachines.forEach((stateMachine) => {
-          if (stateMachine.name === stateMachineName) {
-            stateMachineArn = stateMachine.stateMachineArn;
-          }
-        });
-      }
-    });
+    const listMachinesResult = await runner.listStateMachines({}).promise();
+    const machines = listMachinesResult.stateMachines;
+    let stateMachineArn = machines.find(
+      (machine) => machine.name === stateMachineName
+    )?.stateMachineArn;
 
     // If state machine doesn't exist create a new one that can process this scan sequence
-    if (stateMachineArn === "") {
+    if (stateMachineArn === undefined) {
       const response = await runner.createStateMachine(req).promise();
       stateMachineArn = response.stateMachineArn;
     }

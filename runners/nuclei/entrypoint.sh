@@ -1,5 +1,11 @@
 #!/bin/sh -l
 
+trap 'aws stepfunctions send-task-failure --task-token "${TASK_TOKEN_ENV_VARIABLE}" --task-output "Caught SIGTERM signal"' TERM
+trap 'aws stepfunctions send-task-failure --task-token "${TASK_TOKEN_ENV_VARIABLE}" --task-output "Caught SIGINT signal"' INT
+
+heartbeat_cmd="while sleep 60; do aws stepfunctions send-task-heartbeat --task-token ${TASK_TOKEN_ENV_VARIABLE}; done"
+eval "$heartbeat_cmd" &
+
 nuclei --version
 
 date=$(date +\"%Y-%m-%dT%H:%M:%S:%N\")
@@ -19,3 +25,4 @@ fi
 
 jq "{ \"messageType\": \"ScanReport\", \"reportType\": \"Nuclei\", \"createdAt\": $(date +\"%Y-%m-%dT%H:%M:%S\"),\"importToSecurityhub\": \"$IMPORTVULTOSECURITYHUB\",\"id\": \"$SCAN_ID\",\"url\": \"$SCAN_URL\",\"s3Bucket\": \"${S3_BUCKET}\",\"key\": \"Reports/$FILENAME.json\", \"report\": . }" nuclei-results.json > payload.json
 aws s3 cp payload.json s3://"${S3_BUCKET}"/Reports/"$FILENAME".json
+aws stepfunctions send-task-success --task-token "${TASK_TOKEN_ENV_VARIABLE}" --task-output file://payload.json

@@ -8,6 +8,21 @@ data "aws_iam_policy_document" "service_principal" {
       type        = "Service"
       identifiers = ["lambda.amazonaws.com"]
     }
+
+    principals {
+      type        = "Service"
+      identifiers = ["ecs.amazonaws.com"]
+    }
+
+    principals {
+      type        = "Service"
+      identifiers = ["ecs-tasks.amazonaws.com"]
+    }
+
+    principals {
+      type        = "Service"
+      identifiers = ["states.${var.region}.amazonaws.com"]
+    }
   }
 }
 
@@ -54,7 +69,9 @@ data "aws_iam_policy_document" "scan_runner_policies" {
       "ecr:BatchGetImage"
     ]
     resources = [
-      aws_ecr_repository.orchestrator.arn
+      aws_ecr_repository.orchestrator.arn,
+      aws_ecr_repository.runners-owasp-zap.arn,
+      aws_ecr_repository.runners-nuclei.arn,
     ]
   }
 
@@ -116,6 +133,7 @@ data "aws_iam_policy_document" "scan_runner_policies" {
 
     resources = [
       aws_iam_role.container_execution_role.arn,
+      aws_iam_role.orchestrator.arn,
       aws_iam_role.task_execution_role.arn
     ]
   }
