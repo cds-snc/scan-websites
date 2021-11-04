@@ -3,7 +3,10 @@ import { asyncForEach } from "./common/foreach";
 import { Record } from "./common/record";
 import { Runner } from "./common/runner";
 
-export async function Impl(records: Record[], runner: Runner): Promise<boolean> {
+export async function Impl(
+  records: Record[],
+  runner: Runner
+): Promise<boolean> {
   try {
     const scanInputs: any[] = []; // eslint-disable-line @typescript-eslint/no-explicit-any
 
