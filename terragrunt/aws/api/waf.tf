@@ -1,4 +1,6 @@
 resource "aws_wafv2_web_acl" "api_waf" {
+  # TODO: Create kinesis stream and logging config
+  # checkov:skip=CKV2_AWS_31:Kinesis required,will do in seperate PR
   name        = "api_waf"
   description = "WAF for API protection"
   scope       = "REGIONAL"
