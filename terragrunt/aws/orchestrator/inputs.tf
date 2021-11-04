@@ -18,6 +18,10 @@ variable "owasp_zap_report_data_bucket_id" {
   type = string
 }
 
+variable "nuclei_report_data_bucket_arn" {
+  type = string
+}
+
 variable "nuclei_report_data_bucket_id" {
   type = string
 }
