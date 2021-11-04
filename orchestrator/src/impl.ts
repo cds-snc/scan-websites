@@ -18,13 +18,14 @@ export async function Impl(
     const states: any[] = []; // eslint-disable-line @typescript-eslint/no-explicit-any
     const machineName: string[] = [];
     const scanInputs: any[] = []; // eslint-disable-line @typescript-eslint/no-explicit-any
-    let stepCount = 1;
-    await asyncForEach(records, async (record: Record) => {
+    let stepCount = 0;
+    records.forEach((record: Record) => {
       const state = {
-        [stepCount.toString()]: {
+        [record.payload.name]: {
           Type: "Task",
           Resource: "arn:aws:states:::ecs:runTask.waitForTaskToken",
-          InputPath: `$.${stepCount.toString()}`,
+          InputPath: `$.${record.payload.name}`,
+          ResultPath: "$.resultPath",
           Parameters: {
             CapacityProviderStrategy: [
               {
@@ -71,19 +72,20 @@ export async function Impl(
             },
           },
           TimeoutSeconds: 7200,
-          HeartbeatSeconds: 120,
+          HeartbeatSeconds: 300,
           Next: "",
           End: false,
         },
       };
 
       // Reached the end of the state machine sequence
-      if (stepCount === records.length) {
-        state[stepCount.toString()].End = true;
-        delete state[stepCount.toString()].Next;
+      if (stepCount === records.length - 1) {
+        state[record.payload.name].End = true;
+        delete state[record.payload.name].Next;
+        delete state[record.payload.name].ResultPath;
       } else {
-        state[stepCount.toString()].Next = (stepCount + 1).toString();
-        delete state[stepCount.toString()].End;
+        state[record.payload.name].Next = records[stepCount + 1].payload.name;
+        delete state[record.payload.name].End;
       }
       states.push(state);
       machineName.push(`${record.payload.name}`);
@@ -96,7 +98,8 @@ export async function Impl(
       record.payload.reportBucket = (
         scanReportBuckets as { [index: string]: string }
       )[record.payload.name];
-      scanInputs.push({ [stepCount.toString()]: record.payload });
+      record.payload.resultPath = null; // Use original input instead of output from previous step
+      scanInputs.push({ [record.payload.name]: record.payload });
 
       stepCount++;
     });
@@ -105,7 +108,7 @@ export async function Impl(
       Version: "1.0",
       Comment: "Run ECS/Fargate tasks",
       TimeoutSeconds: 7200 * records.length,
-      StartAt: "1",
+      StartAt: records[0].payload.name,
       States: Object.assign({}, ...states),
     };
 

@@ -58,7 +58,7 @@ data "template_file" "runners-nuclei" {
     image                 = "${aws_ecr_repository.runners-nuclei.repository_url}:latest"
     awslogs-region        = "ca-central-1"
     awslogs-stream-prefix = "ecs-runners-nuclei"
-    s3_name               = var.owasp_zap_report_data_bucket_id
+    s3_name               = var.nuclei_report_data_bucket_id
     awslogs-group         = aws_cloudwatch_log_group.nuclei-log.name
     name                  = "runners-nuclei"
   }
