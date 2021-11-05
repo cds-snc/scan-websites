@@ -24,7 +24,7 @@ from models.User import User  # noqa: F401
 
 class AvailableScans(Enum):
     OWASP_ZAP = "OWASP Zap"
-    NUCLEI = "nuclei"
+    NUCLEI = "Nuclei"
     AXE_CORE = "axe-core"
 
 
