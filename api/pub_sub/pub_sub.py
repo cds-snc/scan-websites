@@ -32,6 +32,7 @@ validator_list = {}
 common_validations = ["url", "type", "queue", "product", "revision", "template_id"]
 # Append to common_validations if additional validations are required for only one template
 validator_list[AvailableScans.OWASP_ZAP.value] = common_validations
+validator_list[AvailableScans.NUCLEI.value] = common_validations
 validator_list[AvailableScans.AXE_CORE.value] = common_validations
 
 
@@ -54,7 +55,10 @@ def dispatch(payloads):
             raise ValueError("type is not defined")
 
         validate_mandatory(payload, payload["type"])
-        if payload["type"] == AvailableScans.OWASP_ZAP.value:
+        if (
+            payload["type"] == AvailableScans.OWASP_ZAP.value
+            or payload["type"] == AvailableScans.NUCLEI.value
+        ):
             security_report = SecurityReport(
                 product=payload["product"],
                 revision=payload["revision"],
