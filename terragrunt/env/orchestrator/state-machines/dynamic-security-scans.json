@@ -1,0 +1,161 @@
+{
+  "Version": "1.0",
+  "Comment": "Synchronously run dynamic vulnerability scanning fargate tasks",
+  "TimeoutSeconds": 14400,
+  "StartAt": "Choice",
+  "States": {
+    "Choice": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.payload[0]",
+          "IsPresent": false,
+          "Next": "Done"
+        },
+        {
+          "Variable": "$.payload[0].name",
+          "StringMatches": "nuclei",
+          "Next": "nuclei"
+        },
+        {
+          "Variable": "$.payload[0].name",
+          "StringMatches": "owasp-zap",
+          "Next": "owasp-zap"
+        }
+      ],
+      "Default": "Done"
+    },
+    "SetupNextScan": {
+      "Type": "Pass",
+      "Parameters": {
+        "payload.$": "$.payload[1:$.payload.ItemsCount]"
+      },
+      "Next": "Choice",
+      "ResultPath": "$"
+    },
+    "Done": {
+      "Type": "Pass",
+      "End": true
+    },
+    "nuclei": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::ecs:runTask.waitForTaskToken",
+      "InputPath": "$.payload[0]",
+      "ResultPath": null,
+      "Parameters": {
+        "CapacityProviderStrategy": [
+          {
+            "Base": ${min_ecs_capacity},
+            "CapacityProvider": "FARGATE_SPOT",
+            "Weight": ${max_ecs_capacity}
+          },
+          {
+            "Base": 0,
+            "CapacityProvider": "FARGATE",
+            "Weight": ${min_ecs_capacity}
+          }
+        ],
+        "Cluster": "${cluster}",
+        "TaskDefinition": "${nuclei_task_def}",
+        "Overrides": {
+          "ContainerOverrides": [
+            {
+              "Name": "${nuclei_container_name}",
+              "Environment": [
+                {
+                  "Name": "SCAN_URL",
+                  "Value.$": "$.url"
+                },
+                {
+                  "Name": "SCAN_ID",
+                  "Value.$": "$.id"
+                },
+                {
+                  "Name": "REPORT_DATA_BUCKET",
+                  "Value": "${nuclei_report_bucket}"
+                },
+                {
+                  "Name": "TASK_TOKEN_ENV_VARIABLE",
+                  "Value.$": "$$.Task.Token"
+                }
+              ]
+            }
+          ]
+        },
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "SecurityGroups": [
+              "${security_groups}"
+            ],
+            "Subnets": [${subnets}]
+          }
+        }
+      },
+      "TimeoutSeconds": 7200,
+      "HeartbeatSeconds": 300,
+      "Next": "SetupNextScan"
+    },
+    "owasp-zap": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::ecs:runTask.waitForTaskToken",
+      "InputPath": "$.payload[0]",
+      "ResultPath": null,
+      "Parameters": {
+        "CapacityProviderStrategy": [
+          {
+            "Base": ${min_ecs_capacity},
+            "CapacityProvider": "FARGATE_SPOT",
+            "Weight": ${max_ecs_capacity}
+          },
+          {
+            "Base": 0,
+            "CapacityProvider": "FARGATE",
+            "Weight": ${min_ecs_capacity}
+          }
+        ],
+        "Cluster": "${cluster}",
+        "TaskDefinition": "${owasp_zap_task_def}",
+        "Overrides": {
+          "ContainerOverrides": [
+            {
+              "Name": "${owasp_zap_container_name}",
+              "Environment": [
+                {
+                  "Name": "SCAN_URL",
+                  "Value.$": "$.url"
+                },
+                {
+                  "Name": "SCAN_ID",
+                  "Value.$": "$.id"
+                },
+                {
+                  "Name": "SCAN_THREADS",
+                  "Value": "${owasp_zap_scan_threads}"
+                },
+                {
+                  "Name": "REPORT_DATA_BUCKET",
+                  "Value": "${owasp_zap_report_bucket}"
+                },
+                {
+                  "Name": "TASK_TOKEN_ENV_VARIABLE",
+                  "Value.$": "$$.Task.Token"
+                }
+              ]
+            }
+          ]
+        },
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "SecurityGroups": [
+              "${security_groups}"
+            ],
+            "Subnets": [${subnets}]
+          }
+        }
+      },
+      "TimeoutSeconds": 7200,
+      "HeartbeatSeconds": 300,
+      "Next": "SetupNextScan"
+    }
+  }
+}

@@ -15,17 +15,7 @@ resource "aws_lambda_function" "orchestrator" {
 
   environment {
     variables = {
-      OWASP_ZAP_REPORT_DATA_BUCKET = var.owasp_zap_report_data_bucket_id
-      NUCLEI_REPORT_DATA_BUCKET    = var.nuclei_report_data_bucket_id
-      CLUSTER                      = var.scanning_tools_cluster_arn
-      STEP_FUNC_ROLE_ARN           = aws_iam_role.orchestrator.arn
-      OWASP_ZAP_TASK_DEF_ARN       = aws_ecs_task_definition.runners-owasp-zap.arn
-      NUCLEI_TASK_DEF_ARN          = aws_ecs_task_definition.runners-nuclei.arn
-      PRIVATE_SUBNETS              = join(",", var.private_subnet_ids)
-      SECURITY_GROUP               = aws_security_group.security_tools_scanning.id
-      OWASP_ZAP_SCAN_THREADS       = var.owasp_zap_scan_threads
-      MIN_ECS_CAPACITY             = var.min_ecs_capacity
-      MAX_ECS_CAPACITY             = var.max_ecs_capacity
+      STEP_FUNC_ARN = aws_sfn_state_machine.dynamic_security_scans.arn
     }
   }
 
