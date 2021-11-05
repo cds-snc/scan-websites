@@ -54,7 +54,6 @@ def test_build_scan_payload_with_git_sha(
     scan = ScanFactory(
         organisation=organisation, template=template, scan_type=scan_type
     )
-    session.commit()
 
     git_sha = str(uuid.uuid4())
     payload = build_scan_payload(template, template_scan, scan, git_sha)
