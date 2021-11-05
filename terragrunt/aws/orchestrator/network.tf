@@ -1,5 +1,5 @@
-# checkov:skip=CKV2_AWS_5: False-positive, security group is associated with State machine in ./state_machine.tf
 resource "aws_security_group" "security_tools_scanning" {
+  # checkov:skip=CKV2_AWS_5: False-positive, security group is associated with State machine in ./state_machine.tf
   name        = "security-scanners-sg"
   description = "Internet access for Security Scanners"
   vpc_id      = var.vpc_id
