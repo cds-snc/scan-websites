@@ -1,5 +1,5 @@
 from copy import copy
-from fastapi import APIRouter, Depends, Request, HTTPException
+from fastapi import APIRouter, Depends, Request, HTTPException, Response
 from fastapi.responses import HTMLResponse
 from database.db import db_session
 from logger import log
@@ -16,6 +16,7 @@ from models.SecurityViolation import SecurityViolation
 from pub_sub import pub_sub
 from storage import storage
 
+import os
 import uuid
 
 router = APIRouter()
@@ -84,6 +85,8 @@ async def get_a11y_report_screenshot(
     scan_id: uuid.UUID,
     report_id: uuid.UUID,
     session: Session = Depends(get_db),
+    responses={200: {"content": {"image/png": {}}}},
+    response_class=Response,
 ):
     try:
         if locale not in languages:
@@ -101,16 +104,23 @@ async def get_a11y_report_screenshot(
         )
 
         # Download screenshot
+        record = {
+            "s3": {
+                "bucket": {"name": os.environ.get("AXE_CORE_SCREENSHOT_BUCKET", False)},
+                "object": {"key": report_id},
+            }
+        }
+        data = storage.get_object(record)
 
     except Exception as e:
         log.error(e)
         raise HTTPException(status_code=500, detail=str(e))
     if report.scan.scan_type.name == pub_sub.AvailableScans.AXE_CORE.value:
-        return {"status": "Feature not implemented"}
+        return Response(content=data, media_type="image/png")
     else:
         raise HTTPException(
             status_code=500,
-            detail=f"Scan type {report.scan.scan_type.name} has no associated layout",
+            detail=f"Could not download image from bucket",
         )
 
 

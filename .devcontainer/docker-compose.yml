@@ -30,7 +30,8 @@ services:
       OWASP_ZAP_URLS_TOPIC: "arn:aws:sns:ca-central-1:000000000000:owasp-zap-urls-topic"
       DYNAMIC_SCAN_URLS_TOPIC: "arn:aws:sns:ca-central-1:000000000000:dynamic-scan-urls-topic"
       NUCLEI_URLS_TOPIC: "arn:aws:sns:ca-central-1:000000000000:nuclei-urls-topic"
-      AXE_CORE_REPORT_DATA_BUCKET: axe-core-report-data 
+      AXE_CORE_REPORT_DATA_BUCKET: axe-core-report-data
+      AXE_CORE_SCREENSHOT_BUCKET: axe-core-screenshots
       OWASP_ZAP_REPORT_DATA_BUCKET: owasp-zap-report-data 
       <<: *db-connection-strings
 
@@ -46,7 +47,8 @@ services:
       AXE_CORE_URLS_TOPIC: "arn:aws:sns:ca-central-1:000000000000:axe-core-urls-topic"
       OWASP_ZAP_URLS_TOPIC: "arn:aws:sns:ca-central-1:000000000000:owasp-zap-urls-topic"
       NUCLEI_URLS_TOPIC: "arn:aws:sns:ca-central-1:000000000000:nuclei-urls-topic"
-      AXE_CORE_REPORT_DATA_BUCKET: axe-core-report-data 
+      AXE_CORE_REPORT_DATA_BUCKET: axe-core-report-data
+      AXE_CORE_SCREENSHOT_BUCKET: axe-core-screenshots
       OWASP_ZAP_REPORT_DATA_BUCKET: owasp-zap-report-data 
       FASTAPI_SECRET_KEY: e8cb82f5-b966-4496-b96e-8c021892e265
     ports:

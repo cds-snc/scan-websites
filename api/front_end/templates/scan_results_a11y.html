@@ -47,15 +47,14 @@
               <tbody class="bg-white divide-y divide-gray-200">
                 {% for a11y_report in scan.a11y_reports %}
                   <tr>
-                    <td class="px-6 py-4 whitespace-nowrap">
+                    <td class="px-6 py-4 whitespace-nowrap truncate">
                       <div class="text-sm font-medium text-gray-900">
                         {{ a11y_report.url }}
-
                       </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                       <div class="text-sm font-medium">
-                        {{ a11y_report.created_at }}
+                        {{ a11y_report.created_at.strftime('%d-%m-%Y %H:%M:%S') }}
                       </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">

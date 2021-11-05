@@ -13,6 +13,7 @@ resource "aws_lambda_function" "api" {
     variables = {
       AXE_CORE_URLS_TOPIC          = aws_sns_topic.axe-core-urls.arn
       AXE_CORE_REPORT_DATA_BUCKET  = module.axe-core-report-data.s3_bucket_id
+      AXE_CORE_SCREENSHOT_BUCKET   = module.axe-core-screenshots.s3_bucket_id
       OWASP_ZAP_URLS_TOPIC         = aws_sns_topic.owasp-zap-urls.arn
       OWASP_ZAP_REPORT_DATA_BUCKET = module.owasp-zap-report-data.s3_bucket_id
       NUCLEI_URLS_TOPIC            = aws_sns_topic.nuclei-urls.arn
