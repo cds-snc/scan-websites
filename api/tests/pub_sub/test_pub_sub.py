@@ -12,16 +12,18 @@ def test_dispatch_adds_an_id_and_calls_send(
 ):
     mock_a11y_report_class().id = "a11y_report"
     pub_sub.dispatch(
-        {
-            "type": pub_sub.AvailableScans.AXE_CORE.value,
-            "product": "foo",
-            "revision": "bar",
-            "template_id": "123",
-            "scan_id": "scan_id",
-            "url": "url",
-            "event": "sns",
-            "queue": "AXE_CORE_URLS_TOPIC",
-        }
+        [
+            {
+                "type": pub_sub.AvailableScans.AXE_CORE.value,
+                "product": "foo",
+                "revision": "bar",
+                "template_id": "123",
+                "scan_id": "scan_id",
+                "url": "url",
+                "event": "sns",
+                "queue": "AXE_CORE_URLS_TOPIC",
+            }
+        ]
     )
     mock_send.assert_called_once_with(
         "AXE_CORE_URLS_TOPIC",
@@ -41,36 +43,40 @@ def test_dispatch_adds_an_id_and_calls_send(
 
 @patch("pub_sub.pub_sub.SecurityReport")
 @patch("pub_sub.pub_sub.db_session")
-@patch("pub_sub.pub_sub.send")
-def test_security_dispatch_adds_an_id_and_calls_send(
-    mock_send, _mock_session, mock_security_report_class
+@patch("pub_sub.pub_sub.execute")
+def test_security_dispatch_adds_an_id_and_calls_execute(
+    mock_execute, _mock_session, mock_security_report_class
 ):
     mock_security_report_class().id = "security_report"
     pub_sub.dispatch(
-        {
-            "type": pub_sub.AvailableScans.OWASP_ZAP.value,
-            "product": "foo",
-            "revision": "bar",
-            "template_id": "123",
-            "scan_id": "scan_id",
-            "url": "url",
-            "event": "sns",
-            "queue": "OWASP_ZAP_URLS_TOPIC",
-        }
+        [
+            {
+                "type": pub_sub.AvailableScans.OWASP_ZAP.value,
+                "product": "foo",
+                "revision": "bar",
+                "template_id": "123",
+                "scan_id": "scan_id",
+                "url": "url",
+                "event": "stepfunctions",
+                "queue": "dynamic-security-scans",
+            }
+        ]
     )
-    mock_send.assert_called_once_with(
-        "OWASP_ZAP_URLS_TOPIC",
-        {
-            "type": pub_sub.AvailableScans.OWASP_ZAP.value,
-            "product": "foo",
-            "revision": "bar",
-            "template_id": "123",
-            "scan_id": "scan_id",
-            "url": "url",
-            "event": "sns",
-            "queue": "OWASP_ZAP_URLS_TOPIC",
-            "id": "security_report",
-        },
+    mock_execute.assert_called_once_with(
+        "dynamic-security-scans",
+        [
+            {
+                "type": pub_sub.AvailableScans.OWASP_ZAP.value,
+                "product": "foo",
+                "revision": "bar",
+                "template_id": "123",
+                "scan_id": "scan_id",
+                "url": "url",
+                "event": "stepfunctions",
+                "queue": "dynamic-security-scans",
+                "id": "security_report",
+            }
+        ],
     )
 
 
@@ -83,15 +89,17 @@ def test_dispatch_logs_error_if_no_type_is_defined(
     mock_a11y_report_class().id = "a11y_report"
     with pytest.raises(ValueError):
         pub_sub.dispatch(
-            {
-                "product": "foo",
-                "revision": "bar",
-                "template_id": "123",
-                "scan_id": "scan_id",
-                "url": "url",
-                "event": "sns",
-                "queue": "AXE_CORE_URLS_TOPIC",
-            }
+            [
+                {
+                    "product": "foo",
+                    "revision": "bar",
+                    "template_id": "123",
+                    "scan_id": "scan_id",
+                    "url": "url",
+                    "event": "sns",
+                    "queue": "AXE_CORE_URLS_TOPIC",
+                }
+            ]
         )
 
 
@@ -104,15 +112,17 @@ def test_dispatch_logs_error_if_mandatory_key_is_missing(
     mock_a11y_report_class().id = "a11y_report"
     with pytest.raises(ValueError):
         pub_sub.dispatch(
-            {
-                "type": pub_sub.AvailableScans.AXE_CORE.value,
-                "revision": "bar",
-                "template_id": "123",
-                "scan_id": "scan_id",
-                "url": "url",
-                "event": "sns",
-                "queue": "AXE_CORE_URLS_TOPIC",
-            }
+            [
+                {
+                    "type": pub_sub.AvailableScans.AXE_CORE.value,
+                    "revision": "bar",
+                    "template_id": "123",
+                    "scan_id": "scan_id",
+                    "url": "url",
+                    "event": "sns",
+                    "queue": "AXE_CORE_URLS_TOPIC",
+                }
+            ]
         )
 
 
@@ -125,15 +135,17 @@ def test_dispatch_logs_error_if_unknown_type_is_specified(
     mock_a11y_report_class().id = "a11y_report"
     with pytest.raises(ValueError):
         pub_sub.dispatch(
-            {
-                "type": "baz",
-                "revision": "bar",
-                "template_id": "123",
-                "scan_id": "scan_id",
-                "url": "url",
-                "event": "sns",
-                "queue": "AXE_CORE_URLS_TOPIC",
-            }
+            [
+                {
+                    "type": "baz",
+                    "revision": "bar",
+                    "template_id": "123",
+                    "scan_id": "scan_id",
+                    "url": "url",
+                    "event": "sns",
+                    "queue": "AXE_CORE_URLS_TOPIC",
+                }
+            ]
         )
 
 
@@ -146,7 +158,7 @@ def test_dispatch_logs_error_if_queue_is_undefined(
     mock_a11y_report_class().id = "a11y_report"
     with pytest.raises(ValueError):
         pub_sub.dispatch(
-            {"type": "axe-core", "scan_id": "scan_id", "url": "url", "event": "sns"}
+            [{"type": "axe-core", "scan_id": "scan_id", "url": "url", "event": "sns"}]
         )
 
 
@@ -171,4 +183,30 @@ def test_send_publishes_to_a_sns_topic(mock_get_session):
         TargetArn="topic",
         Message='{"default": "{\\"id\\": \\"abcd\\"}"}',
         MessageStructure="json",
+    )
+
+
+@patch("pub_sub.pub_sub.get_session")
+def test_execute_starts_state_machine(mock_get_session):
+    mock_client = MagicMock()
+    mock_get_session.return_value.client.return_value = mock_client
+    mock_get_session.return_value.client.return_value.list_state_machines.return_value = {
+        "stateMachines": [
+            {
+                "stateMachineArn": "arn",
+                "name": "dynamic-security-scans",
+            },
+        ]
+    }
+
+    payload = [
+        {"id": "abcd", "url": "https://www.example.com", "name": "owasp-zap"},
+        {"id": "efgh", "url": "https://www.example.com", "name": "nuclei"},
+    ]
+    pub_sub.execute("dynamic-security-scans", payload)
+    mock_client.start_execution.assert_called_once_with(
+        stateMachineArn="arn",
+        input={
+            "payload": '[{"id": "abcd", "url": "https://www.example.com", "name": "owasp-zap"}, {"id": "efgh", "url": "https://www.example.com", "name": "nuclei"}]'
+        },
     )
