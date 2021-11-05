@@ -39,6 +39,9 @@
                   <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {{ screenshot_locale }}
                   </th>
+                  <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {{ link_locale }}
+                  </th>
                 </tr>
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
@@ -46,9 +49,8 @@
                   <tr>
                     <td class="px-6 py-4 whitespace-nowrap">
                       <div class="text-sm font-medium text-gray-900">
-                        <a href="/{{ lang }}/results/{{ scan.template.id }}/a11y/{{scan.id}}/{{ a11y_report.id }}">
-                          {{ a11y_report.url }}
-                        </a>
+                        {{ a11y_report.url }}
+
                       </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
@@ -76,7 +78,12 @@
                         <span class="material-icons">image</span>
                       </a>
                     </td>
-                  </tr>
+                    <td class="text-center">
+                      <a href="{{a11y_report.url}}" target="_blank">
+                        <span class="material-icons">ios_share</span>
+                      </a>
+                    </tr>
+                  </td>
                 {% endfor %}
               </tbody>
             </table>
