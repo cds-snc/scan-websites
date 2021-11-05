@@ -107,7 +107,7 @@ async def get_a11y_report_screenshot(
         record = {
             "s3": {
                 "bucket": {"name": os.environ.get("AXE_CORE_SCREENSHOT_BUCKET", False)},
-                "object": {"key": report_id},
+                "object": {"key": f"{str(report_id)}.png"},
             }
         }
         data = storage.get_object(record)
