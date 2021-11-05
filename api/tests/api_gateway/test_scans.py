@@ -2,6 +2,8 @@ from fastapi.testclient import TestClient
 from unittest.mock import ANY, MagicMock, patch
 
 from api_gateway import api
+from api_gateway.routers.scans import build_scan_payload
+
 from factories import (
     OrganisationFactory,
     ScanFactory,
@@ -30,6 +32,80 @@ def test_create_template_valid(authorized_request):
     response = logged_in_client.post("/scans/template", json={"name": "foo"})
     assert response.json() == {"id": ANY}
     assert response.status_code == 200
+
+
+def test_build_scan_payload_with_git_sha(
+    session,
+    authorized_request,
+):
+    _, _, organisation = authorized_request
+
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.OWASP_ZAP.value,
+        callback={
+            "event": "stepfunctions",
+            "state_machine_name": "dynamic-security-scans",
+        },
+    )
+    template_scan = TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    scan = ScanFactory(
+        organisation=organisation, template=template, scan_type=scan_type
+    )
+
+    git_sha = str(uuid.uuid4())
+    payload = build_scan_payload(template, template_scan, scan, git_sha)
+
+    assert payload == {
+        "crawl": False,
+        "event": "stepfunctions",
+        "product": template.name,
+        "queue": "dynamic-security-scans",
+        "revision": git_sha,
+        "scan_id": str(scan.id),
+        "template_id": str(template.id),
+        "type": scan_type.name,
+        "url": template_scan.data["url"],
+    }
+
+
+def test_build_scan_payload_no_git_sha(
+    session,
+    authorized_request,
+):
+    _, _, organisation = authorized_request
+
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.OWASP_ZAP.value,
+        callback={
+            "event": "stepfunctions",
+            "state_machine_name": "dynamic-security-scans",
+        },
+    )
+    template_scan = TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    scan = ScanFactory(
+        organisation=organisation, template=template, scan_type=scan_type
+    )
+    session.commit()
+
+    payload = build_scan_payload(template, template_scan, scan)
+
+    assert payload == {
+        "crawl": False,
+        "event": "stepfunctions",
+        "product": template.name,
+        "queue": "dynamic-security-scans",
+        "revision": "latest",
+        "scan_id": str(scan.id),
+        "template_id": str(template.id),
+        "type": scan_type.name,
+        "url": template_scan.data["url"],
+    }
 
 
 def test_create_template_scan_valid(session, authorized_request):
@@ -231,7 +307,10 @@ def test_start_scan_valid_api_keys(
     template = TemplateFactory(organisation=organisation)
     scan_type = ScanTypeFactory(
         name=AvailableScans.OWASP_ZAP.value,
-        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+        callback={
+            "event": "stepfunctions",
+            "state_machine_name": "dynamic-security-scans",
+        },
     )
     template_scan = TemplateScanFactory(
         template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
@@ -265,7 +344,10 @@ def test_start_scan_valid_api_keys_with_unknown_error(
     template = TemplateFactory(organisation=organisation)
     scan_type = ScanTypeFactory(
         name=AvailableScans.OWASP_ZAP.value,
-        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+        callback={
+            "event": "stepfunctions",
+            "state_machine_name": "dynamic-security-scans",
+        },
     )
     template_scan = TemplateScanFactory(
         template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
@@ -286,12 +368,12 @@ def test_start_scan_valid_api_keys_with_unknown_error(
     }
 
 
-@patch("pub_sub.pub_sub.send")
+@patch("pub_sub.pub_sub.execute")
 @patch("database.db.get_session")
 @patch.dict(os.environ, {"OWASP_ZAP_URLS_TOPIC": "topic"}, clear=True)
 def test_start_scan_valid_api_keys_with_gitsha(
     mock_aws_session,
-    mock_send,
+    mock_execute,
     session,
     authorized_request,
 ):
@@ -303,7 +385,10 @@ def test_start_scan_valid_api_keys_with_gitsha(
     template = TemplateFactory(organisation=organisation)
     scan_type = ScanTypeFactory(
         name=AvailableScans.OWASP_ZAP.value,
-        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+        callback={
+            "event": "stepfunctions",
+            "state_machine_name": "dynamic-security-scans",
+        },
     )
     template_scan = TemplateScanFactory(
         template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
@@ -320,20 +405,22 @@ def test_start_scan_valid_api_keys_with_gitsha(
 
     assert response.status_code == 200
 
-    mock_send.assert_called_once_with(
-        "topic",
-        {
-            "type": AvailableScans.OWASP_ZAP.value,
-            "product": template.name,
-            "revision": "123456789",
-            "template_id": str(template.id),
-            "scan_id": ANY,
-            "url": template_scan.data["url"],
-            "crawl": False,
-            "event": "sns",
-            "queue": "topic",
-            "id": ANY,
-        },
+    mock_execute.assert_called_once_with(
+        "dynamic-security-scans",
+        [
+            {
+                "type": AvailableScans.OWASP_ZAP.value,
+                "product": template.name,
+                "revision": "123456789",
+                "template_id": str(template.id),
+                "scan_id": ANY,
+                "url": template_scan.data["url"],
+                "crawl": False,
+                "event": "stepfunctions",
+                "queue": "dynamic-security-scans",
+                "id": ANY,
+            }
+        ],
     )
 
 
@@ -349,7 +436,10 @@ def test_start_scan_valid_api_keys_with_crawling(
     template = TemplateFactory(organisation=organisation)
     scan_type = ScanTypeFactory(
         name=AvailableScans.OWASP_ZAP.value,
-        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+        callback={
+            "event": "stepfunctions",
+            "state_machine_name": "dynamic-security-scans",
+        },
     )
     template_scan = TemplateScanFactory(
         template=template,
@@ -378,8 +468,8 @@ def test_start_scan_valid_api_keys_with_crawling(
             "scan_id": ANY,
             "url": template_scan.data["url"],
             "crawl": "true",
-            "event": "sns",
-            "queue": "topic",
+            "event": "stepfunctions",
+            "queue": "dynamic-security-scans",
         },
     )
 
@@ -400,7 +490,10 @@ def test_start_scan_valid_keys_wrong_org(
     template = TemplateFactory(organisation=organisation)
     scan_type = ScanTypeFactory(
         name=AvailableScans.OWASP_ZAP.value,
-        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+        callback={
+            "event": "stepfunctions",
+            "state_machine_name": "dynamic-security-scans",
+        },
     )
     TemplateScanFactory(
         template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
@@ -444,7 +537,10 @@ def test_start_scan_invalid_user_api_key(
     template = TemplateFactory(organisation=organisation)
     scan_type = ScanTypeFactory(
         name=AvailableScans.OWASP_ZAP.value,
-        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+        callback={
+            "event": "stepfunctions",
+            "state_machine_name": "dynamic-security-scans",
+        },
     )
     TemplateScanFactory(
         template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
@@ -476,7 +572,10 @@ def test_start_scan_invalid_template_token(
     template = TemplateFactory(organisation=organisation)
     scan_type = ScanTypeFactory(
         name=AvailableScans.OWASP_ZAP.value,
-        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+        callback={
+            "event": "stepfunctions",
+            "state_machine_name": "dynamic-security-scans",
+        },
     )
     TemplateScanFactory(
         template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
@@ -502,7 +601,10 @@ def test_delete_security_report_with_bad_id(
     template = TemplateFactory(organisation=organisation)
     scan_type = ScanTypeFactory(
         name=AvailableScans.OWASP_ZAP.value,
-        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+        callback={
+            "event": "stepfunctions",
+            "state_machine_name": "dynamic-security-scans",
+        },
     )
     template_scan = TemplateScanFactory(
         template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
@@ -526,7 +628,10 @@ def test_delete_security_report_with_id_not_found(
     template = TemplateFactory(organisation=organisation)
     scan_type = ScanTypeFactory(
         name=AvailableScans.OWASP_ZAP.value,
-        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+        callback={
+            "event": "stepfunctions",
+            "state_machine_name": "dynamic-security-scans",
+        },
     )
     TemplateScanFactory(
         template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
@@ -553,7 +658,10 @@ def test_delete_security_report_with_correct_id(
     template = TemplateFactory(organisation=organisation)
     scan_type = ScanTypeFactory(
         name=AvailableScans.OWASP_ZAP.value,
-        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+        callback={
+            "event": "stepfunctions",
+            "state_machine_name": "dynamic-security-scans",
+        },
     )
     TemplateScanFactory(
         template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
@@ -620,7 +728,10 @@ def test_delete_template_scan_with_correct_id(
     template = TemplateFactory(organisation=organisation)
     scan_type = ScanTypeFactory(
         name=AvailableScans.OWASP_ZAP.value,
-        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+        callback={
+            "event": "stepfunctions",
+            "state_machine_name": "dynamic-security-scans",
+        },
     )
     template_scan = TemplateScanFactory(
         template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
@@ -644,7 +755,10 @@ def test_delete_template_scan_with_correct_id_has_reports(
     template = TemplateFactory(organisation=organisation)
     scan_type = ScanTypeFactory(
         name=AvailableScans.OWASP_ZAP.value,
-        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+        callback={
+            "event": "stepfunctions",
+            "state_machine_name": "dynamic-security-scans",
+        },
     )
     template_scan = TemplateScanFactory(
         template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
@@ -692,7 +806,10 @@ def test_ignore_security_violation(
     template = TemplateFactory(organisation=organisation)
     scan_type = ScanTypeFactory(
         name=AvailableScans.OWASP_ZAP.value,
-        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+        callback={
+            "event": "stepfunctions",
+            "state_machine_name": "dynamic-security-scans",
+        },
     )
     scan = ScanFactory(
         organisation=organisation, template=template, scan_type=scan_type
@@ -723,7 +840,10 @@ def test_ignore_security_violation_already_ignored(
     template = TemplateFactory(organisation=organisation)
     scan_type = ScanTypeFactory(
         name=AvailableScans.OWASP_ZAP.value,
-        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+        callback={
+            "event": "stepfunctions",
+            "state_machine_name": "dynamic-security-scans",
+        },
     )
     scan = ScanFactory(
         organisation=organisation, template=template, scan_type=scan_type
@@ -761,7 +881,10 @@ def test_delete_scan_ignore(
     template = TemplateFactory(organisation=organisation)
     scan_type = ScanTypeFactory(
         name=AvailableScans.OWASP_ZAP.value,
-        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+        callback={
+            "event": "stepfunctions",
+            "state_machine_name": "dynamic-security-scans",
+        },
     )
     scan = ScanFactory(
         organisation=organisation, template=template, scan_type=scan_type
@@ -799,7 +922,10 @@ def test_delete_scan_ignore_doesnt_exist(
     template = TemplateFactory(organisation=organisation)
     scan_type = ScanTypeFactory(
         name=AvailableScans.OWASP_ZAP.value,
-        callback={"event": "sns", "topic_env": "OWASP_ZAP_URLS_TOPIC"},
+        callback={
+            "event": "stepfunctions",
+            "state_machine_name": "dynamic-security-scans",
+        },
     )
     scan = ScanFactory(
         organisation=organisation, template=template, scan_type=scan_type
