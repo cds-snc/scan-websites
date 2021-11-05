@@ -86,6 +86,45 @@ async def verify_scan_tokens(
     return template
 
 
+def build_scan_payload(template, template_scan, scan, git_sha=None):
+    item = {}
+    item["event"] = template_scan.scan_type.callback["event"]
+    item["revision"] = "latest"
+
+    if template_scan.scan_type.callback["event"] == "sns":
+        item["queue"] = os.getenv(
+            template_scan.scan_type.callback["topic_env"], "NOT_FOUND"
+        )
+    elif template_scan.scan_type.callback["event"] == "stepfunctions":
+        item["queue"] = template_scan.scan_type.callback["state_machine_name"]
+
+    item["scan_id"] = str(scan.id)
+    item["type"] = template_scan.scan_type.name
+    item["product"] = template.name
+    item["template_id"] = str(template.id)
+
+    if "url" in template_scan.data:
+        item["url"] = template_scan.data["url"]
+    if "revision" in template_scan.data:
+        item["revision"] = template_scan.data["revision"]
+
+    if "crawl" in template_scan.data:
+        item["crawl"] = template_scan.data["crawl"]
+    else:
+        item["crawl"] = False
+
+    if "url" not in item:
+        return {"message": "Scan error: URL not configured in template"}
+
+    if "event" not in item:
+        return {"message": "Scan error: Scan type callback event not defined"}
+
+    if git_sha:
+        item["revision"] = git_sha
+
+    return item
+
+
 @router.get("/start")
 @router.get("/start/revision/{git_sha}")
 def start_scan(
@@ -98,6 +137,7 @@ def start_scan(
 
     success_list = []
     fail_list = []
+    payload_list = []
     for template_scan in template.template_scans:
         scan = (
             session.query(Scan)
@@ -117,49 +157,27 @@ def start_scan(
             session.add(scan)
             session.commit()
 
-        item = {}
-        item["event"] = template_scan.scan_type.callback["event"]
-        item["revision"] = "latest"
-
-        if template_scan.scan_type.callback["event"] == "sns":
-            item["scan_id"] = str(scan.id)
-            item["type"] = template_scan.scan_type.name
-            item["product"] = template.name
-            item["template_id"] = str(template.id)
-
-            if "url" in template_scan.data:
-                item["url"] = template_scan.data["url"]
-            if "revision" in template_scan.data:
-                item["revision"] = template_scan.data["revision"]
-
-            if "crawl" in template_scan.data:
-                item["crawl"] = template_scan.data["crawl"]
-            else:
-                item["crawl"] = False
-
-            item["queue"] = os.getenv(
-                template_scan.scan_type.callback["topic_env"], "NOT_FOUND"
-            )
-
-        if "url" not in item:
-            return {"message": "Scan error: URL not configured in template"}
-
-        if "event" not in item:
-            return {"message": "Scan error: Scan type callback event not defined"}
-
-        if git_sha:
-            item["revision"] = git_sha
-
+        item = build_scan_payload(template, template_scan, scan, git_sha)
         try:
             if item["crawl"] == "true":
                 background_tasks.add_task(crawl, item)
+                success_list.append(template_scan.scan_type.name)
             else:
-                pub_sub.dispatch(item)
-            success_list.append(template_scan.scan_type.name)
+                payload_list.append(item)
         except Exception as error:
             log.error(error)
             fail_list.append(template_scan.scan_type.name)
             pass
+
+    try:
+        pub_sub.dispatch(payload_list)
+        for payload in payload_list:
+            success_list.append(payload["type"].rstrip())
+    except Exception as error:
+        log.error(error)
+        for payload in payload_list:
+            fail_list.append(payload["type"].rstrip())
+        pass
 
     return {
         "message": f"Scan start details: {template.name}, successful: {success_list}, failed: {fail_list}"

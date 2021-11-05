@@ -75,6 +75,38 @@ data "aws_iam_policy_document" "api_policies" {
     effect = "Allow"
 
     actions = [
+      "states:ListStateMachines",
+      "states:ListActivities",
+      "states:CreateActivity",
+      "states:DescribeExecution",
+      "states:StartExecution",
+    ]
+
+    resources = [
+      "arn:aws:states:${var.region}:${var.account_id}:*"
+    ]
+  }
+
+  statement {
+
+    effect = "Allow"
+
+    actions = [
+      "events:PutTargets",
+      "events:PutRule",
+      "events:DescribeRule"
+    ]
+
+    resources = [
+      "arn:aws:events:${var.region}:${var.account_id}:*"
+    ]
+  }
+
+  statement {
+
+    effect = "Allow"
+
+    actions = [
       "kms:Decrypt",
       "kms:GenerateDataKey*"
     ]
