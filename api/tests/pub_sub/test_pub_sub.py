@@ -207,6 +207,6 @@ def test_execute_starts_state_machine(mock_get_session):
     mock_client.start_execution.assert_called_once_with(
         stateMachineArn="arn",
         input={
-            "payload": '[{"id": "abcd", "url": "https://www.example.com", "name": "owasp-zap"}, {"id": "efgh", "url": "https://www.example.com", "name": "nuclei"}]'
+            "{payload": '[{"id": "abcd", "url": "https://www.example.com", "name": "owasp-zap"}, {"id": "efgh", "url": "https://www.example.com", "name": "nuclei"}]}'
         },
     )
