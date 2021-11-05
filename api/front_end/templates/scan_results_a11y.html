@@ -1,70 +1,93 @@
 {% extends "base.html" %}
 {% block body %}
-<nav
+  <nav
   class="block text-sm text-left text-green-800 h-12 flex items-center p-4 mb-5 border-2 border-gray-500"
   role="alert"
 >
-  <ol class="list-reset flex text-grey-dark">
-    <li><a href="/{{ lang }}" class="font-bold">{{home_locale}}</a></li>
-    <li><span class="mx-2">/</span></li>
-    <li>{{ scan.template.name }}: {{ scan.scan_type.name }}</li>
-  </ol>
-</nav>
-<a href="/{{ lang }}/ignored/{{ scan.template.id }}/scan/{{ scan.id }}" class="button flex-shrink-0 bg-green-500 hover:bg-green-700 border-green-500 hover:border-green-700 text-sm border-4 text-black py-1 px-2 rounded float-right">{{ ignored_results_locale }}</a>
-<h1 class="text-gray-700 font-semibold uppercase text-xl mb-7">{{ scan.template.name }}: {{ scan.scan_type.name }} - {{ revision_locale }}</h1>
-<hr class="my-3"/>
-<div class="container">
-  
-  <div class="row mb-8 my-8">
-    <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-      <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-        <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-              <tr>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {{ uri_locale }}
-                </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {{ date_locale }}
-                </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {{ violation_categories_locale }}
-                </th>
-              </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-              {% for a11y_report in scan.a11y_reports %}
-              <tr>
-                <td class="px-6 py-4 whitespace-nowrap">
+    <ol class="list-reset flex text-grey-dark">
+      <li>
+        <a href="/{{ lang }}" class="font-bold">{{home_locale}}</a>
+      </li>
+      <li>
+        <span class="mx-2">/</span></li>
+      <li>{{ scan.template.name }}: {{ scan.scan_type.name }}</li>
+    </ol>
+  </nav>
+  <h1 class="text-gray-700 font-semibold uppercase text-xl mb-7">{{ scan.template.name }}: {{ scan.scan_type.name }} - {{ revision_locale }}</h1>
+  <hr class="my-3"/>
+  <div class="container">
+
+    <div class="row mb-8 my-8">
+      <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+        <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+          <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {{ uri_locale }}
+                  </th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {{ date_locale }}
+                  </th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {{ violation_categories_locale }}
+                  </th>
+                  <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {{ reports_locale }}
+                  </th>
+                  <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {{ screenshot_locale }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                {% for a11y_report in scan.a11y_reports %}
+                  <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">
                       <div class="text-sm font-medium text-gray-900">
-                      <a href="/{{ lang }}/results/{{ scan.template.id }}/a11y/{{ a11y_report.id }}">
+                        <a href="/{{ lang }}/results/{{ scan.template.id }}/a11y/{{scan.id}}/{{ a11y_report.id }}">
                           {{ a11y_report.url }}
                         </a>
                       </div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm font-medium">
-                      {{ a11y_report.created_at }}
-                  </div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm font-medium text-gray-900">
-                      {{ a11y_report.a11y_violations | length }}
-                  </div>
-                </td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="text-sm font-medium">
+                        {{ a11y_report.created_at }}
+                      </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="text-sm font-medium text-gray-900">
+                        <p class="flex flex-wrap gap-2">
+                          <span class="{{ 'bg-red-300' if a11y_report.summary.violations.critical | default(0) > 0 else 'bg-gray-100'}} inline-block p-1 px-2">{{a11y_report.summary.violations['critical'] or 0 }}&nbsp;Critical</span>
+                          <span class="{{ 'bg-orange-300' if a11y_report.summary.violations.serious | default(0) > 0 else 'bg-gray-100'}} inline-block p-1 px-2">{{a11y_report.summary.violations['serious'] or 0 }}&nbsp;Serious</span>
+                          <span class="{{ 'bg-yellow-300' if a11y_report.summary.violations.moderate | default(0) > 0 else 'bg-gray-100'}} inline-block p-1 px-2">{{a11y_report.summary.violations['moderate'] or 0 }}&nbsp;Moderate</span>
+                          <span class="{{ 'bg-lime-300' if a11y_report.summary.violations.minor | default(0) > 0 else 'bg-gray-100'}} inline-block p-1 px-2">{{a11y_report.summary.violations['minor'] or 0 }}&nbsp;Minor</span>
+                        </p>
+                      </div>
+                    </td>
+                    <td class="text-center">
+                      <a href="/{{ lang }}/results/{{ scan.template.id }}/a11y/{{scan.id}}/{{ a11y_report.id }}">
+                        <span class="material-icons">description</span>
+                      </a>
+                    </td>
+                    <td class="text-center">
+                      <a href="/{{ lang }}/results/{{ scan.template.id }}/a11y/{{scan.id}}/{{ a11y_report.id }}/screenshot" target="_blank">
+                        <span class="material-icons">image</span>
+                      </a>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
-    </div>
 
+    </div>
   </div>
-</div>
 
   {% block footer %}
-  {{super()}}
+    {{super()}}
   {% endblock %}
 {% endblock %}
