@@ -6,6 +6,7 @@ On-demand scanning of websites for accessibility and security vulnerabilities/co
 
 - Create new alembic database migration to insert new scan_type
 - Add new scan_type to AvailableScans class in `/pub_sub/`
+- Associate validator_list to new scan_type in `/pub_sub/`
 - Add new SNS topic for the new scan (api terraform)
 - Add new S3 report bucket via terraform + IAM permissions to store results for processing by the api (api terraform)
 - Add new lambda function via terraform + IAM permissions to be invoked by SNS

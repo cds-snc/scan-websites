@@ -331,6 +331,56 @@ def test_start_scan_valid_api_keys(
     }
 
 
+@patch("pub_sub.pub_sub.get_session")
+def test_start_scan_valid_api_keys_multiple_scans(
+    mock_aws_session,
+    session,
+    authorized_request,
+):
+    mock_client = MagicMock()
+    mock_aws_session.return_value.client.return_value = mock_client
+
+    _, user, organisation = authorized_request
+
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.OWASP_ZAP.value,
+        callback={
+            "event": "stepfunctions",
+            "state_machine_name": "dynamic-security-scans",
+        },
+    )
+    template_scan = TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    nuclei_scan_type = ScanTypeFactory(
+        name=AvailableScans.NUCLEI.value,
+        callback={
+            "event": "stepfunctions",
+            "state_machine_name": "dynamic-security-scans",
+        },
+    )
+    nuclei_template_scan = TemplateScanFactory(
+        template=template,
+        scan_type=nuclei_scan_type,
+        data={"url": "http://www.example.com"},
+    )
+    session.commit()
+
+    response = client.get(
+        "scans/start",
+        headers={
+            "X-API-KEY": str(user.access_token),
+            "X-TEMPLATE-TOKEN": str(template.token),
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "message": f"Scan start details: {template.name}, successful: ['{template_scan.scan_type.name}', '{nuclei_template_scan.scan_type.name}'], failed: []"
+    }
+
+
 @patch("pub_sub.pub_sub.dispatch")
 def test_start_scan_valid_api_keys_with_unknown_error(
     mock_dispatch,
