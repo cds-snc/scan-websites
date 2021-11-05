@@ -130,6 +130,8 @@ data "aws_iam_policy_document" "api_policies" {
       "${module.owasp-zap-report-data.s3_bucket_arn}/*",
       module.axe-core-report-data.s3_bucket_arn,
       "${module.axe-core-report-data.s3_bucket_arn}/*",
+      module.axe-core-screenshots.s3_bucket_arn,
+      "${module.axe-core-screenshots.s3_bucket_arn}/*",
       module.github-report-data.s3_bucket_arn,
       "${module.github-report-data.s3_bucket_arn}/*",
       module.nuclei-report-data.s3_bucket_arn,
