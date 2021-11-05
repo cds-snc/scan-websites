@@ -120,7 +120,7 @@ async def get_a11y_report_screenshot(
     else:
         raise HTTPException(
             status_code=500,
-            detail=f"Could not download image from bucket",
+            detail="Could not download image from bucket",
         )
 
 
