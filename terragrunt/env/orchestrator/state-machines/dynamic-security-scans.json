@@ -14,7 +14,7 @@
         },
         {
           "Variable": "$.payload[0].type",
-          "StringMatches": "nuclei",
+          "StringMatches": "Nuclei",
           "Next": "nuclei"
         },
         {
