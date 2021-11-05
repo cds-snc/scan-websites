@@ -1,0 +1,12 @@
+.theme-impact[data-impact=critical]{
+    background-color:#f99a9e;
+}
+.bg-orange-300,.theme-impact[data-impact=serious]{
+    background-color:#f4a259;
+}
+.theme-impact[data-impact=moderate]{
+    background-color:#d9ae50;
+}
+.bg-lime-300,.theme-impact[data-impact=minor]{
+    background-color:#a6be62;
+}

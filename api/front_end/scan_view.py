@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from .view import languages, default_fallback, templates
 from api_gateway.routers.auth import is_authenticated
 from api_gateway.routers.scans import template_belongs_to_org
+from models.A11yReport import A11yReport
 from models.Scan import Scan
 from models.ScanIgnore import ScanIgnore
 from models.SecurityReport import SecurityReport
@@ -27,6 +28,90 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+@router.get(
+    "/{locale}/results/{template_id}/a11y/{scan_id}/{report_id}",
+    dependencies=[Depends(is_authenticated), Depends(template_belongs_to_org)],
+    response_class=HTMLResponse,
+)
+async def get_a11y_report(
+    request: Request,
+    locale: str,
+    template_id: uuid.UUID,
+    scan_id: uuid.UUID,
+    report_id: uuid.UUID,
+    session: Session = Depends(get_db),
+):
+    try:
+        if locale not in languages:
+            locale = default_fallback
+
+        report = (
+            session.query(A11yReport)
+            .outerjoin(Scan.a11y_reports)
+            .filter(
+                A11yReport.id == report_id,
+                Scan.id == scan_id,
+                Scan.template_id == template_id,
+            )
+            .one()
+        )
+
+        result = {"request": request}
+        result.update(languages[locale])
+        result.update({"report": report})
+    except Exception as e:
+        log.error(e)
+        raise HTTPException(status_code=500, detail=str(e))
+    if report.scan.scan_type.name == pub_sub.AvailableScans.AXE_CORE.value:
+        return templates.TemplateResponse("scan_results_a11y_summary.html", result)
+    else:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Scan type {report.scan.scan_type.name} has no associated layout",
+        )
+
+
+@router.get(
+    "/{locale}/results/{template_id}/a11y/{scan_id}/{report_id}/screenshot",
+    dependencies=[Depends(is_authenticated), Depends(template_belongs_to_org)],
+)
+async def get_a11y_report_screenshot(
+    request: Request,
+    locale: str,
+    template_id: uuid.UUID,
+    scan_id: uuid.UUID,
+    report_id: uuid.UUID,
+    session: Session = Depends(get_db),
+):
+    try:
+        if locale not in languages:
+            locale = default_fallback
+
+        report = (
+            session.query(A11yReport)
+            .outerjoin(Scan.a11y_reports)
+            .filter(
+                A11yReport.id == report_id,
+                Scan.id == scan_id,
+                Scan.template_id == template_id,
+            )
+            .one()
+        )
+
+        # Download screenshot
+
+    except Exception as e:
+        log.error(e)
+        raise HTTPException(status_code=500, detail=str(e))
+    if report.scan.scan_type.name == pub_sub.AvailableScans.AXE_CORE.value:
+        return {"status": "Feature not implemented"}
+    else:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Scan type {report.scan.scan_type.name} has no associated layout",
+        )
 
 
 @router.get(
