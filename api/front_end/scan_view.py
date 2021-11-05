@@ -110,7 +110,7 @@ async def get_a11y_report_screenshot(
                 "object": {"key": f"{str(report_id)}.png"},
             }
         }
-        data = storage.get_object(record)
+        data: bytes = storage.get_object(record)
 
     except Exception as e:
         log.error(e)
