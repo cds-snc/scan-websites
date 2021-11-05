@@ -131,7 +131,7 @@ def execute(state_machine, payloads):
         if stateMachine:
             response = client.start_execution(
                 stateMachineArn=stateMachine[0]["stateMachineArn"],
-                input={"payload": json.dumps(payloads)},
+                input=json.dumps({"payload": payloads}),
             )
         else:
             log.error(f"State machine: {state_machine} is not defined")
