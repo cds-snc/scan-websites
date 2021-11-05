@@ -124,7 +124,7 @@ async def get_a11y_report_screenshot(
         )
 
 
-@ router.get(
+@router.get(
     "/{locale}/results/{template_id}/security/{scan_id}/{report_id}",
     dependencies=[Depends(is_authenticated), Depends(template_belongs_to_org)],
     response_class=HTMLResponse,
@@ -167,7 +167,7 @@ async def get_security_report(
         )
 
 
-@ router.get(
+@router.get(
     "/{locale}/results/{template_id}/security/{scan_id}/{report_id}/{violation_id}",
     dependencies=[Depends(is_authenticated), Depends(template_belongs_to_org)],
     response_class=HTMLResponse,
@@ -260,7 +260,7 @@ async def get_security_violation(
         )
 
 
-@ router.get(
+@router.get(
     "/{locale}/results/{template_id}/scan/{scan_id}",
     dependencies=[Depends(is_authenticated), Depends(template_belongs_to_org)],
     response_class=HTMLResponse,
@@ -299,7 +299,7 @@ async def get_scan(
         )
 
 
-@ router.get(
+@router.get(
     "/{locale}/ignored/{template_id}/scan/{scan_id}",
     dependencies=[Depends(is_authenticated), Depends(template_belongs_to_org)],
     response_class=HTMLResponse,
