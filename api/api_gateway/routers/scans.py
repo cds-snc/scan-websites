@@ -172,11 +172,11 @@ def start_scan(
     try:
         pub_sub.dispatch(payload_list)
         for payload in payload_list:
-            success_list.append(payload["type"].rstrip())
+            success_list.append(payload["type"])
     except Exception as error:
         log.error(error)
         for payload in payload_list:
-            fail_list.append(payload["type"].rstrip())
+            fail_list.append(payload["type"])
         pass
 
     return {
