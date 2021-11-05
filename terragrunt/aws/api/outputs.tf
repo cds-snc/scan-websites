@@ -18,14 +18,6 @@ output "owasp_zap_report_data_bucket_arn" {
   value = module.owasp-zap-report-data.s3_bucket_arn
 }
 
-output "owasp_zap_urls_topic_arn" {
-  value = aws_sns_topic.owasp-zap-urls.arn
-}
-
-output "dynamic_scan_urls_topic_arn" {
-  value = aws_sns_topic.dynamic-scan-urls.arn
-}
-
 output "nuclei_report_data_bucket_id" {
   value = module.nuclei-report-data.s3_bucket_id
 }
@@ -33,11 +25,6 @@ output "nuclei_report_data_bucket_id" {
 output "nuclei_report_data_bucket_arn" {
   value = module.nuclei-report-data.s3_bucket_arn
 }
-
-output "nuclei_urls_topic_arn" {
-  value = aws_sns_topic.nuclei-urls.arn
-}
-
 
 output "vpc_id" {
   value = module.vpc.vpc_id
