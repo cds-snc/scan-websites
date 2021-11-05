@@ -13,13 +13,13 @@
           "Next": "Done"
         },
         {
-          "Variable": "$.payload[0].name",
+          "Variable": "$.payload[0].type",
           "StringMatches": "nuclei",
           "Next": "nuclei"
         },
         {
-          "Variable": "$.payload[0].name",
-          "StringMatches": "owasp-zap",
+          "Variable": "$.payload[0].type",
+          "StringMatches": "OWASP Zap",
           "Next": "owasp-zap"
         }
       ],
