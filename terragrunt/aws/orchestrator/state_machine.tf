@@ -9,7 +9,7 @@ resource "aws_sfn_state_machine" "dynamic_security_scans" {
   }
 }
 data "template_file" "dynamic-security-scans" {
-  template = file("step-functions/dynamic-security-scans.json")
+  template = file("state-machines/dynamic-security-scans.json")
   vars = {
     nuclei_container_name = aws_ecs_task_definition.runners-nuclei.family
     nuclei_task_def       = aws_ecs_task_definition.runners-nuclei.arn
