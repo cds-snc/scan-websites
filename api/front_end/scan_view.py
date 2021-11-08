@@ -16,6 +16,7 @@ from models.SecurityViolation import SecurityViolation
 from pub_sub import pub_sub
 from storage import storage
 
+import base64
 import os
 import uuid
 
@@ -103,14 +104,13 @@ async def get_a11y_report_screenshot(
             .one()
         )
 
-        # Download screenshot
         record = {
             "s3": {
                 "bucket": {"name": os.environ.get("AXE_CORE_SCREENSHOT_BUCKET", False)},
                 "object": {"key": f"{str(report_id)}.png"},
             }
         }
-        data: bytes = storage.get_object(record)
+        data: bytes = base64.b64decode(storage.get_object(record))
 
     except Exception as e:
         log.error(e)
