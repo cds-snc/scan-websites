@@ -158,11 +158,10 @@ async def get_security_report(
     except Exception as e:
         log.error(e)
         raise HTTPException(status_code=500, detail=str(e))
-    if (
-        report.scan.scan_type.name == pub_sub.AvailableScans.OWASP_ZAP.value
-        or report.scan.scan_type.name == pub_sub.AvailableScans.NUCLEI.value
-    ):
+    if report.scan.scan_type.name == pub_sub.AvailableScans.OWASP_ZAP.value:
         return templates.TemplateResponse("scan_results_security_summary.html", result)
+    elif report.scan.scan_type.name == pub_sub.AvailableScans.NUCLEI.value:
+        return templates.TemplateResponse("scan_results_nuclei_summary.html", result)
     else:
         raise HTTPException(
             status_code=500,
@@ -297,11 +296,10 @@ async def get_scan(
     except Exception as e:
         log.error(e)
         raise HTTPException(status_code=500, detail=str(e))
-    if (
-        scan.scan_type.name == pub_sub.AvailableScans.OWASP_ZAP.value
-        or scan.scan_type.name == pub_sub.AvailableScans.NUCLEI.value
-    ):
-        return templates.TemplateResponse("scan_results_security.html", result)
+    if scan.scan_type.name == pub_sub.AvailableScans.OWASP_ZAP.value:
+        return templates.TemplateResponse("scan_results_owasp_zap.html", result)
+    elif scan.scan_type.name == pub_sub.AvailableScans.NUCLEI.value:
+        return templates.TemplateResponse("scan_results_nuclei.html", result)
     elif scan.scan_type.name == pub_sub.AvailableScans.AXE_CORE.value:
         return templates.TemplateResponse("scan_results_a11y.html", result)
     else:

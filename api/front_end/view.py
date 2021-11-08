@@ -98,6 +98,18 @@ def get_risk_colour(riskcode):
         return "bg-gray-500"
 
 
+def extract_risk_text(summary):
+    reduced_summary = {}
+    for key in summary:
+        print(key)
+        if " (" in key:
+            risk = str(key.split(" (")[0]).lower()
+            reduced_summary[risk] = summary[key]
+        else:
+            reduced_summary[key] = summary[key]
+    return reduced_summary
+
+
 def prettier_array(data):
     if scan_websites_constants.UNIQUE_SEPARATOR in data:
         return data.replace(scan_websites_constants.UNIQUE_SEPARATOR, ", ")
@@ -114,6 +126,7 @@ templates.env.filters["plural_formatting"] = plural_formatting
 templates.env.filters["date"] = format_date
 templates.env.filters["risk_colour"] = get_risk_colour
 templates.env.filters["prettier_array"] = prettier_array
+templates.env.filters["extract_risk_text"] = extract_risk_text
 templates.env.globals["get_seperator"] = get_seperator
 
 
