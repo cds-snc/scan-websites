@@ -318,6 +318,44 @@ def test_start_scan_valid_api_keys(
     session.commit()
 
     response = client.get(
+        "scans/start?dynamic=true",
+        headers={
+            "X-API-KEY": str(user.access_token),
+            "X-TEMPLATE-TOKEN": str(template.token),
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "message": f"Scan start details: {template.name}, successful: ['{template_scan.scan_type.name}'], failed: [], skipped: []"
+    }
+
+
+@patch("pub_sub.pub_sub.get_session")
+def test_start_scan_valid_api_keys_dynamic_scans_disabled(
+    mock_aws_session,
+    session,
+    authorized_request,
+):
+    mock_client = MagicMock()
+    mock_aws_session.return_value.client.return_value = mock_client
+
+    _, user, organisation = authorized_request
+
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.OWASP_ZAP.value,
+        callback={
+            "event": "stepfunctions",
+            "state_machine_name": "dynamic-security-scans",
+        },
+    )
+    template_scan = TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    session.commit()
+
+    response = client.get(
         "scans/start",
         headers={
             "X-API-KEY": str(user.access_token),
@@ -327,7 +365,7 @@ def test_start_scan_valid_api_keys(
 
     assert response.status_code == 200
     assert response.json() == {
-        "message": f"Scan start details: {template.name}, successful: ['{template_scan.scan_type.name}'], failed: []"
+        "message": f"Scan start details: {template.name}, successful: [], failed: [], skipped: ['{template_scan.scan_type.name}']"
     }
 
 
@@ -368,7 +406,7 @@ def test_start_scan_valid_api_keys_multiple_scans(
     session.commit()
 
     response = client.get(
-        "scans/start",
+        "scans/start?dynamic=true",
         headers={
             "X-API-KEY": str(user.access_token),
             "X-TEMPLATE-TOKEN": str(template.token),
@@ -377,7 +415,7 @@ def test_start_scan_valid_api_keys_multiple_scans(
 
     assert response.status_code == 200
     assert response.json() == {
-        "message": f"Scan start details: {template.name}, successful: ['{template_scan.scan_type.name}', '{nuclei_template_scan.scan_type.name}'], failed: []"
+        "message": f"Scan start details: {template.name}, successful: ['{template_scan.scan_type.name}', '{nuclei_template_scan.scan_type.name}'], failed: [], skipped: []"
     }
 
 
@@ -405,7 +443,7 @@ def test_start_scan_valid_api_keys_with_unknown_error(
     session.commit()
 
     response = client.get(
-        "scans/start",
+        "scans/start?dynamic=true",
         headers={
             "X-API-KEY": str(user.access_token),
             "X-TEMPLATE-TOKEN": str(template.token),
@@ -414,7 +452,7 @@ def test_start_scan_valid_api_keys_with_unknown_error(
 
     assert response.status_code == 200
     assert response.json() == {
-        "message": f"Scan start details: {template.name}, successful: [], failed: ['{template_scan.scan_type.name}']"
+        "message": f"Scan start details: {template.name}, successful: [], failed: ['{template_scan.scan_type.name}'], skipped: []"
     }
 
 
@@ -446,7 +484,7 @@ def test_start_scan_valid_api_keys_with_gitsha(
     session.commit()
 
     response = client.get(
-        "scans/start/revision/123456789",
+        "scans/start/revision/123456789?dynamic=true",
         headers={
             "X-API-KEY": str(user.access_token),
             "X-TEMPLATE-TOKEN": str(template.token),
@@ -499,7 +537,7 @@ def test_start_scan_valid_api_keys_with_crawling(
     session.commit()
 
     response = client.get(
-        "scans/start/revision/123456789",
+        "scans/start/revision/123456789?dynamic=true",
         headers={
             "X-API-KEY": str(user.access_token),
             "X-TEMPLATE-TOKEN": str(template.token),
