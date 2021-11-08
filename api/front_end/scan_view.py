@@ -124,7 +124,7 @@ async def get_a11y_report_screenshot(
         )
 
 
-@ router.get(
+@router.get(
     "/{locale}/results/{template_id}/security/{scan_id}/{report_id}",
     dependencies=[Depends(is_authenticated), Depends(template_belongs_to_org)],
     response_class=HTMLResponse,
