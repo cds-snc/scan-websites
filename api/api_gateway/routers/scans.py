@@ -4,6 +4,7 @@ from fastapi import (
     BackgroundTasks,
     Header,
     HTTPException,
+    Query,
     Request,
     Response,
     status,
@@ -131,6 +132,7 @@ def start_scan(
     request: Request,
     background_tasks: BackgroundTasks,
     git_sha: Optional[str] = None,
+    dynamic: Optional[bool] = Query(False),
     session: Session = Depends(get_session),
     template: Template = Depends(verify_scan_tokens),
 ):
@@ -138,7 +140,12 @@ def start_scan(
     success_list = []
     fail_list = []
     payload_list = []
+    skipped_list = []
     for template_scan in template.template_scans:
+        if template_scan.scan_type.dynamic != dynamic:
+            skipped_list.append(template_scan.scan_type.name)
+            break
+
         scan = (
             session.query(Scan)
             .filter(
@@ -180,7 +187,7 @@ def start_scan(
         pass
 
     return {
-        "message": f"Scan start details: {template.name}, successful: {success_list}, failed: {fail_list}"
+        "message": f"Scan start details: {template.name}, successful: {success_list}, failed: {fail_list}, skipped: {skipped_list}"
     }
 
 
