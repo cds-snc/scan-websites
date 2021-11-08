@@ -45,6 +45,12 @@ if __name__ == "__main__":
         .scalar()
     )
 
+    nuclei_scan_type = (
+        session.query(ScanType)
+        .filter(ScanType.name == pub_sub.AvailableScans.NUCLEI.value)
+        .scalar()
+    )
+
     axe_core_scan_type = (
         session.query(ScanType)
         .filter(ScanType.name == pub_sub.AvailableScans.AXE_CORE.value)
@@ -78,6 +84,12 @@ if __name__ == "__main__":
     )
     session.add(owasp_zap_template)
 
+    nuclei_template = Template(
+        name="Nuclei template",
+        organisation=cds_org,
+    )
+    session.add(nuclei_template)
+
     axe_core_template = Template(
         name="Axe core template",
         organisation=cds_org,
@@ -97,6 +109,13 @@ if __name__ == "__main__":
     )
     session.add(owasp_zap_template_scan)
 
+    nuclei_template_scan = TemplateScan(
+        data={"url": "https://www.example.com"},
+        scan_type=nuclei_scan_type,
+        template=combined_template,
+    )
+    session.add(nuclei_template_scan)
+
     axe_core_template_scan = TemplateScan(
         data={"url": "https://www.alpha.canada.ca"},
         scan_type=axe_core_scan_type,
@@ -111,6 +130,13 @@ if __name__ == "__main__":
     )
     session.add(owasp_zap_scan)
 
+    nuclei_scan = Scan(
+        organisation=cds_org,
+        scan_type=nuclei_scan_type,
+        template=combined_template,
+    )
+    session.add(nuclei_scan)
+
     axe_core_scan = Scan(
         organisation=cds_org,
         scan_type=axe_core_scan_type,
@@ -121,11 +147,15 @@ if __name__ == "__main__":
     owasp_zap_report_f = open(
         "./tests/storage/fixtures/owasp_zap_report.json",
     )
+    nuclei_report_f = open(
+        "./tests/storage/fixtures/nuclei_report.json",
+    )
     axe_core_report_f = open(
         "./tests/storage/fixtures/axe_core_report.json",
     )
 
     owasp_zap_data = json.load(owasp_zap_report_f)
+    nuclei_data = json.load(nuclei_report_f)
     axe_core_data = json.load(axe_core_report_f)
 
     # Create 5 reports with 10 violations each
@@ -145,7 +175,7 @@ if __name__ == "__main__":
         )
         session.add(a11y_report)
 
-        security_report = SecurityReport(
+        owasp_zap_security_report = SecurityReport(
             product="product",
             revision=str(uuid.uuid4()),
             url="https://www.example.com",
@@ -154,14 +184,28 @@ if __name__ == "__main__":
             },
             scan=owasp_zap_scan,
         )
-        session.add(security_report)
+        session.add(owasp_zap_security_report)
+
+        nuclei_security_report = SecurityReport(
+            product="product",
+            revision=str(uuid.uuid4()),
+            url="https://www.example.com",
+            summary={
+                "status": "completed",
+            },
+            scan=nuclei_scan,
+        )
+        session.add(nuclei_security_report)
 
         session.commit()
 
         axe_core_data["id"] = str(a11y_report.id)
         storage.store_axe_core_record(session, axe_core_data)
 
-        owasp_zap_data["id"] = str(security_report.id)
+        owasp_zap_data["id"] = str(owasp_zap_security_report.id)
         storage.store_owasp_zap_record(session, owasp_zap_data)
+
+        nuclei_data["id"] = str(nuclei_security_report.id)
+        storage.store_nuclei_record(session, nuclei_data)
 
     print("Seed completed!")

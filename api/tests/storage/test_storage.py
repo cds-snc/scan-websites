@@ -202,6 +202,19 @@ def test_retrieve_and_route_with_bucket_type_as_owasp_zap(
     mock_store_owasp_zap.assert_called_once()
 
 
+@patch("storage.storage.get_object")
+@patch("storage.storage.store_nuclei_record")
+@patch.dict(os.environ, {"NUCLEI_REPORT_DATA_BUCKET": "nuclei"}, clear=True)
+def test_retrieve_and_route_with_bucket_type_as_owasp_zap(
+    mock_store_nuclei, mock_get_object
+):
+    mock_store_nuclei.return_value = True
+    mock_get_object.return_value = load_fixture("nuclei_report.json")
+    assert storage.retrieve_and_route(mock_record("nuclei")) is True
+    mock_store_nuclei.assert_called_once()
+
+
+
 @patch("storage.storage.db_session")
 @patch.dict(os.environ, {"OWASP_ZAP_REPORT_DATA_BUCKET": "owasp_zap"}, clear=True)
 def test_store_owasp_zap_record_returns_false_on_missing_record(mock_session):
