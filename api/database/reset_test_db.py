@@ -1,12 +1,9 @@
-import glob
 import os
 import sys
 
 from alembic.config import Config
 from alembic import command
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
 
 # Add parent to PYTHONPATH. This is needed since models is not in the PYTHONPATH when db migrations are generated
 sys.path = ["", ".."] + sys.path[1:]
@@ -33,7 +30,7 @@ if __name__ == "__main__":
         "SQLALCHEMY_DATABASE_TEST_URI"
     )
 
-    engine = create_engine(os.environ.get("SQLALCHEMY_DATABASE_TEST_URI"))    
+    engine = create_engine(os.environ.get("SQLALCHEMY_DATABASE_TEST_URI"))
     Base.metadata.drop_all(bind=engine)
 
     alembic_cfg = Config("../db_migrations/alembic.ini")
