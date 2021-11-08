@@ -142,7 +142,7 @@ def test_security_report_violation_details(
         f"/en/results/{template.id}/security/{scan.id}/{security_report.id}/{security_violation.id}"
     )
     assert response.status_code == 200
-    assert response.template.name == "scan_results_security_details.html"
+    assert response.template.name == "scan_results_security_details_zap.html"
 
 
 def risk_colour_assignment_valid():

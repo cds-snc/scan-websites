@@ -202,19 +202,6 @@ def test_retrieve_and_route_with_bucket_type_as_owasp_zap(
     mock_store_owasp_zap.assert_called_once()
 
 
-@patch("storage.storage.get_object")
-@patch("storage.storage.store_nuclei_record")
-@patch.dict(os.environ, {"NUCLEI_REPORT_DATA_BUCKET": "nuclei"}, clear=True)
-def test_retrieve_and_route_with_bucket_type_as_owasp_zap(
-    mock_store_nuclei, mock_get_object
-):
-    mock_store_nuclei.return_value = True
-    mock_get_object.return_value = load_fixture("nuclei_report.json")
-    assert storage.retrieve_and_route(mock_record("nuclei")) is True
-    mock_store_nuclei.assert_called_once()
-
-
-
 @patch("storage.storage.db_session")
 @patch.dict(os.environ, {"OWASP_ZAP_REPORT_DATA_BUCKET": "owasp_zap"}, clear=True)
 def test_store_owasp_zap_record_returns_false_on_missing_record(mock_session):
@@ -572,3 +559,129 @@ def test_filter_results_location_condition_mismatch():
 
     with pytest.raises(ValueError):
         storage.filter_ignored_results(False, exclude_condition, "foo", [scan_ignore])
+
+
+@patch("storage.storage.get_object")
+@patch("storage.storage.store_nuclei_record")
+@patch.dict(os.environ, {"NUCLEI_REPORT_DATA_BUCKET": "nuclei"}, clear=True)
+def test_retrieve_and_route_with_bucket_type_as_nuclei(
+    mock_store_nuclei, mock_get_object
+):
+    mock_store_nuclei.return_value = True
+    mock_get_object.return_value = load_fixture("nuclei_report.json")
+    assert storage.retrieve_and_route(mock_record("nuclei")) is True
+    mock_store_nuclei.assert_called_once()
+
+
+@patch("storage.storage.db_session")
+@patch.dict(os.environ, {"NUCLEI_REPORT_DATA_BUCKET": "nuclei"}, clear=True)
+def test_store_nuclei_record_returns_false_on_missing_record(mock_session):
+    mock_session.query().get.return_value = None
+    payload = json.loads(load_fixture("nuclei_report.json"))
+    assert storage.store_nuclei_record(mock_session, payload) is False
+
+
+def test_store_nuclei_record_updates_record(session):
+    organisation = OrganisationFactory()
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.NUCLEI.value,
+        callback={},
+    )
+    TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    scan = ScanFactory(
+        organisation=organisation, template=template, scan_type=scan_type
+    )
+    security_report = SecurityReportFactory(scan=scan)
+    payload = json.loads(load_fixture("nuclei_report.json"))
+    payload["id"] = security_report.id
+    assert storage.store_nuclei_record(session, payload) is True
+    session.refresh(security_report)
+    assert security_report.summary == {
+        "status": "completed",
+        "total": 13,
+        "info": 13,
+    }
+
+
+def test_store_nuclei_record_creates_violations(session):
+    organisation = OrganisationFactory()
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.NUCLEI.value,
+        callback={},
+    )
+    TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    scan = ScanFactory(
+        organisation=organisation, template=template, scan_type=scan_type
+    )
+    security_report = SecurityReport(
+        product="product",
+        revision="revision",
+        url="url",
+        summary={"jsonb": "data"},
+        scan=scan,
+    )
+    session.add(security_report)
+    session.commit()
+
+    payload = json.loads(load_fixture("nuclei_report.json"))
+    payload["id"] = security_report.id
+    assert storage.store_nuclei_record(session, payload) is True
+    violations = (
+        session.query(SecurityViolation)
+        .filter(SecurityViolation.security_report_id == security_report.id)
+        .all()
+    )
+    assert len(violations) == 13
+
+
+def test_store_nuclei_record_creates_violations_and_ignores(session):
+    organisation = OrganisationFactory()
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.NUCLEI.value,
+        callback={},
+    )
+    TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    scan = ScanFactory(
+        organisation=organisation, template=template, scan_type=scan_type
+    )
+    security_report = SecurityReport(
+        product="product",
+        revision="revision",
+        url="url",
+        summary={"jsonb": "data"},
+        scan=scan,
+    )
+    session.add(security_report)
+
+    payload = json.loads(load_fixture("nuclei_report.json"))
+    first_violation = payload["report"][0]
+    scan_ignore = ScanIgnoreFactory(
+        violation=first_violation["info"]["name"],
+        location="matcher_name",
+        condition=first_violation["matcher-name"],
+        scan=scan,
+    )
+
+    session.add(scan_ignore)
+    session.commit()
+
+    payload["id"] = security_report.id
+    assert storage.store_nuclei_record(session, payload) is True
+    violation = (
+        session.query(SecurityViolation)
+        .filter(
+            SecurityViolation.security_report_id == security_report.id,
+            SecurityViolation.violation == first_violation["info"]["name"],
+        )
+        .one()
+    )
+    assert len(violation.data) == 0

@@ -238,51 +238,58 @@ def store_nuclei_record(session, payload):
     if security_report is None:
         return False
 
+    summary = {}
+    summary["status"] = "completed"
+    summary["total"] = 0
+    session.query(SecurityViolation).filter(
+        SecurityViolation.security_report_id == security_report.id
+    ).delete()
+    session.commit()
+
+    scan_ignores = (
+        session.query(ScanIgnore)
+        .filter(ScanIgnore.scan_id == security_report.scan_id)
+        .all()
+    )
     for report in payload["report"]:
-        summary = {}
-        summary["status"] = "completed"
-        summary["total"] = 0
-        session.query(SecurityViolation).filter(
-            SecurityViolation.security_report_id == security_report.id
-        ).delete()
-        session.commit()
-
-        scan_ignores = (
-            session.query(ScanIgnore)
-            .filter(ScanIgnore.scan_id == security_report.scan_id)
-            .all()
-        )
-
         if report["info"]["severity"] in summary:
             summary[report["info"]["severity"]] += 1
         else:
             summary[report["info"]["severity"]] = 1
 
-        for alert in report["alerts"]:
-            summary["total"] += int(alert["count"])
-            security_violation = SecurityViolation(
-                violation=report["info"]["name"],
-                risk=report["matcher-name"],
-                confidence=100,
-                data=report["curl-command"],
-                tags=report["info"]["tags"],
-                url=report["matched-at"],
-                security_report=security_report,
-            )
+        summary["total"] += 1
+        security_violation = SecurityViolation(
+            violation=report["info"]["name"],
+            risk=report["info"]["severity"],
+            message=report["matcher-name"],
+            confidence=100,
+            data=[
+                {
+                    "uri": report["matched-at"],
+                    "template_id": report["template-id"],
+                    "type": report["type"],
+                    "matcher_name": report["matcher-name"],
+                    "curl_command": report["curl-command"],
+                }
+            ],
+            tags=report["info"]["tags"],
+            url=report["matched-at"],
+            security_report=security_report,
+        )
 
-            try:
-                security_violation.data[:] = (
-                    itm
-                    for itm in security_violation.data
-                    if filter_ignored_results(
-                        False, itm, security_violation.violation, scan_ignores
-                    )
+        try:
+            security_violation.data[:] = (
+                itm
+                for itm in security_violation.data
+                if filter_ignored_results(
+                    False, itm, security_violation.violation, scan_ignores
                 )
-            except ValueError as err:
-                log.error(f"Error filtering results: {err}")
+            )
+        except ValueError as err:
+            log.error(f"Error filtering results: {err}")
 
-            if len(security_violation.data) > 0:
-                session.add(security_violation)
+        if len(security_violation.data) > 0:
+            session.add(security_violation)
 
         security_report.summary = summary
     session.commit()
