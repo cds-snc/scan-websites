@@ -149,7 +149,6 @@ def start_scan(
         scan = (
             session.query(Scan)
             .filter(
-                # ScanType.id == Scan.scan_type,
                 Scan.template_id == template.id,
                 Scan.scan_type == template_scan.scan_type,
             )
