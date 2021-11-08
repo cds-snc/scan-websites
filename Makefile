@@ -1,7 +1,6 @@
 RESOURCES = \
 	terragrunt \
 	api \
-	orchestrator \
 	scanners/axe-core \
 	terragrunt
 

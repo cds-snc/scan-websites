@@ -22,7 +22,6 @@ jobs:
         with:
           filters: |
             api: 'api/**'
-            orchestrator: 'orchestrator/**'
             scanners/axe-core: 'scanners/axe-core/**'
             runners/owasp-zap: 'runners/owasp-zap/**'
             runners/nuclei: 'runners/nuclei/**'

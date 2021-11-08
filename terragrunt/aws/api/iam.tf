@@ -64,9 +64,6 @@ data "aws_iam_policy_document" "api_policies" {
     ]
     resources = [
       aws_sns_topic.axe-core-urls.arn,
-      aws_sns_topic.dynamic-scan-urls.arn,
-      aws_sns_topic.owasp-zap-urls.arn,
-      aws_sns_topic.nuclei-urls.arn,
     ]
   }
 

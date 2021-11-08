@@ -69,7 +69,6 @@ data "aws_iam_policy_document" "scan_runner_policies" {
       "ecr:BatchGetImage"
     ]
     resources = [
-      aws_ecr_repository.orchestrator.arn,
       aws_ecr_repository.runners-owasp-zap.arn,
       aws_ecr_repository.runners-nuclei.arn,
     ]
