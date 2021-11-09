@@ -37,9 +37,6 @@
                     {{ reports_locale }}
                   </th>
                   <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {{ screenshot_locale }}
-                  </th>
-                  <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {{ link_locale }}
                   </th>
                 </tr>
@@ -72,11 +69,6 @@
                     <td class="text-center">
                       <a href="/{{ lang }}/results/{{ scan.template.id }}/security/{{scan.id}}/{{ security_report.id }}">
                         <span class="material-icons">description</span>
-                      </a>
-                    </td>
-                    <td class="text-center">
-                      <a href="/{{ lang }}/results/{{ scan.template.id }}/security/{{scan.id}}/{{ security_report.id }}/screenshot" target="_blank">
-                        <span class="material-icons">image</span>
                       </a>
                     </td>
                     <td class="text-center">
