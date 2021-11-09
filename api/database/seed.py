@@ -197,6 +197,12 @@ if __name__ == "__main__":
         storage.store_nuclei_record(session, nuclei_data)
 
     print("Seeding individual scan templates")
+    owasp_zap_template_no_violations = Template(
+        name="OWASP Zap template pending results",
+        organisation=cds_org,
+    )
+    session.add(owasp_zap_template_no_violations)
+
     owasp_zap_template = Template(
         name="OWASP Zap template",
         organisation=cds_org,
@@ -214,6 +220,13 @@ if __name__ == "__main__":
         organisation=cds_org,
     )
     session.add(axe_core_template)
+
+    owasp_zap_only_scan_no_violations = Scan(
+        organisation=cds_org,
+        scan_type=owasp_zap_scan_type,
+        template=owasp_zap_template,
+    )
+    session.add(owasp_zap_only_scan_no_violations)
 
     owasp_zap_only_scan = Scan(
         organisation=cds_org,
@@ -250,6 +263,17 @@ if __name__ == "__main__":
         scan=axe_core_only_scan,
     )
     session.add(a11y_report)
+
+    owasp_zap_security_report_no_results = SecurityReport(
+        product="product",
+        revision=str(uuid.uuid4()),
+        url="https://www.example.com",
+        summary={
+            "status": "completed",
+        },
+        scan=owasp_zap_only_scan_no_violations,
+    )
+    session.add(owasp_zap_security_report_no_results)
 
     owasp_zap_security_report = SecurityReport(
         product="product",
