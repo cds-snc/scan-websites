@@ -37,8 +37,11 @@
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {{ token_locale }}
                 </th>
-                <th scope="col" class="relative px-6 py-3">
-                  <span class="sr-only">{{ configure_locale }}</span>
+                <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {{ configure_locale }}
+                </th>
+                <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {{ delete_locale }}
                 </th>
               </tr>
             </thead>
@@ -55,8 +58,13 @@
                         {{ template.token }}
                       </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <a href="/{{lang}}/template/{{ template.id }}/scan" class="text-indigo-600 hover:text-indigo-900" alt="{{ edit_locale }}"><span class="material-icons">radar</span></a>
+                <td class="px-6 py-4 text-center whitespace-nowrap">
+                  <a href="/{{lang}}/template/{{ template.id }}/scan" alt="{{ edit_locale }}"><span class="material-icons">construction</span></a>
+                </td>
+                <td class="px-6 py-4 text-center whitespace-nowrap">
+                  <form class="submitFormAsJSON" action= "/scans/template/{{ template.id }}" method="delete" data-confirm="{{delete_confirm_locale}}">
+                    <button type="submit" name="submit" class="text-red-600 hover:text-indigo-900"><span class="material-icons" aria-label="{{ delete_locale }}"> delete </span></button>
+                  </form>
                 </td>
               </tr>
               {% endfor %}

@@ -290,6 +290,29 @@ async def update_template_scan(
 
 
 @router.delete(
+    "/template/{template_id}",
+    dependencies=[Depends(is_authenticated), Depends(template_belongs_to_org)],
+)
+async def delete_template(
+    request: Request,
+    response: Response,
+    template_id,
+    session: Session = Depends(get_session),
+):
+    try:
+
+        template = session.query(Template).filter(Template.id == template_id).first()
+        session.delete(template)
+        session.commit()
+        return {"status": "OK"}
+
+    except Exception as err:
+        log.error(err)
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {"error": "error deleting template"}
+
+
+@router.delete(
     "/template/{template_id}/scan/{template_scan_id}",
     dependencies=[Depends(is_authenticated), Depends(template_belongs_to_org)],
 )

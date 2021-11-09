@@ -1032,3 +1032,98 @@ def test_delete_scan_ignore_doesnt_exist(
 
     assert response.json() == {"error": "error deleting ignore"}
     assert response.status_code == 500
+
+
+def test_delete_template_with_bad_id(session, authorized_request):
+    logged_in_client, _, organisation = authorized_request
+
+    TemplateFactory(organisation=organisation)
+    session.commit()
+
+    response = logged_in_client.delete("/scans/template/foo")
+    assert response.json() == {"detail": "Unauthorized"}
+    assert response.status_code == 401
+
+
+def test_delete_template_with_id_not_found(session, authorized_request):
+    client, _, organisation = authorized_request
+
+    TemplateFactory(organisation=organisation)
+    session.commit()
+
+    response = client.delete(f"/scans/template/{str(uuid.uuid4())}")
+    assert response.json() == {"detail": "Unauthorized"}
+    assert response.status_code == 401
+
+
+def test_delete_template_with_correct_id(
+    session,
+    authorized_request,
+):
+    logged_in_client, _, organisation = authorized_request
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.OWASP_ZAP.value,
+        callback={
+            "event": "stepfunctions",
+            "state_machine_name": "dynamic-security-scans",
+        },
+    )
+    TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    session.commit()
+
+    response = logged_in_client.delete(f"/scans/template/{str(template.id)}")
+
+    assert response.json() == {"status": "OK"}
+    assert response.status_code == 200
+
+
+def test_delete_template_with_correct_id_has_reports(
+    session,
+    authorized_request,
+):
+
+    logged_in_client, _, organisation = authorized_request
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.OWASP_ZAP.value,
+        callback={
+            "event": "stepfunctions",
+            "state_machine_name": "dynamic-security-scans",
+        },
+    )
+    TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    scan = ScanFactory(
+        organisation=organisation, template=template, scan_type=scan_type
+    )
+    security_report = SecurityReportFactory(scan=scan)
+    security_violation = SecurityViolationFactory(security_report=security_report)
+    session.commit()
+
+    deleted_scan_id = scan.id
+    deleted_security_report = security_report.id
+    deleted_security_violation = security_violation.id
+
+    response = logged_in_client.delete(f"/scans/template/{str(template.id)}")
+
+    scan = session.query(Scan).filter(Scan.id == deleted_scan_id).one_or_none()
+    security_report = (
+        session.query(SecurityReport)
+        .filter(SecurityReport.id == deleted_security_report)
+        .one_or_none()
+    )
+    security_violations = (
+        session.query(SecurityViolation)
+        .filter(SecurityViolation.id == deleted_security_violation)
+        .all()
+    )
+
+    assert response.json() == {"status": "OK"}
+    assert response.status_code == 200
+    assert scan is None
+    assert security_report is None
+    assert len(security_violations) == 0
