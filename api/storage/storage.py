@@ -226,6 +226,9 @@ def store_owasp_zap_record(session, payload):
 
                 if len(security_violation.data) > 0:
                     session.add(security_violation)
+                else:
+                    summary[alert["riskdesc"]] -= int(alert["count"])
+                    summary["total"] -= int(alert["count"])
 
         security_report.summary = summary
     session.commit()
@@ -290,6 +293,9 @@ def store_nuclei_record(session, payload):
 
         if len(security_violation.data) > 0:
             session.add(security_violation)
+        else:
+            summary[report["info"]["severity"]] -= 1
+            summary["total"] -= 1
 
         security_report.summary = summary
     session.commit()
