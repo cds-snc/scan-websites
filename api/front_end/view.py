@@ -82,17 +82,18 @@ def format_date(value, format="medium"):
 
 
 def get_risk_colour(riskcode):
-    if riskcode == "0" or "info":  # Informational
+    if riskcode == "0" or riskcode == "info":  # Informational
         return "bg-blue-500"
-    elif riskcode == "1" or "low":  # Low
+    elif riskcode == "1" or riskcode == "low":  # Low
+        print("return green")
         return "bg-green-500"
-    elif riskcode == "2" or "medium":  # Medium
+    elif riskcode == "2" or riskcode == "medium":  # Medium
         return "bg-yellow-300"
     elif riskcode == "3":  # High
         return "bg-red-500"
     elif riskcode == "high":  # High
         return "bg-yellow-600"
-    elif riskcode == "3" or "critical":  # High
+    elif riskcode == "3" or riskcode == "critical":  # High
         return "bg-red-500"
     else:  # default
         return "bg-gray-500"
