@@ -78,24 +78,6 @@ if __name__ == "__main__":
         organisation=cds_org,
     )
 
-    owasp_zap_template = Template(
-        name="OWASP Zap template",
-        organisation=cds_org,
-    )
-    session.add(owasp_zap_template)
-
-    nuclei_template = Template(
-        name="Nuclei template",
-        organisation=cds_org,
-    )
-    session.add(nuclei_template)
-
-    axe_core_template = Template(
-        name="Axe core template",
-        organisation=cds_org,
-    )
-    session.add(axe_core_template)
-
     combined_template = Template(
         name="Combined template",
         organisation=cds_org,
@@ -123,6 +105,7 @@ if __name__ == "__main__":
     )
     session.add(axe_core_template_scan)
 
+    print("Seeding combined template")
     owasp_zap_scan = Scan(
         organisation=cds_org,
         scan_type=owasp_zap_scan_type,
@@ -135,7 +118,7 @@ if __name__ == "__main__":
         scan_type=nuclei_scan_type,
         template=combined_template,
     )
-    session.add(nuclei_scan)
+    session.add(nuclei_scan)    
 
     axe_core_scan = Scan(
         organisation=cds_org,
@@ -158,8 +141,8 @@ if __name__ == "__main__":
     nuclei_data = json.load(nuclei_report_f)
     axe_core_data = json.load(axe_core_report_f)
 
-    # Create 5 reports with 10 violations each
-    for _ in range(5):
+    # Create 2 reports with various violations each
+    for idx in range(2):
         a11y_report = A11yReport(
             product="product",
             revision=str(uuid.uuid4()),
@@ -199,6 +182,11 @@ if __name__ == "__main__":
 
         session.commit()
 
+        if idx == 1: # Test different length of violations by removing last element
+          axe_core_data["report"]["violations"].pop()
+          owasp_zap_data["report"]["site"][0]["alerts"].pop()
+          nuclei_data["report"].pop()
+
         axe_core_data["id"] = str(a11y_report.id)
         storage.store_axe_core_record(session, axe_core_data)
 
@@ -207,5 +195,92 @@ if __name__ == "__main__":
 
         nuclei_data["id"] = str(nuclei_security_report.id)
         storage.store_nuclei_record(session, nuclei_data)
+
+    print("Seeding individual scan templates")
+    owasp_zap_template = Template(
+        name="OWASP Zap template",
+        organisation=cds_org,
+    )
+    session.add(owasp_zap_template)
+
+    nuclei_template = Template(
+        name="Nuclei template",
+        organisation=cds_org,
+    )
+    session.add(nuclei_template)
+
+    axe_core_template = Template(
+        name="Axe core template",
+        organisation=cds_org,
+    )
+    session.add(axe_core_template)
+
+    owasp_zap_only_scan = Scan(
+        organisation=cds_org,
+        scan_type=owasp_zap_scan_type,
+        template=owasp_zap_template,
+    )
+    session.add(owasp_zap_only_scan)
+
+    nuclei_only_scan = Scan(
+        organisation=cds_org,
+        scan_type=nuclei_scan_type,
+        template=nuclei_template,
+    )
+    session.add(nuclei_only_scan)
+
+    axe_core_only_scan = Scan(
+        organisation=cds_org,
+        scan_type=axe_core_scan_type,
+        template=axe_core_template,
+    )
+    session.add(axe_core_only_scan)
+    
+    a11y_report = A11yReport(
+        product="product",
+        revision=str(uuid.uuid4()),
+        url="https://www.alpha.canada.ca",
+        summary={
+            "status": "completed",
+            "inapplicable": 1,
+            "incomplete": 1,
+            "violations": 1,
+            "passes": 1,
+        },
+        scan=axe_core_only_scan,
+    )
+    session.add(a11y_report)
+
+    owasp_zap_security_report = SecurityReport(
+        product="product",
+        revision=str(uuid.uuid4()),
+        url="https://www.example.com",
+        summary={
+            "status": "completed",
+        },
+        scan=owasp_zap_only_scan,
+    )
+    session.add(owasp_zap_security_report)
+
+    nuclei_security_report = SecurityReport(
+        product="product",
+        revision=str(uuid.uuid4()),
+        url="https://www.example.com",
+        summary={
+            "status": "completed",
+        },
+        scan=nuclei_only_scan,
+    )
+    session.add(nuclei_security_report)
+    session.commit()
+    axe_core_data["id"] = str(a11y_report.id)
+    storage.store_axe_core_record(session, axe_core_data)
+
+    owasp_zap_data["id"] = str(owasp_zap_security_report.id)
+    storage.store_owasp_zap_record(session, owasp_zap_data)
+
+    nuclei_data["id"] = str(nuclei_security_report.id)
+    storage.store_nuclei_record(session, nuclei_data)
+    
 
     print("Seed completed!")
