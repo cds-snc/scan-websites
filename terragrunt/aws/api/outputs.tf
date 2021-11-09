@@ -61,3 +61,7 @@ output "github_report_data_bucket_id" {
 output "github_report_data_bucket_arn" {
   value = module.github-report-data.s3_bucket_arn
 }
+
+output "github_urls_topic_arn" {
+  value = resource.aws_sns_topic.github-urls.arn
+}
