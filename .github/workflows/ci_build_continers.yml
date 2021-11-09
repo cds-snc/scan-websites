@@ -23,6 +23,7 @@ jobs:
           filters: |
             api: 'api/**'
             scanners/axe-core: 'scanners/axe-core/**'
+            scanners/axe-core: 'scanners/axe-core/**'
             runners/owasp-zap: 'runners/owasp-zap/**'
             runners/nuclei: 'runners/nuclei/**'
 

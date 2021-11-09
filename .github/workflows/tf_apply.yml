@@ -58,6 +58,9 @@ jobs:
             scanners-axe-core:
               - 'terragrunt/aws/scanners/axe-core/**'
               - 'terragrunt/env/scanners/axe-core/**'
+            scanners-github:
+              - 'terragrunt/aws/scanners/github/**'
+              - 'terragrunt/env/scanners/github/**'
             orchestrator:
               - 'terragrunt/aws/orchestrator/**'
               - 'terragrunt/env/orchestrator/**'
@@ -89,6 +92,12 @@ jobs:
       - name: Apply scanners/axe-core
         if: ${{ steps.filter.outputs.scanners-axe-core == 'true' }}
         working-directory: terragrunt/env/scanners/axe-core
+        run: |
+          terragrunt apply --terragrunt-non-interactive -auto-approve
+
+      - name: Apply scanners/github
+        if: ${{ steps.filter.outputs.scanners-github == 'true' }}
+        working-directory: terragrunt/env/scanners/github
         run: |
           terragrunt apply --terragrunt-non-interactive -auto-approve
 
