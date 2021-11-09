@@ -32,7 +32,6 @@ jobs:
           - module: scanners/axe-core
           - module: orchestrator
           - module: scanners/github
-
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
