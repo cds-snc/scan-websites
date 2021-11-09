@@ -1,5 +1,5 @@
 from copy import copy
-from fastapi import APIRouter, Depends, Request, HTTPException, Response
+from fastapi import APIRouter, Depends, Request, HTTPException
 from fastapi.responses import HTMLResponse
 from database.db import db_session
 from logger import log
@@ -86,8 +86,7 @@ async def get_a11y_report_screenshot(
     scan_id: uuid.UUID,
     report_id: uuid.UUID,
     session: Session = Depends(get_db),
-    responses={200: {"content": {"image/png": {}}}},
-    response_class=Response,
+    response_class=HTMLResponse,
 ):
     try:
         if locale not in languages:
@@ -110,13 +109,17 @@ async def get_a11y_report_screenshot(
                 "object": {"key": f"{str(report_id)}.png"},
             }
         }
-        data: bytes = base64.b64decode(storage.get_object(record))
+
+        data = base64.b64encode(storage.get_object(record)).decode("utf-8")
+        result = {"request": request}
+        result.update(languages[locale])
+        result.update({"report": report, "data": data})
 
     except Exception as e:
         log.error(e)
         raise HTTPException(status_code=500, detail=str(e))
     if report.scan.scan_type.name == pub_sub.AvailableScans.AXE_CORE.value:
-        return Response(content=data, media_type="image/png")
+        return templates.TemplateResponse("scan_results_screenshot.html", result)
     else:
         raise HTTPException(
             status_code=500,
