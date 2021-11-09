@@ -230,7 +230,6 @@ def store_owasp_zap_record(session, payload):
                     summary[alert["riskdesc"]] -= int(alert["count"])
                     summary["total"] -= int(alert["count"])
 
-
         security_report.summary = summary
     session.commit()
     return True
