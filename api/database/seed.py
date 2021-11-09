@@ -118,7 +118,7 @@ if __name__ == "__main__":
         scan_type=nuclei_scan_type,
         template=combined_template,
     )
-    session.add(nuclei_scan)    
+    session.add(nuclei_scan)
 
     axe_core_scan = Scan(
         organisation=cds_org,
@@ -182,10 +182,10 @@ if __name__ == "__main__":
 
         session.commit()
 
-        if idx == 1: # Test different length of violations by removing last element
-          axe_core_data["report"]["violations"].pop()
-          owasp_zap_data["report"]["site"][0]["alerts"].pop()
-          nuclei_data["report"].pop()
+        if idx == 1:  # Test different length of violations by removing last element
+            axe_core_data["report"]["violations"].pop()
+            owasp_zap_data["report"]["site"][0]["alerts"].pop()
+            nuclei_data["report"].pop()
 
         axe_core_data["id"] = str(a11y_report.id)
         storage.store_axe_core_record(session, axe_core_data)
@@ -235,7 +235,7 @@ if __name__ == "__main__":
         template=axe_core_template,
     )
     session.add(axe_core_only_scan)
-    
+
     a11y_report = A11yReport(
         product="product",
         revision=str(uuid.uuid4()),
@@ -281,6 +281,5 @@ if __name__ == "__main__":
 
     nuclei_data["id"] = str(nuclei_security_report.id)
     storage.store_nuclei_record(session, nuclei_data)
-    
 
     print("Seed completed!")
