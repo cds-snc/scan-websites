@@ -60,7 +60,7 @@
                     <td class="px-6 py-4 whitespace-nowrap">
                       <div class="text-sm font-medium text-gray-900">
                         <p class="flex flex-wrap gap-2">
-                          <span class="{{ 'bg-red-300' if a11y_report.summary.violations.critical | default(0) > 0 else 'bg-gray-100'}} inline-block p-1 px-2">{{a11y_report.summary.violations['critical'] or 0 }}&nbsp;Critical</span>
+                          <span class="{{ 'bg-red-300' if a11y_report.summary.violations.critical | default(0) > 0 else 'bg-gray-100'}} inline-block p-1 px-2">{{a11y_report.summary.violations['critical'] or 0 }}&nbsp;{{ critical_locale }}</span>
                           <span class="{{ 'bg-orange-300' if a11y_report.summary.violations.serious | default(0) > 0 else 'bg-gray-100'}} inline-block p-1 px-2">{{a11y_report.summary.violations['serious'] or 0 }}&nbsp;Serious</span>
                           <span class="{{ 'bg-yellow-300' if a11y_report.summary.violations.moderate | default(0) > 0 else 'bg-gray-100'}} inline-block p-1 px-2">{{a11y_report.summary.violations['moderate'] or 0 }}&nbsp;Moderate</span>
                           <span class="{{ 'bg-lime-300' if a11y_report.summary.violations.minor | default(0) > 0 else 'bg-gray-100'}} inline-block p-1 px-2">{{a11y_report.summary.violations['minor'] or 0 }}&nbsp;Minor</span>

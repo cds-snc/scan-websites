@@ -58,9 +58,9 @@
                       <div class="text-sm font-medium text-gray-900">
                         <p class="flex flex-wrap gap-2">
                           {% set reduced_summary = security_report.summary|extract_risk_text %}
-                          <span class="{{ 'bg-red-300' if reduced_summary.high | default(0) > 0 else 'bg-gray-100'}} inline-block p-1 px-2">{{reduced_summary['high'] or 0 }}&nbsp;High</span>
-                          <span class="{{ 'bg-yellow-300' if reduced_summary.medium | default(0) > 0 else 'bg-gray-100'}} inline-block p-1 px-2">{{reduced_summary['medium'] or 0 }}&nbsp;Medium</span>
-                          <span class="{{ 'bg-green-300' if reduced_summary.low | default(0) > 0 else 'bg-gray-100'}} inline-block p-1 px-2">{{reduced_summary['low'] or 0 }}&nbsp;Low</span>
+                          <span class="{{ 'bg-red-300' if reduced_summary.high | default(0) > 0 else 'bg-gray-100'}} inline-block p-1 px-2">{{reduced_summary['high'] or 0 }}&nbsp;{{ high_locale }}</span>
+                          <span class="{{ 'bg-yellow-300' if reduced_summary.medium | default(0) > 0 else 'bg-gray-100'}} inline-block p-1 px-2">{{reduced_summary['medium'] or 0 }}&nbsp;{{ medium_locale }}</span>
+                          <span class="{{ 'bg-green-300' if reduced_summary.low | default(0) > 0 else 'bg-gray-100'}} inline-block p-1 px-2">{{reduced_summary['low'] or 0 }}&nbsp;{{ low_locale }}</span>
                           <span class="{{ 'bg-blue-300' if reduced_summary.informational | default(0) > 0 else 'bg-gray-100'}} inline-block p-1 px-2">{{reduced_summary['informational'] or 0 }}&nbsp;Info</span>
 
                         </p>
