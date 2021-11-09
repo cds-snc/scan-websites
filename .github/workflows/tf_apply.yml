@@ -12,6 +12,7 @@ env:
   TF_VAR_fastapi_secret_key: ${{ secrets.TF_VARS_FASTAPI_SECRET_KEY }}
   TF_VAR_google_client_id: ${{ secrets.TF_VARS_GOOGLE_CLIENT_ID }}
   TF_VAR_google_client_secret: ${{ secrets.TF_VARS_GOOGLE_CLIENT_SECRET }}
+  TF_VAR_slack_webhook_url: ${{ secrets.TF_VARS_SLACK_WEBHOOK_URL }}
 
 jobs:
   terragrunt-apply:
@@ -42,18 +43,30 @@ jobs:
         id: filter
         with:
           filters: |
+            alarms:
+              - 'terragrunt/aws/alarms/**'
+              - 'terragrunt/env/alarms/**'
             api:
               - 'terragrunt/aws/api/**'
               - 'terragrunt/env/api/**'
+            ecs:
+              - 'terragrunt/aws/ecs/**'
+              - 'terragrunt/env/ecs/**'
             hosted_zone:
               - 'terragrunt/aws/hosted_zone/**'
-              - 'terragrunt/env/hosted_zone/**'              
+              - 'terragrunt/env/hosted_zone/**'
             scanners-axe-core:
               - 'terragrunt/aws/scanners/axe-core/**'
               - 'terragrunt/env/scanners/axe-core/**'
-            scanners-owasp-zap:
-              - 'terragrunt/aws/scanners/owasp-zap/**'
-              - 'terragrunt/env/scanners/owasp-zap/**'
+            orchestrator:
+              - 'terragrunt/aws/orchestrator/**'
+              - 'terragrunt/env/orchestrator/**'
+
+      - name: Apply hosted_zone
+        if: ${{ steps.filter.outputs.hosted_zone == 'true' }}
+        working-directory: terragrunt/env/hosted_zone
+        run: |
+          terragrunt apply --terragrunt-non-interactive -auto-approve
 
       - name: Apply api
         if: ${{ steps.filter.outputs.api == 'true' }}
@@ -61,11 +74,17 @@ jobs:
         run: |
           terragrunt apply --terragrunt-non-interactive -auto-approve
 
-      - name: Apply hosted_zone
-        if: ${{ steps.filter.outputs.hosted_zone == 'true' }}
-        working-directory: terragrunt/env/hosted_zone
+      - name: Apply ecs
+        if: ${{ steps.filter.outputs.ecs == 'true' }}
+        working-directory: terragrunt/env/ecs
         run: |
-          terragrunt apply --terragrunt-non-interactive -auto-approve      
+          terragrunt apply --terragrunt-non-interactive -auto-approve
+
+      - name: Apply alarms
+        if: ${{ steps.filter.outputs.alarms == 'true' }}
+        working-directory: terragrunt/env/alarms
+        run: |
+          terragrunt apply --terragrunt-non-interactive -auto-approve
 
       - name: Apply scanners/axe-core
         if: ${{ steps.filter.outputs.scanners-axe-core == 'true' }}
@@ -73,8 +92,8 @@ jobs:
         run: |
           terragrunt apply --terragrunt-non-interactive -auto-approve
 
-      - name: Apply scanners/owasp-zap
-        if: ${{ steps.filter.outputs.scanners-owasp-zap == 'true' }}
-        working-directory: terragrunt/env/scanners/owasp-zap
+      - name: Apply orchestrator
+        if: ${{ steps.filter.outputs.orchestrator == 'true' }}
+        working-directory: terragrunt/env/orchestrator
         run: |
           terragrunt apply --terragrunt-non-interactive -auto-approve

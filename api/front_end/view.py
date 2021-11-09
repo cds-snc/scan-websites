@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, Request, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from babel.plural import PluralRule
+from babel.dates import format_datetime
 from database.db import db_session
 from logger import log
 from sqlalchemy.orm import Session
@@ -18,6 +19,7 @@ import glob
 import json
 import os
 import uuid
+import scan_websites_constants
 
 router = APIRouter()
 
@@ -34,10 +36,10 @@ def get_db():
 templates = Jinja2Templates(directory="front_end/templates")
 
 default_fallback = "en"
-languages = {}
 
 
 def generate_languages(locale_files):
+    languages = {}
     language_list = glob.glob(locale_files)
     for lang in language_list:
         filename = lang.split(os.path.sep)
@@ -45,9 +47,10 @@ def generate_languages(locale_files):
 
         with open(lang, "r", encoding="utf8") as file:
             languages[lang_code] = json.load(file)
+    return languages
 
 
-generate_languages("i18n/*.json")
+languages = generate_languages("i18n/*.json")
 
 
 # custom filters for Jinja2
@@ -70,8 +73,62 @@ def plural_formatting(key_value, input, locale):
     return languages[locale][key]
 
 
+def format_date(value, format="medium"):
+    if format == "full":
+        format = "EEEE, d. MMMM y 'at' HH:mm"
+    elif format == "medium":
+        format = "EE dd.MM.y HH:mm"
+    return format_datetime(value, format)
+
+
+def get_risk_colour(riskcode):
+    if riskcode == "0" or riskcode == "info":  # Informational
+        return "bg-blue-500"
+    elif riskcode == "1" or riskcode == "low":  # Low
+        print("return green")
+        return "bg-green-500"
+    elif riskcode == "2" or riskcode == "medium":  # Medium
+        return "bg-yellow-300"
+    elif riskcode == "3":  # High
+        return "bg-red-500"
+    elif riskcode == "high":  # High
+        return "bg-yellow-600"
+    elif riskcode == "3" or riskcode == "critical":  # High
+        return "bg-red-500"
+    else:  # default
+        return "bg-gray-500"
+
+
+def extract_risk_text(summary):
+    reduced_summary = {}
+    for key in summary:
+        print(key)
+        if " (" in key:
+            risk = str(key.split(" (")[0]).lower()
+            reduced_summary[risk] = summary[key]
+        else:
+            reduced_summary[key] = summary[key]
+    return reduced_summary
+
+
+def prettier_array(data):
+    if scan_websites_constants.UNIQUE_SEPARATOR in data:
+        return data.replace(scan_websites_constants.UNIQUE_SEPARATOR, ", ")
+    else:
+        return data
+
+
+def get_seperator():
+    return scan_websites_constants.UNIQUE_SEPARATOR
+
+
 # assign filter to Jinja2
 templates.env.filters["plural_formatting"] = plural_formatting
+templates.env.filters["date"] = format_date
+templates.env.filters["risk_colour"] = get_risk_colour
+templates.env.filters["prettier_array"] = prettier_array
+templates.env.filters["extract_risk_text"] = extract_risk_text
+templates.env.globals["get_seperator"] = get_seperator
 
 
 @router.get("/", response_class=HTMLResponse, include_in_schema=False)
@@ -80,13 +137,16 @@ async def force_lang():
 
 
 @router.get("/{locale}", response_class=HTMLResponse)
-async def home(request: Request, locale: str):
+async def home(request: Request, locale: str, session: Session = Depends(get_db)):
     try:
         if locale not in languages:
             locale = default_fallback
 
+        template_list = session.query(Template).all()
+
         result = {"request": request}
         result.update(languages[locale])
+        result.update({"template_list": template_list})
         return templates.TemplateResponse("index.html", result)
     except Exception as e:
         log.error(e)
@@ -273,8 +333,8 @@ async def template_scan(
         for template_scan in template.template_scans:
             if template_scan.id == template_scan_id:
                 return_template_scan = template_scan
-                for ts in template_scan.data:
-                    for key, value in ts.items():
+                for key, value in template_scan.data.items():
+                    if value is not None:
                         scan_configs.append(
                             TemplateScanConfigData(
                                 id=str(uuid.uuid4()), key=key, value=value
@@ -299,7 +359,10 @@ async def login(request: Request, locale: str):
         if locale not in languages:
             locale = default_fallback
 
-        result = {"request": request}
+        result = {
+            "request": request,
+            "heroku": os.environ.get("HEROKU_PR_NUMBER", False),
+        }
         result.update(languages[locale])
         return templates.TemplateResponse("login.html", result)
     except Exception as e:

@@ -13,8 +13,9 @@ resource "aws_lambda_function" "api" {
     variables = {
       AXE_CORE_URLS_TOPIC          = aws_sns_topic.axe-core-urls.arn
       AXE_CORE_REPORT_DATA_BUCKET  = module.axe-core-report-data.s3_bucket_id
-      OWASP_ZAP_URLS_TOPIC         = aws_sns_topic.owasp-zap-urls.arn
+      AXE_CORE_SCREENSHOT_BUCKET   = module.axe-core-screenshots.s3_bucket_id
       OWASP_ZAP_REPORT_DATA_BUCKET = module.owasp-zap-report-data.s3_bucket_id
+      NUCLEI_REPORT_DATA_BUCKET    = module.nuclei-report-data.s3_bucket_id
       SQLALCHEMY_DATABASE_URI      = module.rds.proxy_connection_string_value
       FASTAPI_SECRET_KEY           = var.fastapi_secret_key
       GOOGLE_CLIENT_ID             = var.google_client_id
@@ -64,4 +65,24 @@ resource "aws_s3_bucket_notification" "api-notification" {
   }
 
   depends_on = [aws_lambda_permission.api-permission-s3]
+}
+
+resource "aws_lambda_permission" "api-owasp-permission-s3" {
+  statement_id  = "AllowExecutionFromOWASPS3Bucket"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.api.function_name
+  principal     = "s3.amazonaws.com"
+  source_arn    = module.owasp-zap-report-data.s3_bucket_arn
+}
+
+resource "aws_s3_bucket_notification" "api-owasp-notification" {
+  bucket = module.owasp-zap-report-data.s3_bucket_id
+
+  lambda_function {
+    lambda_function_arn = aws_lambda_function.api.arn
+    events              = ["s3:ObjectCreated:*"]
+    filter_suffix       = ".json"
+  }
+
+  depends_on = [aws_lambda_permission.api-owasp-permission-s3]
 }

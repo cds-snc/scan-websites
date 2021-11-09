@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block body %}
+    <nav
+  class="block text-sm text-left text-green-800 h-12 flex items-center p-4 mb-5 border-2 border-gray-500"
+  role="alert"
+>
+        <ol class="list-reset flex text-grey-dark">
+            <li>
+                <a href="/{{ lang }}" class="font-bold">{{home_locale}}</a>
+            </li>
+            <li>
+                <span class="mx-2">/</span></li>
+            <li>
+                <a href="/{{ lang }}/results/{{report.scan.template.id}}/scan/{{ report.scan.id }}" class="font-bold">{{ report.scan.template.name }}</a>
+            </li>
+            <li>
+                <span class="mx-2">/</span></li>
+            <li>{{ report.scan.template.name }}: {{ report.revision }} - {{ report.url }}</li>
+        </ol>
+    </nav>
+    <h1 class="text-gray-700 font-semibold uppercase text-xl mb-7">{{ report.scan.template.name }}: {{ report.revision }} - {{ report.url }}</h1>
+    <hr class="my-3"/>
+    <div class="container">
+        <div class="row mb-8 my-8">
+            <div class="py-2 align-middle inline-block min-w-full ">
+                <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for security_violation in report.security_violations %}
+                                <tr>
+                                    <td class="p-5">
+                                        <div id="violation{{ loop.index }}" class="flex align-baseline mb-5">
+                                            <a class="mr-4 text-2xl" href="https://dequeuniversity.com/rules/axe/4.1/{{ security_violation.violation }}" target="_blank">
+                                                {{ security_violation.violation }}
+                                            </a>
+                                            <span class="theme-impact p-2 py-1 whitespace-nowrap capitalize" data-impact="{{ security_violation.impact }}">{{ security_violation.impact }}</span>
+                                        </div>
+                                        <table class="mb-4 min-w-full border border-gray-200">
+                                            <tr class="border border-gray-300">
+                                                <th scope='row' class="bg-gray-100 p-3">{{ scan_locale }}</th>
+                                                <td class="w-5/6 align-top p-3">
+                                                    {{ security_violation.data[0].template_id }}
+                                                </td>
+                                            </tr>
+                                            <tr class="border border-gray-300">
+                                                <th scope='row' class="bg-gray-100 p-3">{{ curl_locale }}</th>
+                                                <td class="w-5/6 text-xs align-top truncate p-3">
+                                                    <code class="whitespace-pre-wrap wordbreak-break-all">{{ security_violation.data[0].curl_command | escape | trim }}</code>
+                                                </td>
+                                            </tr>
+                                            <tr class="border border-gray-300">
+                                                <th scope='row' class="bg-gray-100 p-3">{{ target_locale }}</th>
+                                                <td class="w-5/6 text-xs align-top truncate p-3">
+                                                    <code class="whitespace-pre-wrap wordbreak-break-all">{{ security_violation.data[0].matcher_name | escape |trim }}</code>
+                                                </td>
+                                            </tr>
+                                            <tr class="border border-gray-300">
+                                                <th scope='row' class="bg-gray-100 p-3">{{ tags_locale }}</th>
+                                                <td class='w-5/6 text-xs align-top truncate p-3'>
+                                                    <ul class='flex space-x-2'>
+                                                        {% for tag in security_violation.tags %}
+                                                            <li class='p1 px-2 bg-gray-100'>{{ tag }}</li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% block footer %}
+        {{super()}}
+    {% endblock %}
+{% endblock %}

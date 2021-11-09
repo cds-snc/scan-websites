@@ -3,17 +3,34 @@
 <script src="{{ url_for('static', path='js/template_scan.js') }}"></script>
 {% endblock %}
 {% block body %}
+<nav
+  class="block text-sm text-left text-green-800 h-12 flex items-center p-4 mb-5 border-2 border-gray-500"
+  role="alert"
+>
+  <ol class="list-reset flex text-grey-dark">
+    <li><a href="/{{ lang }}" class="font-bold">{{home_locale}}</a></li>
+    <li><span class="mx-2">/</span></li>
+    <li><a href="/{{ lang }}/template" class="font-bold">{{templates_locale}}</a></li>
+    <li><span class="mx-2">/</span></li>
+    <li><a href="/{{ lang }}/template/{{template.id}}/scan" class="font-bold">{{template.name}}</a></li>
+    <li><span class="mx-2">/</span></li>
+    {% if template_scan %}
+      <li>{{update_scan_locale}}</li>
+    {% else %}
+      <li>{{add_new_scan_locale}}</li>
+    {% endif %}
+  </ol>
+</nav>
 {% if template_scan %}
-<h1 class="text-center">{{ update_scan_locale }}</h1>
+<h1 class="text-gray-700 font-semibold uppercase text-xl mb-7">{{ update_scan_locale }}</h1>
 {% else %}
-<h1 class="text-center">{{ add_new_scan_locale }}</h1>
+<h1 class="text-gray-700 font-semibold uppercase text-xl mb-7">{{ add_new_scan_locale }}</h1>
 {% endif %}
-
+<hr class="my-3"/>
 <div><strong>{{ name_locale }}</strong>: {{ template.name }}</div></br>
 
 <div class="container">
   <div class="row mb-8">
-
     <div class="flex flex-col ... divide-y">
       <div>
         <section><strong>{{ scan_types_locale }}:</strong>

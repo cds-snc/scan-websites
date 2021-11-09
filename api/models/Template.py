@@ -34,8 +34,8 @@ class Template(Base):
     )
     organisation = relationship("Organisation", back_populates="templates")
 
-    scans = relationship("Scan")
-    template_scans = relationship("TemplateScan")
+    scans = relationship("Scan", cascade="all,delete")
+    template_scans = relationship("TemplateScan", cascade="all,delete")
 
     @validates("name")
     def validate_name(self, _key, value):

@@ -1,11 +1,26 @@
 {% extends "base.html" %}
+{% block includes %}
+<script src="{{ url_for('static', path='js/app.js') }}"></script>
+{% endblock %}
 {% block body %}
-  <h1 class="text-center">{{ templates_locale }}</h1>
+  <nav
+    class="block text-sm text-left text-green-800 h-12 flex items-center p-4 mb-5 border-2 border-gray-500"
+    role="alert"
+  >
+    <ol class="list-reset flex text-grey-dark">
+      <li><a href="/{{ lang }}" class="font-bold">{{home_locale}}</a></li>
+      <li><span class="mx-2">/</span></li>
+      <li>{{templates_locale}}</li>
+    </ol>
+  </nav>
+  <h1 class="text-gray-700 font-semibold uppercase text-xl mb-7">{{ templates_locale }}</h1>
+  <hr class="my-3"/>
   <div class="flex flex-col">
-    <form class="w-full max-w-sm" action="/scans/template" method="POST">
-      <div class="flex items-center border-b  py-2 ">
-        <stong>{{ templates_locale }}</stong>: <input class="appearance-none  w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none" name="name" type="text" placeholder="www.example.com" aria-label="{{ template_name_locale }}">
-        <button class="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 text-sm border-4 text-black py-1 px-2 rounded" type="submit">
+    <form id="newTemplateForm" class="w-full max-w-sm" action="/scans/template" method="POST">
+      <div class="flex items-center border-b py-2 ">
+        {{ templates_locale }}:
+        <input class="appearance-none  w-full text-gray-700 mx-3 py-1 px-2 leading-tight focus:outline-none" name="name" type="text" placeholder="www.example.com" aria-label="{{ template_name_locale }}">
+        <button class="flex-shrink-0 bg-green-500 hover:bg-green-700 border-green-500 hover:border-green-700 text-sm border-4 text-black py-1 px-2 rounded" type="submit">
           {{ new_locale }}
         </button>
       </div>
@@ -22,8 +37,11 @@
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {{ token_locale }}
                 </th>
-                <th scope="col" class="relative px-6 py-3">
-                  <span class="sr-only">{{ configure_locale }}</span>
+                <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {{ configure_locale }}
+                </th>
+                <th scope="col" class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {{ delete_locale }}
                 </th>
               </tr>
             </thead>
@@ -40,8 +58,13 @@
                         {{ template.token }}
                       </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <a href="/{{lang}}/template/{{ template.id }}/scan" class="text-indigo-600 hover:text-indigo-900" alt="{{ edit_locale }}"><span class="material-icons">radar</span></a>
+                <td class="px-6 py-4 text-center whitespace-nowrap">
+                  <a href="/{{lang}}/template/{{ template.id }}/scan" alt="{{ edit_locale }}"><span class="material-icons">construction</span></a>
+                </td>
+                <td class="px-6 py-4 text-center whitespace-nowrap">
+                  <form class="submitFormAsJSON" action= "/scans/template/{{ template.id }}" method="delete" data-confirm="{{delete_confirm_locale}}">
+                    <button type="submit" name="submit" class="text-red-600 hover:text-indigo-900"><span class="material-icons" aria-label="{{ delete_locale }}"> delete </span></button>
+                  </form>
                 </td>
               </tr>
               {% endfor %}

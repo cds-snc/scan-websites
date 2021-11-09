@@ -24,7 +24,6 @@ jobs:
           filters: |
             api: 'api/**'
             scanners/axe-core: 'scanners/axe-core/**'
-            scanners/owasp-zap: 'scanners/owasp-zap/**'
             runners/owasp-zap: 'runners/owasp-zap/**'
 
   build-push-and-deploy:

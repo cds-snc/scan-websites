@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block includes %}
+<script src="{{ url_for('static', path='js/app.js') }}"></script>
+{% endblock %}
+{% block body %}
+  <nav
+  class="block text-sm text-left text-green-800 h-12 flex items-center p-4 mb-5 border-2 border-gray-500"
+  role="alert"
+>
+    <ol class="list-reset flex text-grey-dark">
+      <li>
+        <a href="/{{ lang }}" class="font-bold">{{home_locale}}</a>
+      </li>
+      <li>
+        <span class="mx-2">/</span></li>
+      <li>{{ scan.template.name }}: {{ scan.scan_type.name }}</li>
+    </ol>
+  </nav>
+
+  <a href="/{{ lang }}/ignored/{{ scan.template.id }}/scan/{{ scan.id }}" class="button flex-shrink-0 bg-green-500 hover:bg-green-700 border-green-500 hover:border-green-700 text-sm border-4 text-black py-1 px-2 rounded float-right">{{ ignored_results_locale }}</a>
+  <h1 class="text-gray-700 font-semibold uppercase text-xl mb-7">{{ scan.template.name }}: {{ scan.scan_type.name }} - {{ revision_locale }}</h1>
+  <hr class="my-3"/>
+  <div class="container">
+
+    <div class="row mb-8 my-8">
+      <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+        <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+          <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {{ uri_locale }}
+                  </th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {{ date_locale }}
+                  </th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {{ violation_categories_locale }}
+                  </th>
+                  <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {{ reports_locale }}
+                  </th>
+                  <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {{ link_locale }}
+                  </th>
+                  <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {{ delete_locale }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                {% for security_report in scan.security_reports %}
+                  <tr>
+                    <td class="px-6 py-4 whitespace-nowrap truncate">
+                      <div class="text-sm font-medium text-gray-900">
+                        {{ security_report.url }}
+                      </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="text-sm font-medium">
+                        {{ security_report.created_at.strftime('%d-%m-%Y %H:%M:%S') }}
+                      </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="text-sm font-medium text-gray-900">
+                        <p class="flex flex-wrap gap-2">
+                          {% set reduced_summary = security_report.summary|extract_risk_text %}
+                          <span class="{{ 'bg-red-300' if reduced_summary.high | default(0) > 0 else 'bg-gray-100'}} inline-block p-1 px-2">{{reduced_summary['high'] or 0 }}&nbsp;{{ high_locale }}</span>
+                          <span class="{{ 'bg-yellow-300' if reduced_summary.medium | default(0) > 0 else 'bg-gray-100'}} inline-block p-1 px-2">{{reduced_summary['medium'] or 0 }}&nbsp;{{ medium_locale }}</span>
+                          <span class="{{ 'bg-green-300' if reduced_summary.low | default(0) > 0 else 'bg-gray-100'}} inline-block p-1 px-2">{{reduced_summary['low'] or 0 }}&nbsp;{{ low_locale }}</span>
+                          <span class="{{ 'bg-blue-300' if reduced_summary.informational | default(0) > 0 else 'bg-gray-100'}} inline-block p-1 px-2">{{reduced_summary['informational'] or 0 }}&nbsp;Info</span>
+
+                        </p>
+                      </div>
+                    </td>
+                    <td class="text-center">
+                      <a href="/{{ lang }}/results/{{ scan.template.id }}/security/{{scan.id}}/{{ security_report.id }}">
+                        <span class="material-icons">description</span>
+                      </a>
+                    </td>
+                    <td class="text-center">
+                      <a href="{{security_report.url}}" target="_blank">
+                        <span class="material-icons">ios_share</span>
+                      </a>
+                    </td>
+                    <td class="text-center">
+                      <form class="submitFormAsJSON" action= "/scans/template/{{ scan.template.id }}/scan/{{scan.id}}/security/{{ security_report.id }}" method="delete" data-confirm="{{delete_confirm_locale}}">
+                        <button type="submit" name="submit" class="text-red-600 hover:text-indigo-900"><span class="material-icons" aria-label="{{ delete_locale }}"> delete </span></button>
+                      </form>
+                    </td>
+                  </td>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  {% block footer %}
+    {{super()}}
+  {% endblock %}
+{% endblock %}

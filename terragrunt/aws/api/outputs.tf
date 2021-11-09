@@ -18,8 +18,12 @@ output "owasp_zap_report_data_bucket_arn" {
   value = module.owasp-zap-report-data.s3_bucket_arn
 }
 
-output "owasp_zap_urls_topic_arn" {
-  value = aws_sns_topic.owasp-zap-urls.arn
+output "nuclei_report_data_bucket_id" {
+  value = module.nuclei-report-data.s3_bucket_id
+}
+
+output "nuclei_report_data_bucket_arn" {
+  value = module.nuclei-report-data.s3_bucket_arn
 }
 
 output "vpc_id" {
@@ -40,4 +44,20 @@ output "log_bucket_id" {
 
 output "domain_name" {
   value = aws_api_gateway_domain_name.api.domain_name
+}
+
+output "sns_topic_critical_arn" {
+  value = aws_sns_topic.critical.arn
+}
+
+output "sns_topic_warning_arn" {
+  value = aws_sns_topic.warning.arn
+}
+
+output "github_report_data_bucket_id" {
+  value = module.github-report-data.s3_bucket_id
+}
+
+output "github_report_data_bucket_arn" {
+  value = module.github-report-data.s3_bucket_arn
 }

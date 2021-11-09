@@ -3,23 +3,32 @@
 <script src="{{ url_for('static', path='js/user.js') }}"></script>
 {% endblock %}
 {% block body %}
-  
-    <div class="container flex justify-center items-center">
-      <div>
-        <h1>{{ request.session.user.name }}</h1>
-        <p><strong>{{ email_locale }}:</strong> {{ request.session.user.email_address }}</p>
-        <div id='child'>
-        <strong>{{ api_key_locale }}:</strong>
+  <nav
+    class="block text-sm text-left text-green-800 h-12 flex items-center p-4 mb-5 border-2 border-gray-500"
+    role="alert"
+  >
+    <ol class="list-reset flex text-grey-dark">
+      <li><a href="/{{ lang }}" class="font-bold">{{home_locale}}</a></li>
+      <li><span class="mx-2">/</span></li>
+      <li>{{my_account_locale}}</li>
+    </ol>
+  </nav>
+  <div class="container flex justify-center items-center">
+    <div>
+      <h1>{{ request.session.user.name }}</h1>
+      <p><strong>{{ email_locale }}:</strong> {{ request.session.user.email_address }}</p>
+      <div id='child'>
+      <strong>{{ api_key_locale }}:</strong>
 
-        <button id="show" class="bg-green-500 hover:bg-green-700 text-white font-bold  px-2 rounded" type="button"
-          id="addScanButton" class="btn btn-primary" onclick="toggleAPIKey();">{{ show_locale }}
-          </button>
-          <span id="token" style="visibility: hidden;">{{ token }}</span>
+      <button id="show" class="bg-green-500 hover:bg-green-700 text-white font-bold  px-2 rounded" type="button"
+        id="addScanButton" class="btn btn-primary" onclick="toggleAPIKey();">{{ show_locale }}
+        </button>
+        <span id="token" style="visibility: hidden;">{{ token }}</span>
 
-        </div>
-        
       </div>
+      
     </div>
+  </div>
   {% block footer %}
   {{super()}}
   {% endblock %}

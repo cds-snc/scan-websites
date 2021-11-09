@@ -2,34 +2,43 @@ import pytest
 
 from sqlalchemy.exc import IntegrityError
 
+from factories import (
+    OrganisationFactory,
+)
 from models.Template import Template
 
 
-def test_template_belongs_to_an_organisation(organisation_fixture, session):
+def test_template_belongs_to_an_organisation(session):
+    organisation = OrganisationFactory()
+
     template = Template(
         name="name",
-        organisation=organisation_fixture,
+        organisation=organisation,
     )
     session.add(template)
     session.commit()
-    assert organisation_fixture.templates[-1].id == template.id
+    assert organisation.templates[-1].id == template.id
     session.delete(template)
     session.commit()
 
 
-def test_template_model(organisation_fixture):
+def test_template_model():
+    organisation = OrganisationFactory()
+
     template = Template(
         name="name",
-        organisation=organisation_fixture,
+        organisation=organisation,
     )
     assert template.name == "name"
     assert template.organisation is not None
 
 
-def test_template_model_saved(assert_new_model_saved, organisation_fixture, session):
+def test_template_model_saved(assert_new_model_saved, session):
+    organisation = OrganisationFactory()
+
     template = Template(
         name="name",
-        organisation=organisation_fixture,
+        organisation=organisation,
     )
     session.add(template)
     session.commit()
@@ -40,9 +49,11 @@ def test_template_model_saved(assert_new_model_saved, organisation_fixture, sess
     session.commit()
 
 
-def test_template_empty_name_fails(organisation_fixture, session):
+def test_template_empty_name_fails(session):
+    organisation = OrganisationFactory()
+
     template = Template(
-        organisation=organisation_fixture,
+        organisation=organisation,
     )
     session.add(template)
     with pytest.raises(IntegrityError):

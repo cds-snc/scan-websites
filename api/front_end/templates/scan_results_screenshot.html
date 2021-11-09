@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block body %}
+    <nav
+  class="block text-sm text-left text-green-800 h-12 flex items-center p-4 mb-5 border-2 border-gray-500"
+  role="alert"
+>
+        <ol class="list-reset flex text-grey-dark">
+            <li>
+                <a href="/{{ lang }}" class="font-bold">{{home_locale}}</a>
+            </li>
+            <li>
+                <span class="mx-2">/</span></li>
+            <li>
+                <a href="/{{ lang }}/results/{{report.scan.template.id}}/scan/{{ report.scan.id }}" class="font-bold">{{ report.scan.template.name }}</a>
+            </li>
+            <li>
+                <span class="mx-2">/</span></li>
+            <li>{{ report.scan.template.name }}: {{ report.revision }} - {{ report.url }} - {{ screenshot_locale }}</li>
+        </ol>
+    </nav>
+    <h1 class="text-gray-700 font-semibold uppercase text-xl mb-7">{{ report.scan.template.name }}: {{ report.revision }} - {{ report.url }}</h1>
+    <hr class="my-3"/>
+    <div class="container">
+        <div class="row mb-8 my-8">
+            <div class="py-2 align-middle inline-block min-w-full ">
+                <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                    <div class="bg-white">
+                        <img src="data:image/png;base64,{{ data }}"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% block footer %}
+        {{super()}}
+    {% endblock %}
+{% endblock %}

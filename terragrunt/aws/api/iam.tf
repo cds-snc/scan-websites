@@ -64,7 +64,38 @@ data "aws_iam_policy_document" "api_policies" {
     ]
     resources = [
       aws_sns_topic.axe-core-urls.arn,
-      aws_sns_topic.owasp-zap-urls.arn
+    ]
+  }
+
+  statement {
+
+    effect = "Allow"
+
+    actions = [
+      "states:ListStateMachines",
+      "states:ListActivities",
+      "states:CreateActivity",
+      "states:DescribeExecution",
+      "states:StartExecution",
+    ]
+
+    resources = [
+      "arn:aws:states:${var.region}:${var.account_id}:*"
+    ]
+  }
+
+  statement {
+
+    effect = "Allow"
+
+    actions = [
+      "events:PutTargets",
+      "events:PutRule",
+      "events:DescribeRule"
+    ]
+
+    resources = [
+      "arn:aws:events:${var.region}:${var.account_id}:*"
     ]
   }
 
@@ -78,6 +109,31 @@ data "aws_iam_policy_document" "api_policies" {
     ]
 
     resources = [aws_kms_key.scan-websites.arn]
+  }
+
+  statement {
+
+    effect = "Allow"
+
+    actions = [
+      "s3:ListBucket",
+      "s3:ListBucketVersions",
+      "s3:GetBucketLocation",
+      "s3:Get*",
+      "s3:Put*"
+    ]
+    resources = [
+      module.owasp-zap-report-data.s3_bucket_arn,
+      "${module.owasp-zap-report-data.s3_bucket_arn}/*",
+      module.axe-core-report-data.s3_bucket_arn,
+      "${module.axe-core-report-data.s3_bucket_arn}/*",
+      module.axe-core-screenshots.s3_bucket_arn,
+      "${module.axe-core-screenshots.s3_bucket_arn}/*",
+      module.github-report-data.s3_bucket_arn,
+      "${module.github-report-data.s3_bucket_arn}/*",
+      module.nuclei-report-data.s3_bucket_arn,
+      "${module.nuclei-report-data.s3_bucket_arn}/*"
+    ]
   }
 }
 

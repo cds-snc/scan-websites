@@ -16,6 +16,7 @@ env:
   TF_VAR_fastapi_secret_key: ${{ secrets.TF_VARS_FASTAPI_SECRET_KEY }}
   TF_VAR_google_client_id: ${{ secrets.TF_VARS_GOOGLE_CLIENT_ID }}
   TF_VAR_google_client_secret: ${{ secrets.TF_VARS_GOOGLE_CLIENT_SECRET }}
+  TF_VAR_slack_webhook_url: ${{ secrets.TF_VARS_SLACK_WEBHOOK_URL }}
 
 
 jobs:
@@ -24,10 +25,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - module: alarms
           - module: api
           - module: hosted_zone
+          - module: ecs
           - module: scanners/axe-core
-          - module: scanners/owasp-zap
+          - module: orchestrator
 
     runs-on: ubuntu-latest
     steps:
