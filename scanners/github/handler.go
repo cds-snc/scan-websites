@@ -10,8 +10,8 @@ import (
 )
 
 type ScanEvent struct {
-	Org  string `json:"org"`
-	Repo string `json:"repo"`
+	Org   string `json:"org"`
+	Repo  string `json:"repo"`
 	Token string `json:"token"`
 }
 
@@ -32,7 +32,6 @@ func HandleRequest(ctx context.Context, e events.SNSEvent) (string, error) {
 	}
 	return "success", nil
 }
-
 
 func main() {
 	lambda.Start(HandleRequest)
