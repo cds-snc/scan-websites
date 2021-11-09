@@ -40,7 +40,7 @@ func saveResults(r complianceScan) error {
 	rJson, _ := json.Marshal(r)
 
 	input := &s3.PutObjectInput{
-		Bucket: aws.String("local-bucket"),
+		Bucket: aws.String(os.Getenv("REPORT_DATA_BUCKET")),
 		Key:    aws.String(r.ScanId),
 		Body:   bytes.NewReader(rJson),
 	}
