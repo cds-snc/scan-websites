@@ -50,6 +50,8 @@ def retrieve_and_route(record):
             return store_axe_core_record(session, payload)
         elif name == os.environ.get("OWASP_ZAP_REPORT_DATA_BUCKET", None):
             return store_owasp_zap_record(session, payload)
+        elif name == os.environ.get("NUCLEI_REPORT_DATA_BUCKET", None):
+            return store_nuclei_record(session, payload)
         else:
             log.error(f"Unknown bucket {name}")
             return False
@@ -224,6 +226,70 @@ def store_owasp_zap_record(session, payload):
 
                 if len(security_violation.data) > 0:
                     session.add(security_violation)
+
+        security_report.summary = summary
+    session.commit()
+    return True
+
+
+def store_nuclei_record(session, payload):
+    security_report = session.query(SecurityReport).get(payload["id"])
+
+    if security_report is None:
+        return False
+
+    summary = {}
+    summary["status"] = "completed"
+    summary["total"] = 0
+    session.query(SecurityViolation).filter(
+        SecurityViolation.security_report_id == security_report.id
+    ).delete()
+    session.commit()
+
+    scan_ignores = (
+        session.query(ScanIgnore)
+        .filter(ScanIgnore.scan_id == security_report.scan_id)
+        .all()
+    )
+    for report in payload["report"]:
+        if report["info"]["severity"] in summary:
+            summary[report["info"]["severity"]] += 1
+        else:
+            summary[report["info"]["severity"]] = 1
+
+        summary["total"] += 1
+        security_violation = SecurityViolation(
+            violation=report["info"]["name"],
+            risk=report["info"]["severity"],
+            message=report["matcher-name"],
+            confidence=100,
+            data=[
+                {
+                    "uri": report["matched-at"],
+                    "template_id": report["template-id"],
+                    "type": report["type"],
+                    "matcher_name": report["matcher-name"],
+                    "curl_command": report["curl-command"],
+                }
+            ],
+            tags=report["info"]["tags"],
+            url=report["matched-at"],
+            security_report=security_report,
+        )
+
+        try:
+            security_violation.data[:] = (
+                itm
+                for itm in security_violation.data
+                if filter_ignored_results(
+                    False, itm, security_violation.violation, scan_ignores
+                )
+            )
+        except ValueError as err:
+            log.error(f"Error filtering results: {err}")
+
+        if len(security_violation.data) > 0:
+            session.add(security_violation)
 
         security_report.summary = summary
     session.commit()

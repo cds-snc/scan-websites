@@ -82,16 +82,32 @@ def format_date(value, format="medium"):
 
 
 def get_risk_colour(riskcode):
-    if riskcode == "0":  # Informational
+    if riskcode == "0" or "info":  # Informational
         return "bg-blue-500"
-    elif riskcode == "1":  # Low
+    elif riskcode == "1" or "low":  # Low
         return "bg-green-500"
-    elif riskcode == "2":  # Medium
-        return "bg-yellow-600"
+    elif riskcode == "2" or "medium":  # Medium
+        return "bg-yellow-300"
     elif riskcode == "3":  # High
+        return "bg-red-500"
+    elif riskcode == "high":  # High
+        return "bg-yellow-600"
+    elif riskcode == "3" or "critical":  # High
         return "bg-red-500"
     else:  # default
         return "bg-gray-500"
+
+
+def extract_risk_text(summary):
+    reduced_summary = {}
+    for key in summary:
+        print(key)
+        if " (" in key:
+            risk = str(key.split(" (")[0]).lower()
+            reduced_summary[risk] = summary[key]
+        else:
+            reduced_summary[key] = summary[key]
+    return reduced_summary
 
 
 def prettier_array(data):
@@ -110,6 +126,7 @@ templates.env.filters["plural_formatting"] = plural_formatting
 templates.env.filters["date"] = format_date
 templates.env.filters["risk_colour"] = get_risk_colour
 templates.env.filters["prettier_array"] = prettier_array
+templates.env.filters["extract_risk_text"] = extract_risk_text
 templates.env.globals["get_seperator"] = get_seperator
 
 

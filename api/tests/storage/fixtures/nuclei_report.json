@@ -1,0 +1,356 @@
+{
+  "messageType": "ScanReport",
+  "reportType": "Nuclei",
+  "createdAt": "2021-10-06T21:20:19",
+  "importToSecurityhub": "False",
+  "id": "scan_id",
+  "url": "https://www.example.com",
+  "s3Bucket": "bucket",
+  "key": "Reports/file.json",
+  "report": [
+    {
+      "template-id": "tech-detect",
+      "info": {
+        "name": "Wappalyzer Technology Detection",
+        "author": [
+          "hakluke"
+        ],
+        "tags": [
+          "tech"
+        ],
+        "reference": null,
+        "severity": "info"
+      },
+      "matcher-name": "google-tag-manager",
+      "type": "http",
+      "host": "https://example.com",
+      "matched-at": "https://example.com",
+      "timestamp": "2021-11-08T11:32:54.472153-05:00",
+      "curl-command": "curl -X 'GET' -d '' -H 'Accept: */*' -H 'Accept-Language: en' -H 'User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2226.0 Safari/537.36' 'https://example.com'"
+    },
+    {
+      "template-id": "http-missing-security-headers",
+      "info": {
+        "name": "HTTP Missing Security Headers",
+        "author": [
+          "socketz",
+          "geeknik",
+          "g4l1t0",
+          "convisoappsec",
+          "kurohost",
+          "dawid-czarnecki"
+        ],
+        "tags": [
+          "misconfig",
+          "generic"
+        ],
+        "description": "It searches for missing security headers, but obviously, could be so less generic and could be useless for Bug Bounty.",
+        "reference": null,
+        "severity": "info"
+      },
+      "matcher-name": "clear-site-data",
+      "type": "http",
+      "host": "https://example.com",
+      "matched-at": "https://example.com",
+      "timestamp": "2021-11-08T11:33:32.43089-05:00",
+      "curl-command": "curl -X 'GET' -d '' -H 'Accept: */*' -H 'Accept-Language: en' -H 'User-Agent: Mozilla/5.0 (X11; OpenBSD i386) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36' 'https://example.com'"
+    },
+    {
+      "template-id": "http-missing-security-headers",
+      "info": {
+        "name": "HTTP Missing Security Headers",
+        "author": [
+          "socketz",
+          "geeknik",
+          "g4l1t0",
+          "convisoappsec",
+          "kurohost",
+          "dawid-czarnecki"
+        ],
+        "tags": [
+          "misconfig",
+          "generic"
+        ],
+        "description": "It searches for missing security headers, but obviously, could be so less generic and could be useless for Bug Bounty.",
+        "reference": null,
+        "severity": "info"
+      },
+      "matcher-name": "cross-origin-embedder-policy",
+      "type": "http",
+      "host": "https://example.com",
+      "matched-at": "https://example.com",
+      "timestamp": "2021-11-08T11:33:32.431009-05:00",
+      "curl-command": "curl -X 'GET' -d '' -H 'Accept: */*' -H 'Accept-Language: en' -H 'User-Agent: Mozilla/5.0 (X11; OpenBSD i386) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36' 'https://example.com'"
+    },
+    {
+      "template-id": "http-missing-security-headers",
+      "info": {
+        "name": "HTTP Missing Security Headers",
+        "author": [
+          "socketz",
+          "geeknik",
+          "g4l1t0",
+          "convisoappsec",
+          "kurohost",
+          "dawid-czarnecki"
+        ],
+        "tags": [
+          "misconfig",
+          "generic"
+        ],
+        "description": "It searches for missing security headers, but obviously, could be so less generic and could be useless for Bug Bounty.",
+        "reference": null,
+        "severity": "info"
+      },
+      "matcher-name": "cross-origin-resource-policy",
+      "type": "http",
+      "host": "https://example.com",
+      "matched-at": "https://example.com",
+      "timestamp": "2021-11-08T11:33:32.431054-05:00",
+      "curl-command": "curl -X 'GET' -d '' -H 'Accept: */*' -H 'Accept-Language: en' -H 'User-Agent: Mozilla/5.0 (X11; OpenBSD i386) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36' 'https://example.com'"
+    },
+    {
+      "template-id": "http-missing-security-headers",
+      "info": {
+        "name": "HTTP Missing Security Headers",
+        "author": [
+          "socketz",
+          "geeknik",
+          "g4l1t0",
+          "convisoappsec",
+          "kurohost",
+          "dawid-czarnecki"
+        ],
+        "tags": [
+          "misconfig",
+          "generic"
+        ],
+        "description": "It searches for missing security headers, but obviously, could be so less generic and could be useless for Bug Bounty.",
+        "reference": null,
+        "severity": "info"
+      },
+      "matcher-name": "access-control-allow-credentials",
+      "type": "http",
+      "host": "https://example.com",
+      "matched-at": "https://example.com",
+      "timestamp": "2021-11-08T11:33:32.431125-05:00",
+      "curl-command": "curl -X 'GET' -d '' -H 'Accept: */*' -H 'Accept-Language: en' -H 'User-Agent: Mozilla/5.0 (X11; OpenBSD i386) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36' 'https://example.com'"
+    },
+    {
+      "template-id": "http-missing-security-headers",
+      "info": {
+        "name": "HTTP Missing Security Headers",
+        "author": [
+          "socketz",
+          "geeknik",
+          "g4l1t0",
+          "convisoappsec",
+          "kurohost",
+          "dawid-czarnecki"
+        ],
+        "tags": [
+          "misconfig",
+          "generic"
+        ],
+        "description": "It searches for missing security headers, but obviously, could be so less generic and could be useless for Bug Bounty.",
+        "reference": null,
+        "severity": "info"
+      },
+      "matcher-name": "access-control-expose-headers",
+      "type": "http",
+      "host": "https://example.com",
+      "matched-at": "https://example.com",
+      "timestamp": "2021-11-08T11:33:32.431175-05:00",
+      "curl-command": "curl -X 'GET' -d '' -H 'Accept: */*' -H 'Accept-Language: en' -H 'User-Agent: Mozilla/5.0 (X11; OpenBSD i386) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36' 'https://example.com'"
+    },
+    {
+      "template-id": "http-missing-security-headers",
+      "info": {
+        "name": "HTTP Missing Security Headers",
+        "author": [
+          "socketz",
+          "geeknik",
+          "g4l1t0",
+          "convisoappsec",
+          "kurohost",
+          "dawid-czarnecki"
+        ],
+        "tags": [
+          "misconfig",
+          "generic"
+        ],
+        "description": "It searches for missing security headers, but obviously, could be so less generic and could be useless for Bug Bounty.",
+        "reference": null,
+        "severity": "info"
+      },
+      "matcher-name": "x-permitted-cross-domain-policies",
+      "type": "http",
+      "host": "https://example.com",
+      "matched-at": "https://example.com",
+      "timestamp": "2021-11-08T11:33:32.431241-05:00",
+      "curl-command": "curl -X 'GET' -d '' -H 'Accept: */*' -H 'Accept-Language: en' -H 'User-Agent: Mozilla/5.0 (X11; OpenBSD i386) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36' 'https://example.com'"
+    },
+    {
+      "template-id": "http-missing-security-headers",
+      "info": {
+        "name": "HTTP Missing Security Headers",
+        "author": [
+          "socketz",
+          "geeknik",
+          "g4l1t0",
+          "convisoappsec",
+          "kurohost",
+          "dawid-czarnecki"
+        ],
+        "tags": [
+          "misconfig",
+          "generic"
+        ],
+        "description": "It searches for missing security headers, but obviously, could be so less generic and could be useless for Bug Bounty.",
+        "reference": null,
+        "severity": "info"
+      },
+      "matcher-name": "referrer-policy",
+      "type": "http",
+      "host": "https://example.com",
+      "matched-at": "https://example.com",
+      "timestamp": "2021-11-08T11:33:32.431268-05:00",
+      "curl-command": "curl -X 'GET' -d '' -H 'Accept: */*' -H 'Accept-Language: en' -H 'User-Agent: Mozilla/5.0 (X11; OpenBSD i386) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36' 'https://example.com'"
+    },
+    {
+      "template-id": "http-missing-security-headers",
+      "info": {
+        "name": "HTTP Missing Security Headers",
+        "author": [
+          "socketz",
+          "geeknik",
+          "g4l1t0",
+          "convisoappsec",
+          "kurohost",
+          "dawid-czarnecki"
+        ],
+        "tags": [
+          "misconfig",
+          "generic"
+        ],
+        "description": "It searches for missing security headers, but obviously, could be so less generic and could be useless for Bug Bounty.",
+        "reference": null,
+        "severity": "info"
+      },
+      "matcher-name": "cross-origin-opener-policy",
+      "type": "http",
+      "host": "https://example.com",
+      "matched-at": "https://example.com",
+      "timestamp": "2021-11-08T11:33:32.439884-05:00",
+      "curl-command": "curl -X 'GET' -d '' -H 'Accept: */*' -H 'Accept-Language: en' -H 'User-Agent: Mozilla/5.0 (X11; OpenBSD i386) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36' 'https://example.com'"
+    },
+    {
+      "template-id": "http-missing-security-headers",
+      "info": {
+        "name": "HTTP Missing Security Headers",
+        "author": [
+          "socketz",
+          "geeknik",
+          "g4l1t0",
+          "convisoappsec",
+          "kurohost",
+          "dawid-czarnecki"
+        ],
+        "tags": [
+          "misconfig",
+          "generic"
+        ],
+        "description": "It searches for missing security headers, but obviously, could be so less generic and could be useless for Bug Bounty.",
+        "reference": null,
+        "severity": "info"
+      },
+      "matcher-name": "access-control-allow-origin",
+      "type": "http",
+      "host": "https://example.com",
+      "matched-at": "https://example.com",
+      "timestamp": "2021-11-08T11:33:32.44005-05:00",
+      "curl-command": "curl -X 'GET' -d '' -H 'Accept: */*' -H 'Accept-Language: en' -H 'User-Agent: Mozilla/5.0 (X11; OpenBSD i386) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36' 'https://example.com'"
+    },
+    {
+      "template-id": "http-missing-security-headers",
+      "info": {
+        "name": "HTTP Missing Security Headers",
+        "author": [
+          "socketz",
+          "geeknik",
+          "g4l1t0",
+          "convisoappsec",
+          "kurohost",
+          "dawid-czarnecki"
+        ],
+        "tags": [
+          "misconfig",
+          "generic"
+        ],
+        "description": "It searches for missing security headers, but obviously, could be so less generic and could be useless for Bug Bounty.",
+        "reference": null,
+        "severity": "info"
+      },
+      "matcher-name": "access-control-max-age",
+      "type": "http",
+      "host": "https://example.com",
+      "matched-at": "https://example.com",
+      "timestamp": "2021-11-08T11:33:32.44007-05:00",
+      "curl-command": "curl -X 'GET' -d '' -H 'Accept: */*' -H 'Accept-Language: en' -H 'User-Agent: Mozilla/5.0 (X11; OpenBSD i386) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36' 'https://example.com'"
+    },
+    {
+      "template-id": "http-missing-security-headers",
+      "info": {
+        "name": "HTTP Missing Security Headers",
+        "author": [
+          "socketz",
+          "geeknik",
+          "g4l1t0",
+          "convisoappsec",
+          "kurohost",
+          "dawid-czarnecki"
+        ],
+        "tags": [
+          "misconfig",
+          "generic"
+        ],
+        "description": "It searches for missing security headers, but obviously, could be so less generic and could be useless for Bug Bounty.",
+        "reference": null,
+        "severity": "info"
+      },
+      "matcher-name": "access-control-allow-methods",
+      "type": "http",
+      "host": "https://example.com",
+      "matched-at": "https://example.com",
+      "timestamp": "2021-11-08T11:33:32.440111-05:00",
+      "curl-command": "curl -X 'GET' -d '' -H 'Accept: */*' -H 'Accept-Language: en' -H 'User-Agent: Mozilla/5.0 (X11; OpenBSD i386) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36' 'https://example.com'"
+    },
+    {
+      "template-id": "http-missing-security-headers",
+      "info": {
+        "name": "HTTP Missing Security Headers",
+        "author": [
+          "socketz",
+          "geeknik",
+          "g4l1t0",
+          "convisoappsec",
+          "kurohost",
+          "dawid-czarnecki"
+        ],
+        "tags": [
+          "misconfig",
+          "generic"
+        ],
+        "description": "It searches for missing security headers, but obviously, could be so less generic and could be useless for Bug Bounty.",
+        "reference": null,
+        "severity": "info"
+      },
+      "matcher-name": "content-security-policy",
+      "type": "http",
+      "host": "https://example.com",
+      "matched-at": "https://example.com",
+      "timestamp": "2021-11-08T11:33:32.440252-05:00",
+      "curl-command": "curl -X 'GET' -d '' -H 'Accept: */*' -H 'Accept-Language: en' -H 'User-Agent: Mozilla/5.0 (X11; OpenBSD i386) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36' 'https://example.com'"
+    }
+  ]
+}
