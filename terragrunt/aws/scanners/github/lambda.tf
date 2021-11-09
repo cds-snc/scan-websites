@@ -1,41 +1,64 @@
-resource "aws_lambda_function" "scanners-github" {
-  function_name = "scanners-github"
-
-  package_type = "Image"
+module "github_scanner" { 
+  name = "scanners-github"
+  source      = "github.com/cds-snc/terraform-modules?ref=v0.0.39//lambda"
   image_uri    = "${aws_ecr_repository.scanners-github.repository_url}:latest"
+  billing_tag_value = var.billing_tag
 
-  role    = aws_iam_role.scanners-github.arn
-  timeout = 60
-
-  memory_size = 1600
-
-  tracing_config {
-    mode = "PassThrough"
+  environment_variables = {
+      "REPORT_DATA_BUCKET" = var.github_report_data_bucket_id
+      "SCREENSHOT_BUCKET"  = var.github_screenshots_bucket_id
   }
 
-  environment {
-    variables = {
-      REPORT_DATA_BUCKET = var.github_report_data_bucket_id
-      SCREENSHOT_BUCKET  = var.github_screenshots_bucket_id
-    }
-  }
+  policies = [ data.aws_iam_policy_document.api_policies.json ]
+  sns_topic_arns = [ 
+    var.github_urls_topic_arn
+  ]  
+}
 
-  lifecycle {
-    ignore_changes = [
-      image_uri,
+data "aws_iam_policy_document" "api_policies" {
+
+  statement {
+    sid    = "CloudWatchAccess"
+    effect = "Allow"
+
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents"
+    ]
+
+    resources = [
+      "*"
     ]
   }
-}
 
-resource "aws_sns_topic_subscription" "scanners-github-lambda-subscription" {
-  topic_arn = var.github_urls_topic_arn
-  protocol  = "lambda"
-  endpoint  = aws_lambda_function.scanners-github.arn
-}
+  statement {
+    sid    = "ECRImageAccess"
+    effect = "Allow"
 
-resource "aws_lambda_permission" "scanners-github-lambda-permission" {
-  function_name = aws_lambda_function.scanners-github.function_name
-  action        = "lambda:InvokeFunction"
-  principal     = "sns.amazonaws.com"
-  source_arn    = var.github_urls_topic_arn
+    actions = [
+      "ecr:GetDownloadUrlForlayer",
+      "ecr:BatchGetImage"
+    ]
+    resources = [
+      aws_ecr_repository.scanners-github.arn
+    ]
+  }
+
+  statement {
+    sid    = "S3BucketAccess"
+    effect = "Allow"
+
+    actions = [
+      "s3:ListBucket",
+      "s3:ListBucketVersions",
+      "s3:GetBucketLocation",
+      "s3:Get*",
+      "s3:Put*"
+    ]
+    resources = [
+      "*"
+    ]
+  }
+
 }
