@@ -1,6 +1,6 @@
 module "github_scanner" {
   name              = "scanners-github"
-  source            = "github.com/cds-snc/terraform-modules?ref=v0.0.39//lambda"
+  source            = "github.com/cds-snc/terraform-modules?ref=v0.0.40//lambda"
   image_uri         = "${aws_ecr_repository.scanners-github.repository_url}:latest"
   billing_tag_value = var.billing_code
 
