@@ -1,7 +1,6 @@
 #!/bin/bash
 
 echo 
-#curl "http://scanner-github:8080/2015-03-31/functions/function/invocations" -d '{ }'
 
 curl "http://scanner-github:8080/2015-03-31/functions/function/invocations" -d '{
   "Records": [
