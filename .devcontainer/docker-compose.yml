@@ -20,6 +20,7 @@ services:
         TERRAGRUNT_VERSION: "0.31.1"
         TERRAGRUNT_CHECKSUM: "76b253919ad688025a4a37338e5602543b0426cae1be1f863b4f3d60dd95ac28"
         AWS_CLI_VERSION: "2.2.29"
+        GO_VERSION: "1.17.2"
         
     volumes:
       - ..:/workspace:cached
@@ -31,6 +32,11 @@ services:
       AXE_CORE_SCREENSHOT_BUCKET: axe-core-screenshots
       OWASP_ZAP_REPORT_DATA_BUCKET: owasp-zap-report-data 
       <<: *db-connection-strings
+  scanner-github:
+    build:
+      context: ../scanners/github/
+    environment:
+      AWS_LOCALSTACK: "True"
 
   api:
     build:

@@ -5,6 +5,7 @@ on:
     paths:
       - api/**
       - scanners/axe-core/**
+      - scanners/github/**
       - terragrunt/**
       - .github/workflows/ci_code.yml
 
