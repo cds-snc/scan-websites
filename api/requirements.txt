@@ -14,5 +14,5 @@ mangum==0.12.1
 psycopg2-binary==2.9.1
 python-multipart==0.0.5
 SQLAlchemy==1.4.22
-scrapy==2.5.0
+scrapy==1.8.1
 scrapy-playwright==0.0.4
