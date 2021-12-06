@@ -4,11 +4,6 @@ resource "aws_lambda_function" "api" {
   package_type = "Image"
   image_uri    = "${aws_ecr_repository.api.repository_url}:latest"
 
-  # AWS Open Telemetry collector and instrumentation layer
-  layers = [
-    "arn:aws:lambda:${var.region}:901920570463:layer:aws-otel-python38-ver-1-7-1:1"
-  ]
-
   role    = aws_iam_role.api.arn
   timeout = 60
 
@@ -16,7 +11,6 @@ resource "aws_lambda_function" "api" {
 
   environment {
     variables = {
-      AWS_LAMBDA_EXEC_WRAPPER      = "/opt/otel-instrument"
       AXE_CORE_URLS_TOPIC          = aws_sns_topic.axe-core-urls.arn
       AXE_CORE_REPORT_DATA_BUCKET  = module.axe-core-report-data.s3_bucket_id
       AXE_CORE_SCREENSHOT_BUCKET   = module.axe-core-screenshots.s3_bucket_id
