@@ -3,12 +3,12 @@ FROM public.ecr.aws/cds-snc/opentelemetry-python-lambda:1.7.1 as otel
 # Define function directory
 ARG FUNCTION_DIR="/function"
 
+COPY --from=otel /opt /opt
+
 FROM python:3.9-slim-buster
 
 # Define function directory
 ARG FUNCTION_DIR="/function"
-
-COPY --from=otel /opt /opt
 
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends \
