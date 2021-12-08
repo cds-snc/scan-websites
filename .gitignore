@@ -200,3 +200,6 @@ dist
 
 # Ignore local stack data file
 .devcontainer/data
+
+# VSCode settings
+.vscode

@@ -1,7 +1,11 @@
-# Define function directory
-ARG FUNCTION_DIR="/function"
+FROM public.ecr.aws/cds-snc/opentelemetry-python-lambda:1.7.1 as otel
 
 FROM python:3.9-slim-buster
+
+COPY --from=otel /opt /opt
+
+# Define function directory
+ARG FUNCTION_DIR="/function"
 
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends \
@@ -29,9 +33,6 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     entr \
     && apt-get autoremove -y \
     && apt-get clean -y
-
-# Include global arg in this stage of the build
-ARG FUNCTION_DIR
 
 WORKDIR ${FUNCTION_DIR}
 
