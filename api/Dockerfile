@@ -1,11 +1,8 @@
 FROM public.ecr.aws/cds-snc/opentelemetry-python-lambda:1.7.1 as otel
 
-# Define function directory
-ARG FUNCTION_DIR="/function"
+FROM python:3.9-slim-buster
 
 COPY --from=otel /opt /opt
-
-FROM python:3.9-slim-buster
 
 # Define function directory
 ARG FUNCTION_DIR="/function"
