@@ -34,9 +34,6 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get autoremove -y \
     && apt-get clean -y
 
-# Include global arg in this stage of the build
-ARG FUNCTION_DIR
-
 WORKDIR ${FUNCTION_DIR}
 
 RUN mkdir -p /pymodules
