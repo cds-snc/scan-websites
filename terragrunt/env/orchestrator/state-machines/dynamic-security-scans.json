@@ -93,6 +93,7 @@
       },
       "TimeoutSeconds": 7200,
       "HeartbeatSeconds": 300,
+      "Catch": [{"ErrorEquals": [ "States.ALL" ], "ResultPath": null, "Next": "SetupNextScan"}],
       "Next": "SetupNextScan"
     },
     "owasp-zap": {
@@ -155,6 +156,7 @@
       },
       "TimeoutSeconds": 7200,
       "HeartbeatSeconds": 300,
+      "Catch": [{"ErrorEquals": [ "States.ALL" ], "ResultPath": null, "Next": "SetupNextScan"}],
       "Next": "SetupNextScan"
     }
   }
