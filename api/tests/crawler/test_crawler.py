@@ -46,6 +46,7 @@ def test_crawl_runner_calls_spider(mock_cawler_class):
     mock_cawler_class.assert_called_once_with(
         settings={
             "TWISTED_REACTOR": "twisted.internet.asyncioreactor.AsyncioSelectorReactor",
+            "ASYNCIO_EVENT_LOOP": ANY,
             "DOWNLOAD_HANDLERS": {
                 "https": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
                 "http": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",

@@ -2,6 +2,7 @@ import os
 from urllib.parse import urlparse
 from multiprocessing.context import Process
 
+from asyncio import new_event_loop
 from scrapy import Request, Spider
 from scrapy.crawler import CrawlerProcess
 from scrapy.linkextractors import LinkExtractor
@@ -46,9 +47,11 @@ class UrlSpider(Spider):
 
 
 def runner(item):
+    event_loop = new_event_loop()
     runner = CrawlerProcess(
         settings={
             "TWISTED_REACTOR": "twisted.internet.asyncioreactor.AsyncioSelectorReactor",
+            "ASYNCIO_EVENT_LOOP": event_loop,
             "DOWNLOAD_HANDLERS": {
                 "https": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
                 "http": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
