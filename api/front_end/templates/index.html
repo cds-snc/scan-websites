@@ -82,16 +82,18 @@
                         <path d="M12 7C11.7239 7 11.5 6.77614 11.5 6.5C11.5 6.22386 11.7239 6 12 6C12.2761 6 12.5 6.22386 12.5 6.5C12.5 6.77614 12.2761 7 12 7Z" fill="black" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                       </svg>
                     </div>
-                    {% if scan.a11y_reports | length > 1 and 'total' in scan.a11y_reports[0].summary.violations and scan.a11y_reports[0].summary.violations['total'] > 0 %}
-                    {% set delta = (scan.a11y_reports[0].summary.violations['total'] - scan.a11y_reports[1].summary.violations['total'])|int %}
-                      {% if delta > 0  %}
-                      <div class="text-red-500 mr-4 mt-3 font-semibold text-center">
-                        +{{ delta }}
-                      </div>
-                      {% elif delta < 0 %}
-                      <div class="text-green-500 mr-4 mt-3 font-semibold text-center">
-                        {{ delta }}
-                      </div>
+                    {% if scan.a11y_reports | length > 1 and 'violations' in scan.a11y_reports[0].summary and 'violations' in scan.a11y_reports[1].summary %}
+                      {% if 'total' in scan.a11y_reports[0].summary.violations and scan.a11y_reports[0].summary.violations['total'] > 0 %}
+                      {% set delta = (scan.a11y_reports[0].summary.violations['total'] - scan.a11y_reports[1].summary.violations['total'])|int %}
+                        {% if delta > 0  %}
+                        <div class="text-red-500 mr-4 mt-3 font-semibold text-center">
+                          +{{ delta }}
+                        </div>
+                        {% elif delta < 0 %}
+                        <div class="text-green-500 mr-4 mt-3 font-semibold text-center">
+                          {{ delta }}
+                        </div>
+                        {% endif %}
                       {% endif %}
                     {% endif %}
                   </div>

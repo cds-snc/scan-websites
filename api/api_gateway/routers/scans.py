@@ -128,7 +128,7 @@ def build_scan_payload(template, template_scan, scan, git_sha=None):
 
 @router.get("/start")
 @router.get("/start/revision/{git_sha}")
-async def start_scan(
+def start_scan(
     request: Request,
     background_tasks: BackgroundTasks,
     git_sha: Optional[str] = None,
@@ -167,8 +167,7 @@ async def start_scan(
         item = build_scan_payload(template, template_scan, scan, git_sha)
         try:
             if item["crawl"] == "true":
-                # background_tasks.add_task(crawl, item)
-                await crawl(item)
+                background_tasks.add_task(crawl, item)
                 success_list.append(template_scan.scan_type.name)
             else:
                 payload_list.append(item)
