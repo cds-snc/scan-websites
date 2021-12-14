@@ -128,7 +128,7 @@ def build_scan_payload(template, template_scan, scan, git_sha=None):
 
 @router.get("/start")
 @router.get("/start/revision/{git_sha}")
-def start_scan(
+async def start_scan(
     request: Request,
     background_tasks: BackgroundTasks,
     git_sha: Optional[str] = None,

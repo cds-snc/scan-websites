@@ -2,7 +2,6 @@ import os
 from urllib.parse import urlparse
 from multiprocessing.context import Process
 
-from asyncio import new_event_loop
 from scrapy import Request, Spider
 from scrapy.crawler import CrawlerProcess
 from scrapy.linkextractors import LinkExtractor
@@ -30,7 +29,7 @@ class UrlSpider(Spider):
         item["url"] = response.url
         item["depth"] = curr_depth
         item["referer"] = response.meta.get("referer", "")
-        pub_sub.dispatch(item)
+        pub_sub.dispatch([item])
 
         if curr_depth < self.max_depth:
             for a in LinkExtractor(self.allowed_domains).extract_links(response):
@@ -47,11 +46,10 @@ class UrlSpider(Spider):
 
 
 def runner(item):
-    event_loop = new_event_loop()
     runner = CrawlerProcess(
         settings={
             "TWISTED_REACTOR": "twisted.internet.asyncioreactor.AsyncioSelectorReactor",
-            "ASYNCIO_EVENT_LOOP": event_loop,
+            "ASYNCIO_EVENT_LOOP": "uvloop.Loop",
             "DOWNLOAD_HANDLERS": {
                 "https": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
                 "http": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
@@ -88,7 +86,7 @@ def runner(item):
     runner.start()
 
 
-def crawl(item):
+async def crawl(item):
     if not item["scan_id"] or not item["url"]:
         log.error(f"scan_id({item['scan_id']}) or url({item['url']}) missing")
         return

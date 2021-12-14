@@ -46,43 +46,45 @@
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
                 {% for a11y_report in scan.a11y_reports %}
-                  <tr>
-                    <td class="px-6 py-4 whitespace-nowrap truncate">
-                      <div class="text-sm font-medium text-gray-900">
-                        {{ a11y_report.url }}
-                      </div>
+                  {% if 'violations' in a11y_report.summary %}
+                    <tr>
+                      <td class="px-6 py-4 whitespace-nowrap truncate">
+                        <div class="text-sm font-medium text-gray-900">
+                          {{ a11y_report.url }}
+                        </div>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium">
+                          {{ a11y_report.created_at.strftime('%d-%m-%Y %H:%M:%S') }}
+                        </div>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">
+                          <p class="flex flex-wrap gap-2">
+                            <span class="{{ 'bg-red-300' if a11y_report.summary.violations.critical | default(0) > 0 else 'bg-gray-100'}} inline-block p-1 px-2">{{a11y_report.summary.violations['critical'] or 0 }}&nbsp;{{ critical_locale }}</span>
+                            <span class="{{ 'bg-orange-300' if a11y_report.summary.violations.serious | default(0) > 0 else 'bg-gray-100'}} inline-block p-1 px-2">{{a11y_report.summary.violations['serious'] or 0 }}&nbsp;{{ serious_locale }}</span>
+                            <span class="{{ 'bg-yellow-300' if a11y_report.summary.violations.moderate | default(0) > 0 else 'bg-gray-100'}} inline-block p-1 px-2">{{a11y_report.summary.violations['moderate'] or 0 }}&nbsp;{{ moderate_locale }}</span>
+                            <span class="{{ 'bg-lime-300' if a11y_report.summary.violations.minor | default(0) > 0 else 'bg-gray-100'}} inline-block p-1 px-2">{{a11y_report.summary.violations['minor'] or 0 }}&nbsp;{{ minor_locale }}</span>
+                          </p>
+                        </div>
+                      </td>
+                      <td class="text-center">
+                        <a href="/{{ lang }}/results/{{ scan.template.id }}/a11y/{{scan.id}}/{{ a11y_report.id }}">
+                          <span class="material-icons">description</span>
+                        </a>
+                      </td>
+                      <td class="text-center">
+                        <a href="/{{ lang }}/results/{{ scan.template.id }}/a11y/{{scan.id}}/{{ a11y_report.id }}/screenshot">
+                          <span class="material-icons">image</span>
+                        </a>
+                      </td>
+                      <td class="text-center">
+                        <a href="{{a11y_report.url}}" target="_blank">
+                          <span class="material-icons">ios_share</span>
+                        </a>
+                      </tr>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                      <div class="text-sm font-medium">
-                        {{ a11y_report.created_at.strftime('%d-%m-%Y %H:%M:%S') }}
-                      </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                      <div class="text-sm font-medium text-gray-900">
-                        <p class="flex flex-wrap gap-2">
-                          <span class="{{ 'bg-red-300' if a11y_report.summary.violations.critical | default(0) > 0 else 'bg-gray-100'}} inline-block p-1 px-2">{{a11y_report.summary.violations['critical'] or 0 }}&nbsp;{{ critical_locale }}</span>
-                          <span class="{{ 'bg-orange-300' if a11y_report.summary.violations.serious | default(0) > 0 else 'bg-gray-100'}} inline-block p-1 px-2">{{a11y_report.summary.violations['serious'] or 0 }}&nbsp;{{ serious_locale }}</span>
-                          <span class="{{ 'bg-yellow-300' if a11y_report.summary.violations.moderate | default(0) > 0 else 'bg-gray-100'}} inline-block p-1 px-2">{{a11y_report.summary.violations['moderate'] or 0 }}&nbsp;{{ moderate_locale }}</span>
-                          <span class="{{ 'bg-lime-300' if a11y_report.summary.violations.minor | default(0) > 0 else 'bg-gray-100'}} inline-block p-1 px-2">{{a11y_report.summary.violations['minor'] or 0 }}&nbsp;{{ minor_locale }}</span>
-                        </p>
-                      </div>
-                    </td>
-                    <td class="text-center">
-                      <a href="/{{ lang }}/results/{{ scan.template.id }}/a11y/{{scan.id}}/{{ a11y_report.id }}">
-                        <span class="material-icons">description</span>
-                      </a>
-                    </td>
-                    <td class="text-center">
-                      <a href="/{{ lang }}/results/{{ scan.template.id }}/a11y/{{scan.id}}/{{ a11y_report.id }}/screenshot">
-                        <span class="material-icons">image</span>
-                      </a>
-                    </td>
-                    <td class="text-center">
-                      <a href="{{a11y_report.url}}" target="_blank">
-                        <span class="material-icons">ios_share</span>
-                      </a>
-                    </tr>
-                  </td>
+                  {% endif %}
                 {% endfor %}
               </tbody>
             </table>

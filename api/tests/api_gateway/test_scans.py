@@ -512,10 +512,10 @@ def test_start_scan_valid_api_keys_with_gitsha(
     )
 
 
-@patch("fastapi.BackgroundTasks.add_task")
+@patch("api_gateway.routers.scans.crawl")
 @patch.dict(os.environ, {"OWASP_ZAP_URLS_TOPIC": "topic"}, clear=True)
 def test_start_scan_valid_api_keys_with_crawling(
-    mock_add_task,
+    mock_crawl,
     session,
     authorized_request,
 ):
@@ -546,8 +546,7 @@ def test_start_scan_valid_api_keys_with_crawling(
 
     assert response.status_code == 200
 
-    mock_add_task.assert_called_once_with(
-        ANY,
+    mock_crawl.assert_called_once_with(
         {
             "type": AvailableScans.OWASP_ZAP.value,
             "product": template.name,
