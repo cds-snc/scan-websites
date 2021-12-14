@@ -16,3 +16,4 @@ python-multipart==0.0.5
 SQLAlchemy==1.4.22
 scrapy==2.5.0
 scrapy-playwright==0.0.4
+uvloop==0.16.0

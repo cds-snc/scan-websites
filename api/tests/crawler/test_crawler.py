@@ -1,4 +1,5 @@
 from crawler import crawler
+import pytest
 from unittest.mock import ANY, MagicMock, patch
 
 
@@ -6,29 +7,32 @@ def mock_item():
     return {"scan_id": "scan_id", "url": "url"}
 
 
+@pytest.mark.asyncio
 @patch("crawler.crawler.log")
-def test_crawl_id_missing(mock_logger):
+async def test_crawl_id_missing(mock_logger):
     item = mock_item()
     item["scan_id"] = None
-    crawler.crawl(item)
+    await crawler.crawl(item)
     mock_logger.error.assert_called_once_with("scan_id(None) or url(url) missing")
 
 
+@pytest.mark.asyncio
 @patch("crawler.crawler.log")
-def test_crawl_url_missing(mock_logger):
+async def test_crawl_url_missing(mock_logger):
     item = mock_item()
     item["url"] = None
-    crawler.crawl(item)
+    await crawler.crawl(item)
     mock_logger.error.assert_called_once_with("scan_id(scan_id) or url(None) missing")
 
 
+@pytest.mark.asyncio
 @patch("crawler.crawler.Process")
 @patch("crawler.crawler.runner")
-def test_crawl_spawns_process(mock_runner, mock_process_class):
+async def test_crawl_spawns_process(mock_runner, mock_process_class):
     mock_process = MagicMock()
     mock_process_class.return_value = mock_process
     item = mock_item()
-    crawler.crawl(item)
+    await crawler.crawl(item)
 
     mock_process_class.assert_called_once_with(target=mock_runner, args=(item,))
     mock_process.start.assert_called_once()
@@ -46,7 +50,7 @@ def test_crawl_runner_calls_spider(mock_cawler_class):
     mock_cawler_class.assert_called_once_with(
         settings={
             "TWISTED_REACTOR": "twisted.internet.asyncioreactor.AsyncioSelectorReactor",
-            "ASYNCIO_EVENT_LOOP": ANY,
+            "ASYNCIO_EVENT_LOOP": "uvloop.Loop",
             "DOWNLOAD_HANDLERS": {
                 "https": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
                 "http": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
@@ -115,12 +119,14 @@ def test_UrlSpider_parse_calls_dispatch(_mock_extractor, mock_pub_sub):
     res = spider.parse(mock_response)
     next(res)
     mock_pub_sub.dispatch.assert_called_once_with(
-        {
-            "scan_id": "scan_id",
-            "url": "http://example.com",
-            "depth": 1,
-            "referer": "http://google.com",
-        }
+        [
+            {
+                "scan_id": "scan_id",
+                "url": "http://example.com",
+                "depth": 1,
+                "referer": "http://google.com",
+            }
+        ]
     )
 
 
