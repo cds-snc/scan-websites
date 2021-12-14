@@ -2,9 +2,10 @@ import json
 import os
 import scan_websites_constants
 
+from boto3wrapper.wrapper import get_session
 from database.db import db_session
 from logger import log
-from boto3wrapper.wrapper import get_session
+from sqlalchemy.orm.attributes import flag_modified
 
 from models.A11yReport import A11yReport
 from models.A11yViolation import A11yViolation
@@ -75,9 +76,23 @@ def store_axe_core_record(session, payload):
         "violations": sum_impact(report["violations"]),
         "passes": len(report["passes"]),
     }
-    summary["violations"]["total"] = sum(list(summary["violations"].values()))
-    a11y_report.summary = summary
-    session.commit()
+
+    if a11y_report.summary["status"] == "completed":
+        a11y_report.summary["inapplicable"] += len(report["inapplicable"])
+        a11y_report.summary["incomplete"] += len(report["incomplete"])
+        a11y_report.summary["violations"] = sum_impact(
+            report["violations"], a11y_report.summary["violations"]
+        )
+        a11y_report.summary["violations"]["total"] += sum(
+            list(summary["violations"].values())
+        )
+        a11y_report.summary["passes"] += len(report["passes"])
+        flag_modified(a11y_report, "summary")
+        session.commit()
+    else:
+        summary["violations"]["total"] = sum(list(summary["violations"].values()))
+        a11y_report.summary = summary
+        session.commit()
 
     for violation in report["violations"]:
         for node in violation["nodes"]:
@@ -99,8 +114,10 @@ def store_axe_core_record(session, payload):
     return True
 
 
-def sum_impact(violations):
-    d = {}
+def sum_impact(violations, d=None):
+    if d is None:
+        d = {}
+
     for v in violations:
         if "impact" in v:
             if v["impact"] in d:

@@ -2,7 +2,7 @@ from fastapi.testclient import TestClient
 from unittest.mock import ANY, MagicMock, patch
 
 from api_gateway import api
-from api_gateway.routers.scans import build_scan_payload
+from api_gateway.routers.scans import build_base_report, build_scan_payload
 
 from factories import (
     OrganisationFactory,
@@ -16,12 +16,13 @@ from factories import (
 )
 
 from models.Scan import Scan
+from models.A11yReport import A11yReport
 from models.SecurityReport import SecurityReport
 from models.SecurityViolation import SecurityViolation
 from pub_sub.pub_sub import AvailableScans
 
-
 import os
+import pytest
 import uuid
 
 client = TestClient(api.app)
@@ -106,6 +107,100 @@ def test_build_scan_payload_no_git_sha(
         "type": scan_type.name,
         "url": template_scan.data["url"],
     }
+
+
+def test_build_base_security_report(
+    session,
+    authorized_request,
+):
+    _, _, organisation = authorized_request
+
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.OWASP_ZAP.value,
+        callback={
+            "event": "stepfunctions",
+            "state_machine_name": "dynamic-security-scans",
+        },
+    )
+    template_scan = TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    scan = ScanFactory(
+        organisation=organisation, template=template, scan_type=scan_type
+    )
+    session.commit()
+
+    git_sha = str(uuid.uuid4())
+    payload = build_scan_payload(template, template_scan, scan, git_sha)
+    base_report_id = build_base_report(
+        template_scan.scan_type.name, scan, payload, session
+    )
+
+    security_report = (
+        session.query(SecurityReport)
+        .filter(SecurityReport.id == base_report_id)
+        .one_or_none()
+    )
+
+    assert security_report is not None
+
+
+def test_build_base_a11y_report(
+    session,
+    authorized_request,
+):
+    _, _, organisation = authorized_request
+
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.AXE_CORE.value,
+        callback={"event": "sns", "topic_env": "AXE_CORE_URLS_TOPIC"},
+    )
+    template_scan = TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    scan = ScanFactory(
+        organisation=organisation, template=template, scan_type=scan_type
+    )
+    session.commit()
+
+    git_sha = str(uuid.uuid4())
+    payload = build_scan_payload(template, template_scan, scan, git_sha)
+    base_report_id = build_base_report(
+        template_scan.scan_type.name, scan, payload, session
+    )
+
+    a11y_report = (
+        session.query(A11yReport).filter(A11yReport.id == base_report_id).one_or_none()
+    )
+
+    assert a11y_report is not None
+
+
+def test_build_base_report_invalid_scan_type(
+    session,
+    authorized_request,
+):
+    _, _, organisation = authorized_request
+
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.AXE_CORE.value,
+        callback={"event": "sns", "topic_env": "AXE_CORE_URLS_TOPIC"},
+    )
+    template_scan = TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    scan = ScanFactory(
+        organisation=organisation, template=template, scan_type=scan_type
+    )
+    session.commit()
+
+    git_sha = str(uuid.uuid4())
+    payload = build_scan_payload(template, template_scan, scan, git_sha)
+    with pytest.raises(ValueError):
+        build_base_report("foo", scan, payload, session)
 
 
 def test_create_template_scan_valid(session, authorized_request):
@@ -548,6 +643,7 @@ def test_start_scan_valid_api_keys_with_crawling(
 
     mock_crawl.assert_called_once_with(
         {
+            "id": ANY,
             "type": AvailableScans.OWASP_ZAP.value,
             "product": template.name,
             "revision": "123456789",

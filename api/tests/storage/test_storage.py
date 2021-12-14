@@ -126,7 +126,7 @@ def test_store_axe_core_record_updates_record(session):
     scan = ScanFactory(
         organisation=organisation, template=template, scan_type=scan_type
     )
-    a11y_report = A11yReportFactory(scan=scan)
+    a11y_report = A11yReportFactory(scan=scan, summary={"status": "scanning"})
     session.commit()
 
     payload = json.loads(load_fixture("axe_core_report.json"))
@@ -139,6 +139,44 @@ def test_store_axe_core_record_updates_record(session):
         "passes": 12,
         "status": "completed",
         "violations": {"moderate": 2, "serious": 1, "total": 3},
+    }
+
+
+def test_store_axe_core_record_updates_existing_record(session):
+    organisation = OrganisationFactory()
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.AXE_CORE.value,
+        callback={"event": "sns", "topic_env": "AXE_CORE_URLS_TOPIC"},
+    )
+    TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    scan = ScanFactory(
+        organisation=organisation, template=template, scan_type=scan_type
+    )
+    a11y_report = A11yReportFactory(
+        scan=scan,
+        summary={
+            "inapplicable": 72,
+            "incomplete": 0,
+            "passes": 12,
+            "status": "completed",
+            "violations": {"moderate": 2, "serious": 1, "total": 3},
+        },
+    )
+    session.commit()
+
+    payload = json.loads(load_fixture("axe_core_report.json"))
+    payload["id"] = a11y_report.id
+    assert storage.store_axe_core_record(session, payload) is True
+    session.refresh(a11y_report)
+    assert a11y_report.summary == {
+        "inapplicable": 144,
+        "incomplete": 0,
+        "passes": 24,
+        "status": "completed",
+        "violations": {"moderate": 4, "serious": 2, "total": 6},
     }
 
 
@@ -161,7 +199,7 @@ def test_store_axe_core_record_creates_violations(session):
         product="product",
         revision="revision",
         url="url",
-        summary={"jsonb": "data"},
+        summary={"status": "scanning"},
         scan=scan,
     )
     session.add(a11y_report)
@@ -188,6 +226,12 @@ def test_sum_impact_missing_impact():
 
 def test_sum_impact_correct_impact():
     assert storage.sum_impact([{"impact": "impact_value"}]) == {"impact_value": 1}
+
+
+def test_sum_impact_add_to_existing_correct_impact():
+    assert storage.sum_impact([{"impact": "impact_value"}], {"impact_value": 1}) == {
+        "impact_value": 2
+    }
 
 
 @patch("storage.storage.get_object")
