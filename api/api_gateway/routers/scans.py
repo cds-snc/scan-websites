@@ -29,6 +29,7 @@ from models.User import User
 from models.Scan import Scan
 from models.ScanIgnore import ScanIgnore
 from models.ScanType import ScanType
+from models.A11yReport import A11yReport
 from models.SecurityReport import SecurityReport
 from schemas.Template import TemplateCreate, TemplateScanCreateList
 from schemas.ScanIgnore import ScanIgnoreCreate
@@ -85,6 +86,37 @@ async def verify_scan_tokens(
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
 
     return template
+
+
+def build_base_report(scan_type, scan, payload, session):
+    if (
+        scan_type == pub_sub.AvailableScans.OWASP_ZAP.value
+        or scan_type == pub_sub.AvailableScans.NUCLEI.value
+    ):
+        security_report = SecurityReport(
+            product=payload["product"],
+            revision=payload["revision"],
+            url=payload["url"],
+            summary={"status": "scanning"},
+            scan=scan,
+        )
+        session.add(security_report)
+        session.commit()
+        return str(security_report.id)
+    elif scan_type == pub_sub.AvailableScans.AXE_CORE.value:
+        a11y_report = A11yReport(
+            product=payload["product"],
+            revision=payload["revision"],
+            url=payload["url"],
+            summary={"status": "scanning"},
+            scan=scan,
+        )
+        session.add(a11y_report)
+        session.commit()
+        return str(a11y_report.id)
+    else:
+        log.error(f"Unsupported scan type: {scan_type}")
+        raise ValueError("Unsupported scan type", scan_type)
 
 
 def build_scan_payload(template, template_scan, scan, git_sha=None):
@@ -165,6 +197,11 @@ async def start_scan(
             session.commit()
 
         item = build_scan_payload(template, template_scan, scan, git_sha)
+        base_report_id = build_base_report(
+            template_scan.scan_type.name, scan, item, session
+        )
+        item["id"] = base_report_id
+
         try:
             if item["crawl"] == "true":
                 background_tasks.add_task(crawl, item)

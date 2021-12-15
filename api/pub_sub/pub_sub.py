@@ -3,7 +3,6 @@ import json
 import os
 from boto3wrapper.wrapper import get_session
 from collections import defaultdict
-from database.db import db_session
 
 
 from logger import log
@@ -29,7 +28,15 @@ class AvailableScans(Enum):
 
 
 validator_list = {}
-common_validations = ["url", "type", "queue", "product", "revision", "template_id"]
+common_validations = [
+    "id",
+    "url",
+    "type",
+    "queue",
+    "product",
+    "revision",
+    "template_id",
+]
 # Append to common_validations if additional validations are required for only one template
 validator_list[AvailableScans.OWASP_ZAP.value] = common_validations
 validator_list[AvailableScans.NUCLEI.value] = common_validations
@@ -46,50 +53,12 @@ def validate_mandatory(payload, scan_type):
 
 
 def dispatch(payloads):
-    session = db_session()
     state_machine_queue = defaultdict(list)
     for payload in payloads:
-        scan = session.query(Scan).get(payload["scan_id"])
-
         if "type" not in payload:
             raise ValueError("type is not defined")
 
         validate_mandatory(payload, payload["type"])
-        if (
-            payload["type"] == AvailableScans.OWASP_ZAP.value
-            or payload["type"] == AvailableScans.NUCLEI.value
-        ):
-            security_report = SecurityReport(
-                product=payload["product"],
-                revision=payload["revision"],
-                url=payload["url"],
-                summary={"status": "scanning"},
-                scan=scan,
-            )
-            session.add(security_report)
-            session.commit()
-            payload["id"] = str(
-                security_report.id
-            )  # Add a ID that can be linked back to the parent ID of the payload
-            session.close()
-
-        elif payload["type"] == AvailableScans.AXE_CORE.value:
-            a11y_report = A11yReport(
-                product=payload["product"],
-                revision=payload["revision"],
-                url=payload["url"],
-                summary={"status": "scanning"},
-                scan=scan,
-            )
-            session.add(a11y_report)
-            session.commit()
-            payload["id"] = str(
-                a11y_report.id
-            )  # Add a ID that can be linked back to the parent ID of the payload
-            session.close()
-        else:
-            log.error("Unsupported scan type")
-            raise ValueError("Unsupported scan type")
 
         if payload["event"] == "sns":
             send(payload["queue"], payload)
