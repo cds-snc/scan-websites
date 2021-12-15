@@ -76,9 +76,11 @@
   "uri_locale": "Uniform Resource Identifier",
   "url_locale": "URL",
   "value_locale": "Value",
+  "view_report_locale": "View report",
   "violation_categories_locale": "Violation Categories",
   "violation_locale": "Violation",
   "violations_locale": "Violations",
+  "visit_website_locale": "Visit website",
   "webpage_title_locale": "Scan websites",
   "welcome_locale": "Welcome to Scan websites"
 }

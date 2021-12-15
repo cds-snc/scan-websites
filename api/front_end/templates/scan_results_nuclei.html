@@ -75,12 +75,12 @@
                       </div>
                     </td>
                     <td class="text-center">
-                      <a href="/{{ lang }}/results/{{ scan.template.id }}/security/{{scan.id}}/{{ security_report.id }}">
+                      <a href="/{{ lang }}/results/{{ scan.template.id }}/security/{{scan.id}}/{{ security_report.id }}" aria-label="{{ view_report_locale }}">
                         <span class="material-icons">description</span>
                       </a>
                     </td>
                     <td class="text-center">
-                      <a href="{{security_report.url}}" target="_blank">
+                      <a href="{{security_report.url}}" aria-label="{{ visit_website_locale }}" target="_blank">
                         <span class="material-icons">ios_share</span>
                       </a>
                     </td>
@@ -89,7 +89,7 @@
                         <button type="submit" name="submit" class="text-red-600 hover:text-indigo-900"><span class="material-icons" aria-label="{{ delete_locale }}"> delete </span></button>
                       </form>
                     </td>
-                  </td>
+                  </tr>
                 {% endfor %}
               </tbody>
             </table>
