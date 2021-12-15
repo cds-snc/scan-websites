@@ -70,7 +70,7 @@ async def login_heroku(request: Request, session: Session = Depends(get_session)
         if db_user is not None:
             authenticated_user = AuthenticatedUser(**db_user.__dict__).dict()
             request.session["user"] = authenticated_user
-            return RedirectResponse(url="/en/dashboard")
+            return RedirectResponse(url="/")
         else:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     else:
@@ -88,7 +88,7 @@ async def login_test(
         if db_user is not None:
             authenticated_user = AuthenticatedUser(**db_user.__dict__).dict()
             request.session["user"] = authenticated_user
-            return RedirectResponse(url="/en/dashboard")
+            return RedirectResponse(url="/")
         else:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     else:
@@ -131,7 +131,7 @@ async def auth_google(
         log.error(e)
         raise HTTPException(status_code=500)
 
-    return RedirectResponse(url="/en/dashboard")
+    return RedirectResponse(url="/")
 
 
 @router.get("/logout")
