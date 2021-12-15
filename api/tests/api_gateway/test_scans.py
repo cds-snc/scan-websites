@@ -5,6 +5,8 @@ from api_gateway import api
 from api_gateway.routers.scans import build_base_report, build_scan_payload
 
 from factories import (
+    A11yReportFactory,
+    A11yViolationFactory,
     OrganisationFactory,
     ScanFactory,
     ScanIgnoreFactory,
@@ -17,6 +19,7 @@ from factories import (
 
 from models.Scan import Scan
 from models.A11yReport import A11yReport
+from models.A11yViolation import A11yViolation
 from models.SecurityReport import SecurityReport
 from models.SecurityViolation import SecurityViolation
 from pub_sub.pub_sub import AvailableScans
@@ -798,7 +801,7 @@ def test_delete_security_report_with_bad_id(
         f"/scans/template/{str(template.id)}/scan/{str(template_scan.id)}/security/foo"
     )
 
-    assert response.json() == {"error": "error deleting report"}
+    assert response.json() == {"error": "error deleting security report"}
     assert response.status_code == 500
 
 
@@ -828,7 +831,7 @@ def test_delete_security_report_with_id_not_found(
         f"/scans/template/{str(template.id)}/scan/{str(scan.id)}/security/{str(uuid.uuid4())}"
     )
 
-    assert response.json() == {"error": "error deleting report"}
+    assert response.json() == {"error": "error deleting security report"}
     assert response.status_code == 500
 
 
@@ -877,6 +880,101 @@ def test_delete_security_report_with_correct_id(
     assert response.status_code == 200
     assert security_report is None
     assert len(security_violations) == 0
+
+
+def test_delete_a11y_report_with_bad_id(
+    session,
+    authorized_request,
+):
+
+    logged_in_client, _, organisation = authorized_request
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.AXE_CORE.value,
+        callback={"event": "sns", "topic_env": "AXE_CORE_URLS_TOPIC"},
+    )
+    template_scan = TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    session.commit()
+
+    response = logged_in_client.delete(
+        f"/scans/template/{str(template.id)}/scan/{str(template_scan.id)}/a11y/foo"
+    )
+
+    assert response.json() == {"error": "error deleting a11y report"}
+    assert response.status_code == 500
+
+
+def test_delete_a11y_report_with_id_not_found(
+    session,
+    authorized_request,
+):
+
+    logged_in_client, _, organisation = authorized_request
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.AXE_CORE.value,
+        callback={"event": "sns", "topic_env": "AXE_CORE_URLS_TOPIC"},
+    )
+    TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    scan = ScanFactory(
+        organisation=organisation, template=template, scan_type=scan_type
+    )
+    session.commit()
+
+    response = logged_in_client.delete(
+        f"/scans/template/{str(template.id)}/scan/{str(scan.id)}/a11y/{str(uuid.uuid4())}"
+    )
+
+    assert response.json() == {"error": "error deleting a11y report"}
+    assert response.status_code == 500
+
+
+def test_delete_a11y_report_with_correct_id(
+    session,
+    authorized_request,
+):
+
+    logged_in_client, _, organisation = authorized_request
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.AXE_CORE.value,
+        callback={"event": "sns", "topic_env": "AXE_CORE_URLS_TOPIC"},
+    )
+    TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    scan = ScanFactory(
+        organisation=organisation, template=template, scan_type=scan_type
+    )
+    a11y_report = A11yReportFactory(scan=scan)
+    a11y_violation = A11yViolationFactory(a11y_report=a11y_report)
+    session.commit()
+
+    deleted_a11y_report = a11y_report.id
+    deleted_a11y_violation = a11y_violation.id
+    response = logged_in_client.delete(
+        f"/scans/template/{str(template.id)}/scan/{str(scan.id)}/a11y/{str(a11y_report.id)}"
+    )
+
+    a11y_report = (
+        session.query(A11yReport)
+        .filter(A11yReport.id == deleted_a11y_report)
+        .one_or_none()
+    )
+    a11y_violations = (
+        session.query(A11yViolation)
+        .filter(A11yViolation.id == deleted_a11y_violation)
+        .all()
+    )
+
+    assert response.json() == {"status": "OK"}
+    assert response.status_code == 200
+    assert a11y_report is None
+    assert len(a11y_violations) == 0
 
 
 def test_delete_template_scan_with_bad_id(session, authorized_request):

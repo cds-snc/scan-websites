@@ -43,6 +43,12 @@
                                                 </td>
                                             </tr>
                                             <tr class="border border-gray-300">
+                                              <th scope='row' class="bg-gray-100 p-3">{{ uri_locale }}</th>
+                                              <td class="w-5/6 text-xs align-top truncate p-3">
+                                                  <code class="whitespace-pre-wrap wordbreak-break-all">{{ a11y_violation.url | escape }}</code>
+                                              </td>
+                                          </tr>
+                                            <tr class="border border-gray-300">
                                                 <th scope='row' class="bg-gray-100 p-3">{{ html_locale }}</th>
                                                 <td class="w-5/6 text-xs align-top truncate p-3">
                                                     <code class="whitespace-pre-wrap wordbreak-break-all">{{ a11y_violation.html | escape | trim }}</code>

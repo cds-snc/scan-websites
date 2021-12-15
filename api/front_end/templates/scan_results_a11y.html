@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+{% block includes %}
+<script src="{{ url_for('static', path='js/app.js') }}"></script>
+{% endblock %}
 {% block body %}
   <nav
   class="block text-sm text-left text-green-800 h-12 flex items-center p-4 mb-5 border-2 border-gray-500"
@@ -42,6 +45,9 @@
                   <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {{ link_locale }}
                   </th>
+                  <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {{ delete_locale }}
+                  </th>
                 </tr>
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
@@ -82,8 +88,13 @@
                         <a href="{{a11y_report.url}}" target="_blank">
                           <span class="material-icons">ios_share</span>
                         </a>
-                      </tr>
-                    </td>
+                      </td>
+                      <td class="text-center">
+                        <form class="submitFormAsJSON" action= "/scans/template/{{ scan.template.id }}/scan/{{scan.id}}/a11y/{{ a11y_report.id }}" method="delete" data-confirm="{{delete_confirm_locale}}">
+                          <button type="submit" name="submit" class="text-red-600 hover:text-indigo-900"><span class="material-icons" aria-label="{{ delete_locale }}"> delete </span></button>
+                        </form>
+                      </td>
+                    </tr>
                   {% endif %}
                 {% endfor %}
               </tbody>

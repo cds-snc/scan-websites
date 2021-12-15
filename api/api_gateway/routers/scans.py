@@ -420,12 +420,50 @@ async def delete_security_report(
             return {"status": "OK"}
         else:
             response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-            return {"error": "error deleting report"}
+            return {"error": "error deleting security report"}
 
     except Exception as err:
         log.error(err)
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        return {"error": "error deleting report"}
+        return {"error": "error deleting security report"}
+
+
+@router.delete(
+    "/template/{template_id}/scan/{scan_id}/a11y/{report_id}",
+    dependencies=[Depends(is_authenticated), Depends(template_belongs_to_org)],
+)
+async def delete_a11y_report(
+    request: Request,
+    response: Response,
+    template_id,
+    scan_id,
+    report_id,
+    session: Session = Depends(get_session),
+):
+    try:
+        a11y_report = (
+            session.query(A11yReport)
+            .outerjoin(Scan.a11y_reports)
+            .filter(
+                A11yReport.id == report_id,
+                Scan.id == scan_id,
+                Scan.template_id == template_id,
+            )
+            .one_or_none()
+        )
+
+        if a11y_report is not None:
+            session.delete(a11y_report)
+            session.commit()
+            return {"status": "OK"}
+        else:
+            response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+            return {"error": "error deleting a11y report"}
+
+    except Exception as err:
+        log.error(err)
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {"error": "error deleting a11y report"}
 
 
 @router.post(
