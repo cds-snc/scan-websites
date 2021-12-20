@@ -1,6 +1,5 @@
 FROM python:3.9-slim-buster
 
-COPY --from=public.ecr.aws/cds-snc/opentelemetry-python-lambda:1.7.1 /opt /opt
 # Define function directory
 ARG FUNCTION_DIR="/function"
 
@@ -23,6 +22,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     postgresql-client \
     openssh-client \
     python3-pip \
+    unzip \
     vim \
     wget \
     xz-utils \
@@ -30,6 +30,9 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     entr \
     && apt-get autoremove -y \
     && apt-get clean -y
+
+COPY otel-layer.zip /tmp
+RUN unzip /tmp/otel-layer.zip -d /opt && rm /tmp/otel-layer.zip
 
 WORKDIR ${FUNCTION_DIR}
 

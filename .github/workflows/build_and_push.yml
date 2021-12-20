@@ -48,6 +48,16 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ca-central-1
 
+      - name: Retrieve AWS Distro for OpenTelemetry Lambda layer
+        if: matrix.image == 'api'
+        working-directory: ./${{ matrix.image }}
+        run: |
+          aws lambda get-layer-version-by-arn \
+          --region ca-central-1 \
+          --arn arn:aws:lambda:ca-central-1:901920570463:layer:aws-otel-python38-ver-1-7-1:1 \
+          | jq -r '.Content.Location' \
+          | xargs curl -o otel-layer.zip
+          
       - name: Login to ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
