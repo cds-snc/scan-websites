@@ -1,5 +1,6 @@
 FROM python:3.9-slim-buster
 
+COPY --from=public.ecr.aws/cds-snc/opentelemetry-python-lambda:1.7.1 /opt /opt
 # Define function directory
 ARG FUNCTION_DIR="/function"
 

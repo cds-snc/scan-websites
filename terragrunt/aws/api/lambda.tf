@@ -20,6 +20,10 @@ resource "aws_lambda_function" "api" {
       FASTAPI_SECRET_KEY           = var.fastapi_secret_key
       GOOGLE_CLIENT_ID             = var.google_client_id
       GOOGLE_CLIENT_SECRET         = var.google_client_secret
+      AWS_LAMBDA_EXEC_WRAPPER      = "/opt/otel-instrument"
+      OTEL_PYTHON_ID_GENERATOR     = "xray"
+      OTEL_PROPAGATORS             = "xray"
+      OTEL_EXPORTER_OTLP_ENDPOINT  = "127.0.0.1:4317"
     }
   }
 

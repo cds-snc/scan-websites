@@ -1,11 +1,11 @@
-from mangum import Mangum
-from api_gateway import api
-from aws_lambda_powertools import Metrics
-from logger import log
-from database.migrate import migrate_head
-from storage import storage
 import os
 
+from api_gateway import api
+from aws_lambda_powertools import Metrics
+from database.migrate import migrate_head
+from logger import log
+from mangum import Mangum
+from storage import storage
 
 # Import so that the application is aware of these Models
 # Required so that models are initialized before they're referenced

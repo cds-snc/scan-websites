@@ -40,14 +40,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Build container
-        working-directory: ./${{ matrix.image }}
-        run: |
-          docker build \
-          --build-arg git_sha=$GITHUB_SHA \
-          -t $REGISTRY/${{ matrix.image }}:$GITHUB_SHA \
-          -t $REGISTRY/${{ matrix.image }}:latest .
-
       - name: Configure AWS credentials
         id: aws-creds
         uses: aws-actions/configure-aws-credentials@v1
@@ -59,6 +51,14 @@ jobs:
       - name: Login to ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build container
+        working-directory: ./${{ matrix.image }}
+        run: |
+          docker build \
+          --build-arg git_sha=$GITHUB_SHA \
+          -t $REGISTRY/${{ matrix.image }}:$GITHUB_SHA \
+          -t $REGISTRY/${{ matrix.image }}:latest .
 
       - name: Push containers to ECR
         run: |
