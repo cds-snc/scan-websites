@@ -21,7 +21,7 @@ resource "aws_lambda_function" "api" {
       GOOGLE_CLIENT_ID                    = var.google_client_id
       GOOGLE_CLIENT_SECRET                = var.google_client_secret
       AWS_LAMBDA_EXEC_WRAPPER             = "/opt/otel-instrument"
-      OPENTELEMETRY_COLLECTOR_CONFIG_FILE = "/var/task/collector.yaml"
+      OPENTELEMETRY_COLLECTOR_CONFIG_FILE = "/function/collector.yaml"
       OTEL_BSP_MAX_EXPORT_BATCH_SIZE      = 1
       OTEL_TRACES_SAMPLER                 = "Always_on"
       OTEL_PYTHON_ID_GENERATOR            = "xray"

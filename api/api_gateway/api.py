@@ -1,7 +1,6 @@
 from os import environ
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
-from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.sessions import SessionMiddleware
@@ -42,4 +41,3 @@ if environ.get("AWS_LOCALSTACK", False):
     app.include_router(dev.router, prefix="/dev", tags=["dev"])
 
 app.mount("/static", StaticFiles(directory="front_end/static"), name="static")
-FastAPIInstrumentor.instrument_app(app)
