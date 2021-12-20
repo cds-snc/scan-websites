@@ -25,6 +25,11 @@ resource "aws_iam_role_policy_attachment" "lambda_insights" {
   policy_arn = data.aws_iam_policy.lambda_insights.arn
 }
 
+resource "aws_iam_role_policy_attachment" "lambda_xray_write" {
+  role       = aws_iam_role.api.name
+  policy_arn = "arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess"
+}
+
 data "aws_iam_policy_document" "api_policies" {
 
   statement {
