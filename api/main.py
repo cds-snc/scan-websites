@@ -5,6 +5,7 @@ from aws_lambda_powertools import Metrics
 from database.migrate import migrate_head
 from logger import log
 from mangum import Mangum
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from storage import storage
 
 # Import so that the application is aware of these Models
@@ -22,6 +23,7 @@ from models.TemplateScanTrigger import TemplateScanTrigger  # noqa: F401
 from models.User import User  # noqa: F401
 
 app = api.app
+FastAPIInstrumentor.instrument_app(app)
 metrics = Metrics(namespace="ScanWebsites", service="api")
 
 
