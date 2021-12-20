@@ -1,7 +1,6 @@
-FROM public.ecr.aws/aws-observability/aws-otel-collector:v0.15.1 as otel
 FROM python:3.9-slim-buster
 
-COPY --from=otel /opt /opt
+COPY --from=public.ecr.aws/cds-snc/opentelemetry-python-lambda:1.7.1 /opt /opt
 # Define function directory
 ARG FUNCTION_DIR="/function"
 
