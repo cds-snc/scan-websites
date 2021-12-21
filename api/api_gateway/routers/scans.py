@@ -176,7 +176,7 @@ async def start_scan(
     for template_scan in template.template_scans:
         if template_scan.scan_type.dynamic != dynamic:
             skipped_list.append(template_scan.scan_type.name)
-            break
+            continue
 
         scan = (
             session.query(Scan)

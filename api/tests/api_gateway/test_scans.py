@@ -517,6 +517,64 @@ def test_start_scan_valid_api_keys_multiple_scans(
     }
 
 
+@patch("pub_sub.pub_sub.get_session")
+def test_start_scan_valid_api_keys_static_scan_mixed_types(
+    mock_aws_session,
+    session,
+    authorized_request,
+):
+    mock_client = MagicMock()
+    mock_aws_session.return_value.client.return_value = mock_client
+
+    _, user, organisation = authorized_request
+
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.OWASP_ZAP.value,
+        callback={
+            "event": "stepfunctions",
+            "state_machine_name": "dynamic-security-scans",
+        },
+    )
+    template_scan = TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    nuclei_scan_type = ScanTypeFactory(
+        name=AvailableScans.NUCLEI.value,
+        callback={
+            "event": "stepfunctions",
+            "state_machine_name": "dynamic-security-scans",
+        },
+    )
+    nuclei_template_scan = TemplateScanFactory(
+        template=template,
+        scan_type=nuclei_scan_type,
+        data={"url": "http://www.example.com"},
+    )
+
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.AXE_CORE.value,
+        callback={"event": "sns", "topic_env": "AXE_CORE_URLS_TOPIC"},
+    )
+    axe_core_template_scan = TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    session.commit()
+
+    response = client.get(
+        "scans/start",
+        headers={
+            "X-API-KEY": str(user.access_token),
+            "X-TEMPLATE-TOKEN": str(template.token),
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "message": f"Scan start details: {template.name}, successful: ['{axe_core_template_scan.scan_type.name}'], failed: [], skipped: ['{template_scan.scan_type.name}', '{nuclei_template_scan.scan_type.name}']"
+    }
+
+
 @patch("pub_sub.pub_sub.dispatch")
 def test_start_scan_valid_api_keys_with_unknown_error(
     mock_dispatch,
