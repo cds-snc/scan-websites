@@ -1,7 +1,7 @@
 # Define function directory
 ARG FUNCTION_DIR="/function"
 
-FROM python:3.9-slim-buster
+FROM python:3.8-slim-buster
 
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends \
@@ -41,15 +41,15 @@ ENV PLAYWRIGHT_BROWSERS_PATH=/pymodules/playwright
 
 COPY ./requirements_playwright.txt ${FUNCTION_DIR}
 
-RUN python3.9 -m pip install -r ${FUNCTION_DIR}/requirements_playwright.txt
+RUN python -m pip install -r ${FUNCTION_DIR}/requirements_playwright.txt
 
 COPY ./requirements.txt ${FUNCTION_DIR}
 
-RUN python3.9 -m pip install -r ${FUNCTION_DIR}/requirements.txt --target /pymodules
+RUN python -m pip install -r ${FUNCTION_DIR}/requirements.txt --target /pymodules
 
 COPY ./requirements_dev.txt ${FUNCTION_DIR}
 
-RUN python3.9 -m pip install -r ${FUNCTION_DIR}/requirements_dev.txt --target /pymodules
+RUN python -m pip install -r ${FUNCTION_DIR}/requirements_dev.txt --target /pymodules
 
 # DO NOT INSTALL CHROMIUM
 # RUN playwright install chromium

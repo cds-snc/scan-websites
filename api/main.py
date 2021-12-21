@@ -23,7 +23,6 @@ from models.TemplateScanTrigger import TemplateScanTrigger  # noqa: F401
 from models.User import User  # noqa: F401
 
 app = api.app
-FastAPIInstrumentor.instrument_app(app)
 metrics = Metrics(namespace="ScanWebsites", service="api")
 
 
@@ -39,6 +38,7 @@ def handler(event, context):
     # TODO: handle different events other than https
     if "httpMethod" in event:
         # Assume it is an API Gateway event
+        FastAPIInstrumentor.instrument_app(app)
         asgi_handler = Mangum(app)
         response = asgi_handler(event, context)
         return response

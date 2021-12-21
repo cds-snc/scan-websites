@@ -12,9 +12,7 @@ itsdangerous==2.0.1
 logzero==1.7.0
 mangum==0.12.1
 opentelemetry-api==1.7.1
-opentelemetry-exporter-otlp==1.7.1
 opentelemetry-instrumentation-fastapi==0.26b1
-opentelemetry-propagator-aws-xray==1.0.1
 opentelemetry-sdk-extension-aws==2.0.1
 psycopg2-binary==2.9.1
 python-multipart==0.0.5
