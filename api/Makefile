@@ -1,3 +1,5 @@
+test_case = '' # Run all tests by default; otherwise run user specified test
+
 .PHONY: dev fmt install lint migrations test fmt-ci lint-ci build install-dev seed
 
 build: ;
@@ -28,7 +30,7 @@ seed:
 	python database/seed.py
 
 test:
-	FASTAPI_SECRET_KEY='e8cb82f5-b966-4496-b96e-8c021892e265' CI=True coverage run -m pytest -s -vv tests &&\
+	FASTAPI_SECRET_KEY='e8cb82f5-b966-4496-b96e-8c021892e265' CI=True coverage run -m pytest -k $(test_case) -s -vv tests &&\
 	coverage report -m
 
 fmt-ci:
