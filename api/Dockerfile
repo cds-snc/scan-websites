@@ -1,10 +1,9 @@
-FROM python:3.9-slim-buster
+FROM amazon/aws-lambda-python:3.8
 
 # Define function directory
 ARG FUNCTION_DIR="/function"
 
-RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends \
+RUN yum -y install \
     ca-certificates \
     curl \
     git \
@@ -28,11 +27,8 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     xz-utils \
     zsh \
     entr \
-    && apt-get autoremove -y \
-    && apt-get clean -y
-
-COPY otel-layer.zip /tmp
-RUN unzip /tmp/otel-layer.zip -d /opt && rm /tmp/otel-layer.zip
+    && yum -y autoremove \
+    && yum clean all
 
 WORKDIR ${FUNCTION_DIR}
 
@@ -42,33 +38,21 @@ ENV PLAYWRIGHT_BROWSERS_PATH=/pymodules/playwright
 
 COPY ./requirements_playwright.txt ${FUNCTION_DIR}
 
-RUN python3.9 -m pip install -r ${FUNCTION_DIR}/requirements_playwright.txt
+RUN python -m pip install -r ${FUNCTION_DIR}/requirements_playwright.txt
 
 COPY ./requirements.txt ${FUNCTION_DIR}
 
-RUN python3.9 -m pip install -r ${FUNCTION_DIR}/requirements.txt --target /pymodules
+RUN python -m pip install -r ${FUNCTION_DIR}/requirements.txt --target /pymodules
 
 RUN playwright install chromium
 
-# Install the runtime interface client
-RUN pip install --target /pymodules \
-    awslambdaric
-
 # Copy function code
 COPY . ${FUNCTION_DIR}
+
+RUN unzip otel-layer.zip -d /opt && rm otel-layer.zip
 
 # Set build variables
 ARG git_sha
 ENV GIT_SHA=$git_sha
 
-# Install lambda runtime interactive environment
-ARG RIE_VERSION=1.1
-ARG AWS_RIE_SRC=https://github.com/aws/aws-lambda-runtime-interface-emulator/releases/download
-RUN wget -O aws-lambda-rie ${AWS_RIE_SRC}/${RIE_VERSION}/aws-lambda-rie \
-    && mv aws-lambda-rie /usr/bin/aws-lambda-rie
-
-COPY bin/entry.sh /
-RUN chmod 755 /usr/bin/aws-lambda-rie /entry.sh
-
-ENTRYPOINT [ "/entry.sh" ]
 CMD [ "main.handler" ]
