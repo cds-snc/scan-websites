@@ -49,7 +49,6 @@ def runner(item):
     runner = CrawlerProcess(
         settings={
             "TWISTED_REACTOR": "twisted.internet.asyncioreactor.AsyncioSelectorReactor",
-            "ASYNCIO_EVENT_LOOP": "uvloop.Loop",
             "DOWNLOAD_HANDLERS": {
                 "https": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
                 "http": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
