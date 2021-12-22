@@ -7,7 +7,6 @@ from alembic import command
 
 from api_gateway import api
 
-from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from factories import (
@@ -23,11 +22,6 @@ from factories import (
     TemplateScanFactory,
     UserFactory,
 )
-
-from api_gateway.custom_middleware import add_security_headers
-from api_gateway.routers import ops
-
-from starlette.middleware.base import BaseHTTPMiddleware
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -95,13 +89,3 @@ def authorized_request(session, client):
     session.commit()
     client.post(f"/login/ci/{user.email_address}")
     yield client, user, organisation
-
-
-# https://github.com/tiangolo/fastapi/issues/1472; has to be tested seperate from Jinja2 routes
-@pytest.fixture
-def hsts_middleware_client():
-    app = FastAPI()
-    app.add_middleware(BaseHTTPMiddleware, dispatch=add_security_headers)
-    app.include_router(ops.router, prefix="/ops", tags=["ops"])
-    client = TestClient(app)
-    yield client

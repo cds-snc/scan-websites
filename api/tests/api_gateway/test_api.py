@@ -41,8 +41,8 @@ def test_healthcheck_failure(mock_log, mock_get_db_version):
     assert response.json() == expected_val
 
 
-def test_hsts_in_response(hsts_middleware_client):
-    response = hsts_middleware_client.get("/ops/version")
+def test_hsts_in_response():
+    response = client.get("/ops/version")
     assert response.status_code == 200
     assert (
         response.headers["Strict-Transport-Security"]
