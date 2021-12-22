@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request, HTTPException
+from fastapi import APIRouter, Depends, Header, Request, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from babel.plural import PluralRule
@@ -6,7 +6,7 @@ from babel.dates import format_datetime
 from database.db import db_session
 from logger import log
 from sqlalchemy.orm import Session
-
+from typing import Optional
 
 from models.Organisation import Organisation
 from models.Template import Template
@@ -14,6 +14,7 @@ from models.User import User
 from models.ScanType import ScanType
 from schemas.Template import TemplateScanConfigData
 from api_gateway.routers.auth import is_authenticated
+from .utils import is_safe_redirect_url
 
 import glob
 import json
@@ -34,7 +35,6 @@ def get_db():
 
 
 templates = Jinja2Templates(directory="front_end/templates")
-
 default_fallback = "en"
 
 
@@ -133,6 +133,27 @@ templates.env.globals["get_seperator"] = get_seperator
 @router.get("/", response_class=HTMLResponse, include_in_schema=False)
 async def force_lang():
     return RedirectResponse("/en")
+
+
+@router.get("/lang/{locale}", response_class=HTMLResponse)
+async def change_lang(
+    request: Request, locale: str, referer: Optional[str] = Header(None)
+):
+    try:
+        if locale not in languages:
+            locale = default_fallback
+
+        paths = referer.split("/")
+        if referer and len(paths) >= 3 and is_safe_redirect_url(referer):
+            paths[3] = locale
+            redirect_url = "/".join(paths[3:])
+            return RedirectResponse(f"/{redirect_url}")
+        else:
+            return RedirectResponse("/en")
+
+    except Exception as e:
+        log.error(e)
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/{locale}", response_class=HTMLResponse)

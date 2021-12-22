@@ -11,6 +11,7 @@ resource "aws_lambda_function" "api" {
 
   environment {
     variables = {
+      DOMAIN_NAME                         = var.domain_name
       AXE_CORE_URLS_TOPIC                 = aws_sns_topic.axe-core-urls.arn
       AXE_CORE_REPORT_DATA_BUCKET         = module.axe-core-report-data.s3_bucket_id
       AXE_CORE_SCREENSHOT_BUCKET          = module.axe-core-screenshots.s3_bucket_id
@@ -23,7 +24,6 @@ resource "aws_lambda_function" "api" {
       AWS_LAMBDA_EXEC_WRAPPER             = "/opt/otel-instrument"
       OPENTELEMETRY_COLLECTOR_CONFIG_FILE = "/function/collector.yaml"
       OTEL_BSP_MAX_EXPORT_BATCH_SIZE      = 1
-      OTEL_TRACES_SAMPLER                 = "Always_on"
       OTEL_PYTHON_ID_GENERATOR            = "xray"
       OTEL_PROPAGATORS                    = "xray"
       OTEL_EXPORTER_OTLP_ENDPOINT         = "127.0.0.1:4317"

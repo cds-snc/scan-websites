@@ -1,5 +1,6 @@
 #!/bin/bash
 
+export DOMAIN_NAME="$HEROKU_APP_NAME".herokuapp.com
 env_db=$DATABASE_URL
 db="${env_db/postgres/postgresql}"
 
