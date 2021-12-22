@@ -6,7 +6,6 @@ receivers:
 
 exporters:
   logging:
-    loglevel: debug
   awsxray:
 
 service:
@@ -14,6 +13,3 @@ service:
     traces:
       receivers: [otlp]
       exporters: [awsxray, logging]
-  telemetry:
-    logs:
-      level: debug
