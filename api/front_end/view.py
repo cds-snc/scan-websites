@@ -102,7 +102,6 @@ def get_risk_colour(riskcode):
 def extract_risk_text(summary):
     reduced_summary = {}
     for key in summary:
-        print(key)
         if " (" in key:
             risk = str(key.split(" (")[0]).lower()
             reduced_summary[risk] = summary[key]

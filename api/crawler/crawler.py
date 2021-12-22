@@ -86,7 +86,7 @@ def runner(item):
     runner.start()
 
 
-async def crawl(item):
+def crawl(item):
     if not item["scan_id"] or not item["url"]:
         log.error(f"scan_id({item['scan_id']}) or url({item['url']}) missing")
         return
