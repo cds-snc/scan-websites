@@ -52,7 +52,7 @@
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
                 {% for a11y_report in scan.a11y_reports %}
-                  {% if 'violations' in a11y_report.summary %}
+                  
                     <tr>
                       <td class="px-6 py-4 whitespace-nowrap truncate">
                         <div class="text-sm font-medium text-gray-900">
@@ -64,6 +64,7 @@
                           {{ a11y_report.created_at.strftime('%d-%m-%Y %H:%M:%S') }}
                         </div>
                       </td>
+                      {% if 'violations' in a11y_report.summary %}
                       <td class="px-6 py-4 whitespace-nowrap">
                         <div class="text-sm font-medium text-gray-900">
                           <p class="flex flex-wrap gap-2">
@@ -74,6 +75,18 @@
                           </p>
                         </div>
                       </td>
+                      {% else %}
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">
+                          <p class="flex flex-wrap gap-2">
+                            <span class="{{ 'bg-gray-100'}} inline-block p-1 px-2">0&nbsp;{{ critical_locale }}</span>
+                            <span class="{{ 'bg-gray-100'}} inline-block p-1 px-2">0&nbsp;{{ serious_locale }}</span>
+                            <span class="{{ 'bg-gray-100'}} inline-block p-1 px-2">0&nbsp;{{ moderate_locale }}</span>
+                            <span class="{{ 'bg-gray-100'}} inline-block p-1 px-2">0&nbsp;{{ minor_locale }}</span>
+                          </p>
+                        </div>
+                      </td>
+                      {% endif %}
                       <td class="text-center">
                         <a href="/{{ lang }}/results/{{ scan.template.id }}/a11y/{{scan.id}}/{{ a11y_report.id }}">
                           <span class="material-icons">description</span>
@@ -95,7 +108,6 @@
                         </form>
                       </td>
                     </tr>
-                  {% endif %}
                 {% endfor %}
               </tbody>
             </table>

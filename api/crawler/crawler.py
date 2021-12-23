@@ -1,7 +1,6 @@
 import os
 import threading
 
-from asyncio import new_event_loop
 from urllib.parse import urlparse
 from multiprocessing.context import Process
 

@@ -83,9 +83,14 @@ def store_axe_core_record(session, payload):
         a11y_report.summary["violations"] = sum_impact(
             report["violations"], a11y_report.summary["violations"]
         )
-        a11y_report.summary["violations"]["total"] += sum(
-            list(summary["violations"].values())
-        )
+        if "total" in a11y_report.summary["violations"]:
+            a11y_report.summary["violations"]["total"] += sum(
+                list(summary["violations"].values())
+            )
+        else:
+            a11y_report.summary["violations"]["total"] = sum(
+                list(summary["violations"].values())
+            )
         a11y_report.summary["passes"] += len(report["passes"])
         flag_modified(a11y_report, "summary")
         session.commit()
@@ -115,7 +120,7 @@ def store_axe_core_record(session, payload):
 
 
 def sum_impact(violations, d=None):
-    if d is None:
+    if d is None or type(d) is not dict:
         d = {}
 
     for v in violations:
