@@ -264,6 +264,15 @@ if __name__ == "__main__":
     )
     session.add(a11y_report)
 
+    empty_a11y_report = A11yReport(
+        product="product",
+        revision=str(uuid.uuid4()),
+        url="https://www.alpha.canada.ca",
+        summary={"status": "scanning"},
+        scan=axe_core_only_scan,
+    )
+    session.add(empty_a11y_report)
+
     owasp_zap_security_report_no_results = SecurityReport(
         product="product",
         revision=str(uuid.uuid4()),

@@ -1,4 +1,6 @@
 import os
+import threading
+
 from urllib.parse import urlparse
 from multiprocessing.context import Process
 
@@ -49,6 +51,7 @@ def runner(item):
     runner = CrawlerProcess(
         settings={
             "TWISTED_REACTOR": "twisted.internet.asyncioreactor.AsyncioSelectorReactor",
+            "ASYNCIO_EVENT_LOOP": "uvloop.Loop",
             "DOWNLOAD_HANDLERS": {
                 "https": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
                 "http": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
@@ -91,5 +94,6 @@ def crawl(item):
         return
 
     process = Process(target=runner, args=(item,))
-    process.start()
+    background = threading.Thread(target=process.start(), name="Crawler")
+    background.start()
     process.join()
