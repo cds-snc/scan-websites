@@ -32,6 +32,7 @@ jobs:
           - module: scanners/axe-core
           - module: orchestrator
           - module: scanners/github
+          - module: tf_roles
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

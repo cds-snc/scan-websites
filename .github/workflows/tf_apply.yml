@@ -64,6 +64,9 @@ jobs:
             orchestrator:
               - 'terragrunt/aws/orchestrator/**'
               - 'terragrunt/env/orchestrator/**'
+            tf_roles:
+              - 'terragrunt/aws/tf_roles/**'
+              - 'terragrunt/env/tf_roles/**'
 
       - name: Apply hosted_zone
         if: ${{ steps.filter.outputs.hosted_zone == 'true' }}
@@ -104,5 +107,11 @@ jobs:
       - name: Apply orchestrator
         if: ${{ steps.filter.outputs.orchestrator == 'true' }}
         working-directory: terragrunt/env/orchestrator
+        run: |
+          terragrunt apply --terragrunt-non-interactive -auto-approve
+
+      - name: Apply tf_roles
+        if: ${{ steps.filter.outputs.tf_roles== 'true' }}
+        working-directory: terragrunt/env/tf_roles
         run: |
           terragrunt apply --terragrunt-non-interactive -auto-approve
