@@ -16,7 +16,7 @@ resource "aws_iam_role_policy_attachment" "readonly" {
 
 module "apply_role" {
   source            = "github.com/cds-snc/terraform-modules?ref=v0.0.48//gh_oicd_role"
-  role_namename     = "gh_plan_role"
+  role_name         = "gh_plan_role"
   repo              = "scan-websites"
   claim             = "ref:refs/heads/main"
   billing_tag_value = var.billing_code
