@@ -26,7 +26,7 @@ data "aws_iam_policy" "readonly" {
 }
 
 resource "aws_iam_role_policy_attachment" "readonly" {
-  role       = module.gh_oidc_roles[local.plan_name].name
+  role       = local.plan_name
   policy_arn = data.aws_iam_policy.readonly.arn
 }
 
@@ -35,6 +35,6 @@ data "aws_iam_policy" "admin" {
 }
 
 resource "aws_iam_role_policy_attachment" "admin" {
-  role       = module.gh_oidc_roles[local.admin_name].name
+  role       = local.admin_name
   policy_arn = data.aws_iam_policy.admin.arn
 }
