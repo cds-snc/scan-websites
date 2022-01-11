@@ -117,7 +117,7 @@ const createReport = async (
   await store
     .putObject({
       Bucket: reportBucket,
-      Key: `${id}.json`,
+      Key: `${id}_${new Date().toJSON()}.json`,
       Body: JSON.stringify(object),
       ContentType: "application/json",
     })
@@ -141,7 +141,7 @@ const takeScreenshot = async (
   await store
     .putObject({
       Bucket: screenshotBucket,
-      Key: `${id}.png`,
+      Key: `${id}_${new Date().toJSON()}.png`,
       Body: screenshot as Buffer | Uint8Array | string,
       ContentType: "image/png",
     })

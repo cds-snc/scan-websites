@@ -53,6 +53,11 @@ const browser: Browser = {
   newPage: async () => page,
 };
 
+jest.useFakeTimers();
+const staticDate = new Date("2020-01-01");
+staticDate.setHours(0, 0, 0);
+jest.setSystemTime(staticDate.getTime());
+
 jest.mock("@axe-core/puppeteer", () => ({
   __esModule: true,
   default: jest.fn().mockImplementation(() => {
@@ -95,7 +100,7 @@ describe("Impl", () => {
         Bucket: "screenshotBucketName",
         Body: Buffer.from("I'm a string!", "utf-8"),
         ContentType: "image/png",
-        Key: "bar.png",
+        Key: `bar_${staticDate.toJSON()}.png`,
       });
 
       expect(storeMock.putObject).toHaveBeenCalledWith({
@@ -106,7 +111,7 @@ describe("Impl", () => {
           report: mockReport,
         }),
         ContentType: "application/json",
-        Key: "bar.json",
+        Key: `bar_${staticDate.toJSON()}.json`,
       });
       expect(response).toBe(true);
     });
@@ -135,7 +140,7 @@ describe("Impl", () => {
         report: mockReport,
       }),
       ContentType: "application/json",
-      Key: "bar.json",
+      Key: `bar_${staticDate.toJSON()}.json`,
     });
     expect(result).toEqual(true);
   });
