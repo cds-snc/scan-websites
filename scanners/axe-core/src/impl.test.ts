@@ -53,8 +53,8 @@ const browser: Browser = {
   newPage: async () => page,
 };
 
-jest.useFakeTimers()
-let staticDate = new Date('2020-01-01');
+jest.useFakeTimers();
+let staticDate = new Date("2020-01-01");
 staticDate.setHours(0, 0, 0);
 jest.setSystemTime(staticDate.getTime());
 
