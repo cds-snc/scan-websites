@@ -31,7 +31,7 @@ resource "aws_iam_role_policy_attachment" "readonly" {
 }
 
 module "attach_tf_plan_policy" {
-  source            = "github.com/cds-snc/terraform-modules?ref=v1.0.1//attach_tf_plan_policy"
+  source            = "github.com/cds-snc/terraform-modules?ref=v1.0.2//attach_tf_plan_policy"
   account_id        = var.account_id
   role_name         = local.plan_name
   bucket_name       = "scan-websites-production-tf"
