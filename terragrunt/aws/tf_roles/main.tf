@@ -47,7 +47,7 @@ resource "aws_iam_role_policy_attachment" "admin" {
 
 resource "aws_iam_policy" "terragrunt" {
   name   = "Terragrunt"
-  policy = aws_iam_policy_document.terragrunt.json
+  policy = data.aws_iam_policy_document.terragrunt.json
 }
 
 data "aws_iam_policy_document" "terragrunt" {
