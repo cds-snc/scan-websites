@@ -71,4 +71,21 @@ data "aws_iam_policy_document" "terragrunt" {
     ]
   }
 
+  statement {
+    sid    = "AllowReadingSecrets"
+    effect = "Allow"
+    actions = [
+      "secretsmanager:GetResourcePolicy",
+      "secretsmanager:GetSecretValue",
+      "secretsmanager:DescribeSecret",
+      "secretsmanager:ListSecretVersionIds"
+    ]
+    resources = ["arn:aws:secretsmanager:ca-central-1:507252742351:secret:*"]
+  }
+
+  statement {
+    sid       = "ListSecrets"
+    actions   = ["secretsmanager:ListSecrets"]
+    resources = ["*"]
+  }
 }
