@@ -30,9 +30,11 @@ resource "aws_iam_role_policy_attachment" "readonly" {
   policy_arn = data.aws_iam_policy.readonly.arn
 }
 
-resource "aws_iam_role_policy_attachment" "terragrunt" {
-  role       = local.plan_name
-  policy_arn = resource.aws_iam_policy.terragrunt.arn
+module "attach_tf_plan_policy" {
+  source            = "github.com/cds-snc/terraform-modules?ref=v1.0.1//attach_tf_plan_policy"
+  role_name         = local.plan_name
+  bucket_name       = "scan-websites-production-tf"
+  billing_tag_value = var.billing_code
 }
 
 data "aws_iam_policy" "admin" {
@@ -42,50 +44,4 @@ data "aws_iam_policy" "admin" {
 resource "aws_iam_role_policy_attachment" "admin" {
   role       = local.admin_name
   policy_arn = data.aws_iam_policy.admin.arn
-}
-
-
-resource "aws_iam_policy" "terragrunt" {
-  name   = "Terragrunt"
-  policy = data.aws_iam_policy_document.terragrunt.json
-}
-
-data "aws_iam_policy_document" "terragrunt" {
-
-  statement {
-    sid     = "AllowAllDynamoDBActionsOnAllTerragruntTables"
-    effect  = "Allow"
-    actions = ["dynamodb:*"]
-    resources = [
-      "arn:aws:dynamodb:ca-central-1:507252742351:table/terraform-state-lock-dynamo"
-    ]
-  }
-
-  statement {
-    sid     = "AllowAllS3ActionsOnTerragruntBuckets"
-    effect  = "Allow"
-    actions = ["s3:*"]
-    resources = [
-      "arn:aws:s3:::scan-websites-production-tf",
-      "arn:aws:s3:::scan-websites-production-tf/*"
-    ]
-  }
-
-  statement {
-    sid    = "AllowReadingSecrets"
-    effect = "Allow"
-    actions = [
-      "secretsmanager:GetResourcePolicy",
-      "secretsmanager:GetSecretValue",
-      "secretsmanager:DescribeSecret",
-      "secretsmanager:ListSecretVersionIds"
-    ]
-    resources = ["arn:aws:secretsmanager:ca-central-1:507252742351:secret:*"]
-  }
-
-  statement {
-    sid       = "ListSecrets"
-    actions   = ["secretsmanager:ListSecrets"]
-    resources = ["*"]
-  }
 }
