@@ -7,5 +7,5 @@ include {
 }
 
 inputs = {
-  account_id = var.account_id
+  account_id = local.account_id
 }
