@@ -63,7 +63,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@master
         with:
           role-to-assume: arn:aws:iam::507252742351:role/gh_plan_role
-          role-session-name: TFApply
+          role-session-name: TFPlan
           aws-region: 'ca-central-1'
 
       - name: Terraform plan
