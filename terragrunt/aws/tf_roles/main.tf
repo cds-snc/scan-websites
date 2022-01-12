@@ -53,8 +53,8 @@ resource "aws_iam_policy" "terragrunt" {
 data "aws_iam_policy_document" "terragrunt" {
 
   statement {
-    sid    = "AllowAllDynamoDBActionsOnAllTerragruntTables"
-    effect = "Allow"
+    sid     = "AllowAllDynamoDBActionsOnAllTerragruntTables"
+    effect  = "Allow"
     actions = ["dynamodb:*"]
     resources = [
       "arn:aws:dynamodb:*:1234567890:table/terraform-state-lock-dynamo"
@@ -62,8 +62,8 @@ data "aws_iam_policy_document" "terragrunt" {
   }
 
   statement {
-    sid    = "AllowAllS3ActionsOnTerragruntBuckets"
-    effect = "Allow"
+    sid     = "AllowAllS3ActionsOnTerragruntBuckets"
+    effect  = "Allow"
     actions = ["s3:*"]
     resources = [
       "arn:aws:s3:::scan-websites-production-tf",
