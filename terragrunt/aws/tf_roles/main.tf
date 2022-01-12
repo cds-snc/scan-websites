@@ -57,7 +57,7 @@ data "aws_iam_policy_document" "terragrunt" {
     effect  = "Allow"
     actions = ["dynamodb:*"]
     resources = [
-      "arn:aws:dynamodb:*:1234567890:table/terraform-state-lock-dynamo"
+      "arn:aws:dynamodb:ca-central-1:507252742351:table/terraform-state-lock-dynamo"
     ]
   }
 
