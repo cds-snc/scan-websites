@@ -3,10 +3,6 @@ locals {
   admin_name = "gh_admin_role"
 }
 
-variable "account_id" {
-  type = string
-}
-
 module "gh_oidc_roles" {
   source = "github.com/cds-snc/terraform-modules?ref=v1.0.0//gh_oidc_role"
   roles = [
