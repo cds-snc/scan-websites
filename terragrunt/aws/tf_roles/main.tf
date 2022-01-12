@@ -30,8 +30,8 @@ resource "aws_iam_role_policy_attachment" "readonly" {
   policy_arn = data.aws_iam_policy.readonly.arn
 }
 
-resource "aws_iam_role_policy_attachment" "terragrunt"{
-  role = local.plan_name
+resource "aws_iam_role_policy_attachment" "terragrunt" {
+  role       = local.plan_name
   policy_arn = resource.aws_iam_policy.terragrunt.arn
 }
 
@@ -46,28 +46,28 @@ resource "aws_iam_role_policy_attachment" "admin" {
 
 
 resource "aws_iam_policy" "terragrunt" {
-  name = "Terragrunt"
+  name   = "Terragrunt"
   policy = aws_iam_policy_document.terragrunt.json
 }
 
 data "aws_iam_policy_document" "terragrunt" {
 
   statement {
-    sid  = "AllowAllDynamoDBActionsOnAllTerragruntTables"
+    sid    = "AllowAllDynamoDBActionsOnAllTerragruntTables"
     effect = "Allow"
-    action = [ "dynamodb:*" ]
+    action = ["dynamodb:*"]
     resource = [
       "arn:aws:dynamodb:*:1234567890:table/terraform-state-lock-dynamo"
     ]
   }
 
   statement {
-    sid = "AllowAllS3ActionsOnTerragruntBuckets"
+    sid    = "AllowAllS3ActionsOnTerragruntBuckets"
     effect = "Allow"
     action = ["s3:*"]
     resource = [
-        "arn:aws:s3:::scan-websites-production-tf",
-        "arn:aws:s3:::scan-websites-production-tf/*"
+      "arn:aws:s3:::scan-websites-production-tf",
+      "arn:aws:s3:::scan-websites-production-tf/*"
     ]
   }
 
