@@ -1,6 +1,4 @@
 resource "aws_wafv2_web_acl" "api_waf" {
-  # TODO: Create kinesis stream and logging config
-  # checkov:skip=CKV2_AWS_31:Kinesis required,will do in seperate PR
   name        = "api_waf"
   description = "WAF for API protection"
   scope       = "REGIONAL"
@@ -226,11 +224,10 @@ resource "aws_kinesis_firehose_delivery_stream" "api_waf" {
     role_arn   = aws_iam_role.waf_log_role.arn
     prefix     = "waf_logs"
     bucket_arn = "arn:aws:s3:::${var.cbs_satellite_bucket_name}"
-    cloudwatch_logging_options {
-      enabled         = true
-      log_group_name  = aws_cloudwatch_log_group.api_waf.name
-      log_stream_name = "WAFLogS3Delivery"
-    }
+  }
+
+  server_side_encryption {
+    enabled = true
   }
 
   tags = {
