@@ -205,3 +205,41 @@ resource "aws_wafv2_web_acl_association" "waf_association" {
   resource_arn = aws_api_gateway_stage.api.arn
   web_acl_arn  = aws_wafv2_web_acl.api_waf.arn
 }
+
+### Log to S3 via firehose
+
+resource "aws_cloudwatch_log_group" "api_waf" {
+  name              = "/aws/kinesisfirehose/api_waf"
+  retention_in_days = 14
+
+  tags = {
+    CostCentre = var.billing_code
+    Terraform  = true
+  }
+}
+
+resource "aws_kinesis_firehose_delivery_stream" "api_waf" {
+  name        = "aws-waf-logs-${var.product_name}"
+  destination = "extended_s3"
+
+  extended_s3_configuration {
+    role_arn   = aws_iam_role.waf_log_role.arn
+    prefix     = "waf_logs"
+    bucket_arn = "arn:aws:s3:::${var.cbs_satellite_bucket_name}"
+    cloudwatch_logging_options {
+      enabled         = true
+      log_group_name  = aws_cloudwatch_log_group.api_waf.name
+      log_stream_name = "WAFLogS3Delivery"
+    }
+  }
+
+  tags = {
+    CostCentre = var.billing_code
+    Terraform  = true
+  }
+}
+
+resource "aws_wafv2_web_acl_logging_configuration" "api_waf" {
+  log_destination_configs = [aws_kinesis_firehose_delivery_stream.api_waf.arn]
+  resource_arn            = aws_wafv2_web_acl.api_waf.arn
+}

@@ -9,12 +9,13 @@ locals {
 # DO NOT CHANGE ANYTHING BELOW HERE UNLESS YOU KNOW WHAT YOU ARE DOING
 
 inputs = {
-  account_id   = local.account_id
-  domain       = local.domain
-  env          = local.env
-  product_name = local.product_name
-  region       = "ca-central-1"
-  billing_code = local.cost_center_code
+  account_id                = local.account_id
+  domain                    = local.domain
+  env                       = local.env
+  product_name              = local.product_name
+  region                    = "ca-central-1"
+  billing_code              = local.cost_center_code
+  cbs_satellite_bucket_name = "cbs-satellite-${local.account_id}"
 }
 
 generate "provider" {

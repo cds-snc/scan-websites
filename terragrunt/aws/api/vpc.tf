@@ -71,3 +71,16 @@ resource "aws_security_group" "api" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
+resource "aws_flow_log" "cloud_based_sensor" {
+  log_destination      = "arn:aws:s3:::${var.cbs_satellite_bucket_name}"
+  log_destination_type = "s3"
+  traffic_type         = "ALL"
+  vpc_id               = module.vpc.vpc_id
+  log_format           = "$${vpc-id} $${version} $${account-id} $${interface-id} $${srcaddr} $${dstaddr} $${srcport} $${dstport} $${protocol} $${packets} $${bytes} $${start} $${end} $${action} $${log-status} $${subnet-id} $${instance-id}"
+
+  tags = {
+    CostCentre = var.billing_code
+    Terraform  = true
+  }
+}
