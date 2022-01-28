@@ -142,7 +142,7 @@ resource "aws_api_gateway_integration_response" "root_integration_response" {
 
 resource "aws_api_gateway_deployment" "api" {
   rest_api_id       = aws_api_gateway_rest_api.api.id
-  stage_description = md5(file("api_gateway.tf"))
+  stage_description = "Deployed at ${timestamp()}"
 
   lifecycle {
     create_before_destroy = true
@@ -159,4 +159,7 @@ resource "aws_api_gateway_stage" "api" {
     destination_arn = aws_cloudwatch_log_group.api_access.arn
     format          = "{\"requestId\":\"$context.requestId\", \"ip\": \"$context.identity.sourceIp\", \"caller\":\"$context.identity.caller\", \"requestTime\":\"$context.requestTime\", \"httpMethod\":\"$context.httpMethod\", \"resourcePath\":\"$context.resourcePath\", \"status\":\"$context.status\", \"responseLength\":\"$context.responseLength\"}"
   }
+
+  depends_on = [aws_api_gateway_deployment.api]
+
 }
