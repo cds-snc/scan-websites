@@ -1,6 +1,4 @@
 resource "aws_wafv2_web_acl" "api_waf" {
-  # TODO: Create kinesis stream and logging config
-  # checkov:skip=CKV2_AWS_31:Kinesis required,will do in seperate PR
   name        = "api_waf"
   description = "WAF for API protection"
   scope       = "REGIONAL"
@@ -204,4 +202,30 @@ resource "aws_wafv2_regex_pattern_set" "body_exclusions" {
 resource "aws_wafv2_web_acl_association" "waf_association" {
   resource_arn = aws_api_gateway_stage.api.arn
   web_acl_arn  = aws_wafv2_web_acl.api_waf.arn
+}
+
+### Log to S3 via firehose
+resource "aws_kinesis_firehose_delivery_stream" "api_waf" {
+  name        = "aws-waf-logs-${var.product_name}"
+  destination = "extended_s3"
+
+  extended_s3_configuration {
+    role_arn   = aws_iam_role.waf_log_role.arn
+    prefix     = "waf_logs"
+    bucket_arn = "arn:aws:s3:::${var.cbs_satellite_bucket_name}"
+  }
+
+  server_side_encryption {
+    enabled = true
+  }
+
+  tags = {
+    CostCentre = var.billing_code
+    Terraform  = true
+  }
+}
+
+resource "aws_wafv2_web_acl_logging_configuration" "api_waf" {
+  log_destination_configs = [aws_kinesis_firehose_delivery_stream.api_waf.arn]
+  resource_arn            = aws_wafv2_web_acl.api_waf.arn
 }
