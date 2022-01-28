@@ -1,6 +1,6 @@
 locals {
-  plan_name  = "gh_plan_role"
-  admin_name = "gh_admin_role"
+  plan_name           = "gh_plan_role"
+  admin_name          = "gh_admin_role"
 }
 
 module "gh_oidc_roles" {
@@ -35,6 +35,7 @@ module "attach_tf_plan_policy" {
   account_id        = var.account_id
   role_name         = local.plan_name
   bucket_name       = "scan-websites-production-tf"
+  lock_table_name   = "terraform-state-lock-dynamo"
   billing_tag_value = var.billing_code
 }
 
