@@ -1,6 +1,6 @@
 locals {
-  plan_name           = "gh_plan_role"
-  admin_name          = "gh_admin_role"
+  plan_name  = "gh_plan_role"
+  admin_name = "gh_admin_role"
 }
 
 module "gh_oidc_roles" {
