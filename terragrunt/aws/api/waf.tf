@@ -205,17 +205,6 @@ resource "aws_wafv2_web_acl_association" "waf_association" {
 }
 
 ### Log to S3 via firehose
-
-resource "aws_cloudwatch_log_group" "api_waf" {
-  name              = "/aws/kinesisfirehose/api_waf"
-  retention_in_days = 14
-
-  tags = {
-    CostCentre = var.billing_code
-    Terraform  = true
-  }
-}
-
 resource "aws_kinesis_firehose_delivery_stream" "api_waf" {
   name        = "aws-waf-logs-${var.product_name}"
   destination = "extended_s3"
