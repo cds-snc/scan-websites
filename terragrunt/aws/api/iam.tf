@@ -178,7 +178,7 @@ resource "aws_iam_role" "waf_log_role" {
 
 resource "aws_iam_policy" "write_waf_logs" {
   name        = "${var.product_name}_WriteLogs"
-  description = "Allow writing WAF logs to S3 + CloudWatch"
+  description = "Allow writing WAF logs to S3"
   policy      = data.aws_iam_policy_document.write_waf_logs.json
 
   tags = {
@@ -207,27 +207,19 @@ data "aws_iam_policy_document" "firehose_assume_role" {
 
 data "aws_iam_policy_document" "write_waf_logs" {
   statement {
+    sid    = "S3PutObjects"
     effect = "Allow"
-
     actions = [
+      "s3:AbortMultipartUpload",
+      "s3:GetBucketLocation",
+      "s3:GetObject",
       "s3:ListBucket",
+      "s3:ListBucketMultipartUploads",
+      "s3:PutObject"
     ]
-
     resources = [
-      "arn:aws:s3:::${var.cbs_satellite_bucket_name}"
-    ]
-  }
-
-  statement {
-    effect = "Allow"
-
-    actions = [
-      "s3:GetObject*",
-      "s3:PutObject*",
-    ]
-
-    resources = [
-      "arn:aws:s3:::${var.cbs_satellite_bucket_name}/waf_logs/*"
+      "arn:aws:s3:::${var.cbs_satellite_bucket_name}",
+      "arn:aws:s3:::${var.cbs_satellite_bucket_name}/waf_acl_logs/*"
     ]
   }
 }
