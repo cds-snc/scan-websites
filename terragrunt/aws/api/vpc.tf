@@ -73,7 +73,7 @@ resource "aws_security_group" "api" {
 }
 
 resource "aws_flow_log" "cloud_based_sensor" {
-  log_destination      = "arn:aws:s3:::${var.cbs_satellite_bucket_name}"
+  log_destination      = "arn:aws:s3:::${var.cbs_satellite_bucket_name}/vpc_flow_logs/"
   log_destination_type = "s3"
   traffic_type         = "ALL"
   vpc_id               = module.vpc.vpc_id
