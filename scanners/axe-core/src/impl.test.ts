@@ -100,7 +100,7 @@ describe("Impl", () => {
         Bucket: "screenshotBucketName",
         Body: Buffer.from("I'm a string!", "utf-8"),
         ContentType: "image/png",
-        Key: `bar_${staticDate.toJSON()}.png`,
+        Key: `bar_${staticDate.getTime()}.png`,
       });
 
       expect(storeMock.putObject).toHaveBeenCalledWith({
@@ -111,7 +111,7 @@ describe("Impl", () => {
           report: mockReport,
         }),
         ContentType: "application/json",
-        Key: `bar_${staticDate.toJSON()}.json`,
+        Key: `bar_${staticDate.getTime()}.json`,
       });
       expect(response).toBe(true);
     });
@@ -140,7 +140,7 @@ describe("Impl", () => {
         report: mockReport,
       }),
       ContentType: "application/json",
-      Key: `bar_${staticDate.toJSON()}.json`,
+      Key: `bar_${staticDate.getTime()}.json`,
     });
     expect(result).toEqual(true);
   });
