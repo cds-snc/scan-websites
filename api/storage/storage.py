@@ -249,6 +249,7 @@ def store_owasp_zap_record(session, payload):
                 if len(security_violation.data) > 0:
                     session.add(security_violation)
                 else:
+                    session.expunge(security_violation)
                     summary[alert["riskdesc"]] -= int(alert["count"])
                     summary["total"] -= int(alert["count"])
 
