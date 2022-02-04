@@ -356,9 +356,9 @@ def test_store_owasp_zap_record_creates_violations_and_ignores(session):
             SecurityViolation.security_report_id == security_report.id,
             SecurityViolation.violation == first_violation["alert"],
         )
-        .one()
+        .one_or_none()
     )
-    assert len(violation.data) == 0
+    assert violation is None
 
 
 def test_filter_owasp_zap_results():
