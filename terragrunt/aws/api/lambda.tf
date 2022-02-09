@@ -93,3 +93,23 @@ resource "aws_s3_bucket_notification" "api-owasp-notification" {
 
   depends_on = [aws_lambda_permission.api-owasp-permission-s3]
 }
+
+resource "aws_lambda_permission" "api-nuclei-permission-s3" {
+  statement_id  = "AllowExecutionFromNucleiS3Bucket"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.api.function_name
+  principal     = "s3.amazonaws.com"
+  source_arn    = module.nuclei-report-data.s3_bucket_arn
+}
+
+resource "aws_s3_bucket_notification" "api-nuclei-notification" {
+  bucket = module.nuclei-report-data.s3_bucket_id
+
+  lambda_function {
+    lambda_function_arn = aws_lambda_function.api.arn
+    events              = ["s3:ObjectCreated:*"]
+    filter_suffix       = ".json"
+  }
+
+  depends_on = [aws_lambda_permission.api-nuclei-permission-s3]
+}
