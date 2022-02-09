@@ -12,6 +12,7 @@
   "curl_locale": "Commande CURL",
   "dashboard_locale": "Tableau de bord",
   "date_locale": "Date",
+  "description_locale": "Description",
   "delete_locale": "Effacer",
   "edit_locale": "Modifier",
   "email_locale": "Courriel",

@@ -43,6 +43,18 @@
                                                 </td>
                                             </tr>
                                             <tr class="border border-gray-300">
+                                              <th scope='row' class="bg-gray-100 p-3">{{ description_locale }}</th>
+                                              <td class="w-5/6 align-top p-3">
+                                                  {{ security_violation.data[0].description }}
+                                              </td>
+                                            </tr>
+                                            <tr class="border border-gray-300">
+                                              <th scope='row' class="bg-gray-100 p-3">{{ risk_locale }}</th>
+                                              <td class="w-5/6 align-top p-3">
+                                                  {{ security_violation.risk }}
+                                              </td>
+                                            </tr>
+                                            <tr class="border border-gray-300">
                                                 <th scope='row' class="bg-gray-100 p-3">{{ curl_locale }}</th>
                                                 <td class="w-5/6 text-xs align-top truncate p-3">
                                                     <code class="whitespace-pre-wrap wordbreak-break-all">{{ security_violation.data[0].curl_command | escape | trim }}</code>
@@ -64,6 +76,16 @@
                                                     </ul>
                                                 </td>
                                             </tr>
+                                            <tr class="border border-gray-300">
+                                              <th scope='row' class="bg-gray-100 p-3">{{ references_locale }}</th>
+                                              <td class='w-5/6 text-xs align-top truncate p-3'>
+                                                  <ul class='flex space-x-2'>
+                                                      {% for reference in security_violation.data[0].reference %}
+                                                          <li class='p1 px-2 bg-gray-100'>{{ reference }}</li>
+                                                      {% endfor %}
+                                                  </ul>
+                                              </td>
+                                          </tr>
                                         </table>
                                     </td>
                                 </tr>

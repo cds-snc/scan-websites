@@ -283,19 +283,31 @@ def store_nuclei_record(session, payload):
         else:
             summary[report["info"]["severity"]] = 1
 
+        if "matcher-name" in report:
+            matcher_name = report["matcher-name"]
+        else:
+            matcher_name = ""
+
+        if "description" in report["info"]:
+            description = report["info"]["description"]
+        else:
+            description = ""
+
         summary["total"] += 1
         security_violation = SecurityViolation(
             violation=report["info"]["name"],
             risk=report["info"]["severity"],
-            message=report["matcher-name"],
+            message=report["template-id"],
             confidence=100,
             data=[
                 {
                     "uri": report["matched-at"],
                     "template_id": report["template-id"],
                     "type": report["type"],
-                    "matcher_name": report["matcher-name"],
+                    "matcher_name": matcher_name,
                     "curl_command": report["curl-command"],
+                    "description": description,
+                    "reference": report["info"]["reference"],
                 }
             ],
             tags=report["info"]["tags"],
