@@ -729,3 +729,44 @@ def test_store_nuclei_record_creates_violations_and_ignores(session):
         .one()
     )
     assert len(violation.data) == 0
+
+
+def test_store_nuclei_record_handles_optional_fields(session):
+    organisation = OrganisationFactory()
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory(
+        name=AvailableScans.NUCLEI.value,
+        callback={},
+    )
+    TemplateScanFactory(
+        template=template, scan_type=scan_type, data={"url": "http://www.example.com"}
+    )
+    scan = ScanFactory(
+        organisation=organisation, template=template, scan_type=scan_type
+    )
+    security_report = SecurityReport(
+        product="product",
+        revision="revision",
+        url="url",
+        summary={"jsonb": "data"},
+        scan=scan,
+    )
+    session.add(security_report)
+    session.commit()
+
+    payload = json.loads(load_fixture("nuclei_report.json"))
+    for report in payload["report"]:
+        if "matcher-name" in report:
+            del report["matcher-name"]
+        if "description" in report["info"]:
+            del report["info"]["description"]
+    payload["id"] = security_report.id
+    assert storage.store_nuclei_record(session, payload) is True
+    violations = (
+        session.query(SecurityViolation)
+        .filter(SecurityViolation.security_report_id == security_report.id)
+        .all()
+    )
+    for violation in violations:
+        assert violation.data[0]["description"] == ""
+        assert violation.data[0]["matcher_name"] == ""
