@@ -1,3 +1,5 @@
+data "aws_caller_identity" "current" {}
+
 resource "aws_lambda_function" "api" {
   function_name = "api"
 
@@ -47,19 +49,21 @@ resource "aws_lambda_function" "api" {
 }
 
 resource "aws_lambda_permission" "api" {
-  statement_id  = "AllowAPIGatewayInvoke"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.api.function_name
-  principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*"
+  statement_id   = "AllowAPIGatewayInvoke"
+  action         = "lambda:InvokeFunction"
+  function_name  = aws_lambda_function.api.function_name
+  principal      = "apigateway.amazonaws.com"
+  source_arn     = "${aws_api_gateway_rest_api.api.execution_arn}/*/*"
+  source_account = data.aws_caller_identity.current.account_id
 }
 
 resource "aws_lambda_permission" "api-permission-s3" {
-  statement_id  = "AllowExecutionFromS3Bucket"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.api.function_name
-  principal     = "s3.amazonaws.com"
-  source_arn    = module.axe-core-report-data.s3_bucket_arn
+  statement_id   = "AllowExecutionFromS3Bucket"
+  action         = "lambda:InvokeFunction"
+  function_name  = aws_lambda_function.api.function_name
+  principal      = "s3.amazonaws.com"
+  source_arn     = module.axe-core-report-data.s3_bucket_arn
+  source_account = data.aws_caller_identity.current.account_id
 }
 
 resource "aws_s3_bucket_notification" "api-notification" {
@@ -75,11 +79,12 @@ resource "aws_s3_bucket_notification" "api-notification" {
 }
 
 resource "aws_lambda_permission" "api-owasp-permission-s3" {
-  statement_id  = "AllowExecutionFromOWASPS3Bucket"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.api.function_name
-  principal     = "s3.amazonaws.com"
-  source_arn    = module.owasp-zap-report-data.s3_bucket_arn
+  statement_id   = "AllowExecutionFromOWASPS3Bucket"
+  action         = "lambda:InvokeFunction"
+  function_name  = aws_lambda_function.api.function_name
+  principal      = "s3.amazonaws.com"
+  source_arn     = module.owasp-zap-report-data.s3_bucket_arn
+  source_account = data.aws_caller_identity.current.account_id
 }
 
 resource "aws_s3_bucket_notification" "api-owasp-notification" {
@@ -95,11 +100,12 @@ resource "aws_s3_bucket_notification" "api-owasp-notification" {
 }
 
 resource "aws_lambda_permission" "api-nuclei-permission-s3" {
-  statement_id  = "AllowExecutionFromNucleiS3Bucket"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.api.function_name
-  principal     = "s3.amazonaws.com"
-  source_arn    = module.nuclei-report-data.s3_bucket_arn
+  statement_id   = "AllowExecutionFromNucleiS3Bucket"
+  action         = "lambda:InvokeFunction"
+  function_name  = aws_lambda_function.api.function_name
+  principal      = "s3.amazonaws.com"
+  source_arn     = module.nuclei-report-data.s3_bucket_arn
+  source_account = data.aws_caller_identity.current.account_id
 }
 
 resource "aws_s3_bucket_notification" "api-nuclei-notification" {
