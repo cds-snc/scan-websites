@@ -32,22 +32,45 @@
 </div>
 <form id="templateScan" name="templateScan" action="/scans/template/{{template.id}}/scan" method="POST">
 <div class="container">
-  <div class="grid lg:grid-cols-3 md:grid-cols-2 gap-8 w-full max-w-screen-lg">
+  <div class="min-h-screen justify-center items-center">
     <div class="lg:col-span-2">
       <div class="col-span-2">
         <label class="text-xs font-bold" for="url">URL to be scanned</label><label class="pl-1 text-red-700 text-xs font-bold" for="url">(required)</label>
-        <input class="flex items-center h-10 border mt-1 rounded px-4 w-full text-sm" value="{{template_scan.data['url']}}" type="text" placeholder="https://digital.canada.ca">  
+        <input class="flex items-center h-10 border mt-1 rounded px-4 w-full text-sm" name="url" value="{{template_scan.data['url']}}" type="text" placeholder="https://digital.canada.ca">  
+      </div>
+      <div class="gap-8 mt-4">
+        <label class="text-xs font-bold" >Scan to run </label>
+      </div>
+      <div class="bg-white rounded  shadow-lg">
+        <div class="flex items-center px-8 py-5">
+          <select
+              id="select-scans"
+              name="scans"
+              multiple
+              placeholder="Select scans..."
+              autocomplete="off"
+              class="block w-full rounded-sm cursor-pointer focus:outline-none"
+              >
+              {% for scan_type in scan_types %}
+              <option id="{{ scan_type.id }}" value="{{ scan_type.name }}" aria-label="{{ scan_type.name }}">{{ scan_type.name }}</option>
+              {% endfor %}
+            </select>
+        </div>
       </div>
       <div class="gap-8 mt-4">
         <label class="text-xs font-bold" >Scan options </label>
       </div>
       <div class="bg-white rounded  shadow-lg">
         <div class="flex items-center px-8 py-5">
+          {% if 'crawl' in scan_configs %}
+          <input id="crawl_scan" class="w-4 h-4 rounded-full border-2 border-white" name="crawl" type="checkbox" checked>
+          {% else %}
           <input id="crawl_scan" class="w-4 h-4 rounded-full border-2 border-white" name="crawl" type="checkbox">
+          {% endif %}
           <label for="crawl_scan" class="text-sm font-medium ml-4">Crawl</label>
         </div>
       </div>
-      <div x-data="services()">
+      
       <div class="relative flex py-5 items-center">
         <div class="flex-grow border-t border-gray-400"></div>
         <span class="flex-shrink mx-4 text-gray-400">URL exclusion rules</span>
@@ -69,32 +92,8 @@
           </tbody>
         </table>
       </div>
-      </div>
-    </div>
-    <div>
-      <h2 class="text-xs font-bold">Scans to run</h2>
-      <div class="bg-white rounded mt-4 shadow-lg py-6">
-        <div class="px-8">
-          <div class="relative flex w-full">
-            <select
-              id="select-scans"
-              name="scans[]"
-              multiple
-              placeholder="Select scans..."
-              autocomplete="off"
-              class="block w-full rounded-sm cursor-pointer focus:outline-none"
-              >
-              {% for scan_type in scan_types %}
-              <option id="{{ scan_type.id }}" value="{{ scan_type.name }}" aria-label="{{ scan_type.name }}">{{ scan_type.name }}</option>
-              {% endfor %}
-            </select>
-          </div>
-        </div>
-        <div class="px-8 mt-4 border-t pt-4">
-        </div>
-        <div class="flex flex-col px-8 pt-2">
-          <button class="flex items-center justify-center bg-green-600 text-sm font-medium w-full h-10 rounded text-blue-50 hover:bg-green-700">Save</button>
-        </div>
+      <div class="flex-col pt-2">
+        <button class="flex items-center justify-center bg-green-600 text-sm font-medium w-full h-10 rounded text-blue-50 hover:bg-green-700">Save</button>
       </div>
     </div>
   </div>

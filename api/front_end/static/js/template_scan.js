@@ -11,8 +11,9 @@ function addExclusion() {
       "'>" +
       "<td class='flex justify-between items-center px-4 py-1'>" +
       "<span>" + expression + "</span>" +
+      "<input type='hidden' name='exclude' value='"+expression+"'>" +
       "<button class='text-sm uppercase text-red-500 px-2 py-1 rounded hover:bg-red-100' onclick='deleteRow(this)'>x</button>" +
-      "</tr>"
+      "</td></tr>"
   );
 }
 
@@ -24,6 +25,7 @@ function deleteRow(button) {
 $(document).ready(function () {
   let data = $('#javascript_data').data();
   new TomSelect('#select-scans', {
+    maxItems: 1,
     items: data.selected_scans.split(","),
     plugins: {
       remove_button:{
@@ -35,33 +37,11 @@ $(document).ready(function () {
     event.preventDefault();
     event.stopPropagation();
     var form = $(document.templateScan);
-    var dat = JSON.stringify(form.serializeArray());
-
-    output = {};
-    data = {};
-    $('tr[data-id]:not([data-id=""])')
-      .each(function () {
-        key = $(this).find("input")[0].value;
-        data[key] = $(this).find("input")[1].value;
-      })
-      .get();
-
-    output["data"] = data;
-
-    var scans = $("input[id^='scanType-']")
-      .map(function () {
-        return {
-          scanType: this.value,
-        };
-      })
-      .get();
-
-    output["scan_types"] = scans;
 
     $.ajax({
       url: form.attr("action"),
       type: form.attr("method"),
-      data: JSON.stringify(output),
+      data: JSON.stringify(form.serializeArray()),
       contentType: "application/json; charset=utf-8",
       dataType: "json",
       success: function () {

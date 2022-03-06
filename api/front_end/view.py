@@ -347,6 +347,7 @@ async def template_scan(
         scan_types = session.query(ScanType).all()
 
         return_template_scan = None
+        scan_configs = {}
         selected_scans = []
 
         # Currently only allows one template scan per template
@@ -354,6 +355,9 @@ async def template_scan(
             if template_scan.id == template_scan_id:
                 selected_scans.append(template_scan.scan_type.name)
                 return_template_scan = template_scan
+                for key, value in template_scan.data.items():
+                    if value is not None:
+                        scan_configs[key] = value
 
         result = {"request": request}
         result.update(languages[locale])
@@ -361,6 +365,7 @@ async def template_scan(
         result.update({"scan_types": scan_types})
         result.update({"template_scan": return_template_scan})
         result.update({"selected_scans": selected_scans})
+        result.update({"scan_configs": scan_configs})
     except Exception as e:
         log.error(e)
         raise HTTPException(status_code=500, detail=str(e))
