@@ -1,5 +1,5 @@
 module "vpc" {
-  source            = "github.com/cds-snc/terraform-modules?ref=v1.0.12//vpc"
+  source            = "github.com/cds-snc/terraform-modules?ref=v0.0.21//vpc"
   name              = var.product_name
   billing_tag_value = var.billing_code
   high_availability = true
@@ -22,7 +22,7 @@ resource "aws_network_acl_rule" "ephemeral_ports" {
   rule_number    = 111
   egress         = false
   protocol       = "tcp"
-  rule_action    = "allow"
+  rule_action    = "block"
   cidr_block     = "0.0.0.0/0"
   from_port      = 1024
   to_port        = 65535
@@ -34,7 +34,7 @@ resource "aws_network_acl_rule" "https_egress" {
   egress         = true
   protocol       = "tcp"
   rule_action    = "allow"
-  cidr_block     = module.vpc.cidr_block
+  cidr_block     = "0.0.0.0/0"
   from_port      = 443
   to_port        = 443
 }
@@ -45,7 +45,7 @@ resource "aws_network_acl_rule" "ephemeral_ports_egress" {
   egress         = true
   protocol       = "tcp"
   rule_action    = "allow"
-  cidr_block     = module.vpc.cidr_block
+  cidr_block     = "0.0.0.0/0"
   from_port      = 1024
   to_port        = 65535
 }

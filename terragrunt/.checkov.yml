@@ -13,3 +13,4 @@ skip-check:
   - CKV_AWS_158 # CloudWatch: default encryption key is acceptable
   - CKV_AWS_173 # Lambda: environment variable encryption with default KMS key is acceptable
   - CKV_AWS_225 # API Gateway: Enabling API caching to enhance responsiveness
+  - CKV_AWS_231 # NACL: Ensure no NACL allow ingress from 0.0.0.0:0 to port 3389
