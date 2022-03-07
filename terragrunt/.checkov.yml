@@ -1,7 +1,7 @@
 skip-check:
-  - CKV_AWS_51  # ECR: `latest` tag is used for development
-  - CKV_AWS_59  # API Gateway: anonymous access required by API
-  - CKV_AWS_73  # API Gateway: X-ray tracing not required
+  - CKV_AWS_51 # ECR: `latest` tag is used for development
+  - CKV_AWS_59 # API Gateway: anonymous access required by API
+  - CKV_AWS_73 # API Gateway: X-ray tracing not required
   - CKV_AWS_108 # IAM: only scan-website resources exist in the account
   - CKV_AWS_109 # KMS: `resources=["*"]` references the key the policy is attached to
   - CKV_AWS_111 # MKS: `resources=["*"]` references the key the policy is attached to
@@ -9,6 +9,7 @@ skip-check:
   - CKV_AWS_116 # Lambda: Dead Letter Queue not required
   - CKV_AWS_117 # Lambda: access to VPC resources not required
   - CKV_AWS_120 # API Gateway: caching is not wanted
-  - CKV_AWS_136 # ECR: default encryption key is acceptable 
+  - CKV_AWS_136 # ECR: default encryption key is acceptable
   - CKV_AWS_158 # CloudWatch: default encryption key is acceptable
   - CKV_AWS_173 # Lambda: environment variable encryption with default KMS key is acceptable
+  - CKV_AWS_225 # API Gateway: Enabling API caching to enhance responsiveness
