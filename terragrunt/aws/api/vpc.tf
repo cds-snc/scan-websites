@@ -22,7 +22,7 @@ resource "aws_network_acl_rule" "ephemeral_ports" {
   rule_number    = 111
   egress         = false
   protocol       = "tcp"
-  rule_action    = "block"
+  rule_action    = "allow"
   cidr_block     = "0.0.0.0/0"
   from_port      = 1024
   to_port        = 65535
