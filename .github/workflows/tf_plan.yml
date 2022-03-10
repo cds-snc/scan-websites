@@ -45,6 +45,13 @@ jobs:
       - name: Setup terraform tools
         uses: cds-snc/terraform-tools-setup@v1
 
+      - name: configure aws credentials using OIDC
+        uses: aws-actions/configure-aws-credentials@master
+        with:
+          role-to-assume: arn:aws:iam::507252742351:role/gh_plan_role
+          role-session-name: TFPlan
+          aws-region: "ca-central-1"
+
       - name: Terraform plan
         uses: cds-snc/terraform-plan@v2
         with:
