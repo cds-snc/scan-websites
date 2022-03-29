@@ -29,6 +29,7 @@ resource "aws_lambda_function" "api" {
       OTEL_PYTHON_ID_GENERATOR            = "xray"
       OTEL_PROPAGATORS                    = "xray"
       OTEL_EXPORTER_OTLP_ENDPOINT         = "127.0.0.1:4317"
+      RERUNING_TASK_ID                    = "0"
     }
   }
 

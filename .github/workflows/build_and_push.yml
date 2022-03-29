@@ -57,7 +57,7 @@ jobs:
           --arn arn:aws:lambda:ca-central-1:901920570463:layer:aws-otel-python38-ver-1-7-1:1 \
           | jq -r '.Content.Location' \
           | xargs curl -o otel-layer.zip
-          
+
       - name: Login to ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
@@ -84,7 +84,7 @@ jobs:
           FNAME=$(sed 's/\//-/g' <<< "${{ matrix.image }}")
           aws lambda update-function-code \
             --function-name "$FNAME" \
-            --image-uri $REGISTRY/${{ matrix.image }}:latest
+            --image-uri $REGISTRY/${{ matrix.image }}:latest > /dev/null 2>&1
 
       - name: Migrate Database
         if: matrix.image == 'api'
