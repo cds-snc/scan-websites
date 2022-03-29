@@ -16,3 +16,5 @@ skip-check:
   - CKV_AWS_231 # NACL: Ensure no NACL allow ingress from 0.0.0.0:0 to port 3389
   - CKV2_AWS_5
   - CKV2_AWS_29
+  - CKV_AWS_237
+  - CKV_AWS_241
