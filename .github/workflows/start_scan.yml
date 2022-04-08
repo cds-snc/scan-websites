@@ -12,17 +12,17 @@ on:
         default: false
         type: boolean
     secrets:
-      SCAN_WEBSITES_KEY:
+      scan_websites_key:
         required: true
-      SCAN_WEBSITES_TEMPLATE:
+      scan_websites_template:
         required: true
 
 jobs:
-  start-static-scan:
+  start-scan:
     runs-on: ubuntu-latest
     steps:  
       - name: Run scan websites
         run: |
           curl -s https://scan-websites.alpha.canada.ca > /dev/null
           sleep 60
-          curl -X GET -H 'X-API-KEY: ${{ secrets.SCAN_WEBSITES_KEY }}' -H 'X-TEMPLATE-TOKEN: ${{ secrets.SCAN_WEBSITES_TEMPLATE }}' https://scan-websites.alpha.canada.ca/scans/start?dynamic=${{ inputs.dynamic }}
+          curl -X GET -H 'X-API-KEY: ${{ secrets.scan_websites_key }}' -H 'X-TEMPLATE-TOKEN: ${{ secrets.scan_websites_template }}' https://scan-websites.alpha.canada.ca/scans/start?dynamic=${{ inputs.dynamic }}
