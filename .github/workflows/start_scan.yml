@@ -1,0 +1,28 @@
+name: "Launch scan-websites scans"
+
+# Starts a scan-websites scans; https://scan-websites.alpha.canada.ca/
+# By default only static scans will run. These scans won't click buttons, submit forms, etc
+# If the dynamic flag is set to true, active scans that send traffic and interact with your app will also be started
+
+on:
+  workflow_call:
+    inputs:
+      dynamic:
+        required: false
+        default: false
+        type: boolean
+    secrets:
+      SCAN_WEBSITES_KEY:
+        required: true
+      SCAN_WEBSITES_TEMPLATE:
+        required: true
+
+jobs:
+  start-static-scan:
+    runs-on: ubuntu-latest
+    steps:  
+      - name: Run scan websites
+        run: |
+          curl -s https://scan-websites.alpha.canada.ca > /dev/null
+          sleep 60
+          curl -X GET -H 'X-API-KEY: ${{ secrets.SCAN_WEBSITES_KEY }}' -H 'X-TEMPLATE-TOKEN: ${{ secrets.SCAN_WEBSITES_TEMPLATE }}' https://scan-websites.alpha.canada.ca/scans/start?dynamic=${{ inputs.dynamic }}
