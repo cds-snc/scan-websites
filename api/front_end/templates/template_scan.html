@@ -40,7 +40,11 @@
     <div class="lg:col-span-2">
       <div class="col-span-2">
         <label class="text-xs font-bold" for="url">URL to be scanned</label><label class="pl-1 text-red-700 text-xs font-bold" for="url">(required)</label>
+        {% if template_scan %}
         <input class="flex items-center h-10 border mt-1 rounded px-4 w-full text-sm" name="url" value="{{template_scan.data['url']}}" type="text" placeholder="https://digital.canada.ca">  
+        {% else %}
+        <input class="flex items-center h-10 border mt-1 rounded px-4 w-full text-sm" name="url" type="text" placeholder="https://digital.canada.ca"> 
+        {% endif %}
       </div>
       <div class="gap-8 mt-4">
         <label class="text-xs font-bold" >Scan to run </label>
@@ -66,7 +70,7 @@
       </div>
       <div class="bg-white rounded  shadow-lg">
         <div class="flex items-center px-8 py-5">
-          {% if 'crawl' in scan_configs %}
+          {% if scan_configs and 'crawl' in scan_configs %}
           <input id="crawl_scan" class="w-4 h-4 rounded-full border-2 border-white" name="crawl" type="checkbox" checked>
           {% else %}
           <input id="crawl_scan" class="w-4 h-4 rounded-full border-2 border-white" name="crawl" type="checkbox">
@@ -93,6 +97,7 @@
             </tr>
           </thead>
           <tbody>
+          {% if scan_configs %}
           {% for exclude in scan_configs.exclude %}
           <tr class="border-t" id="{{loop.index}}">
             <td class="flex justify-between items-center px-4 py-1">
@@ -102,6 +107,7 @@
             </td>
           </tr>
           {% endfor %}
+          {% endif %}
           </tbody>
         </table>
       </div>
