@@ -12,7 +12,6 @@ from models.Organisation import Organisation
 from models.Template import Template
 from models.User import User
 from models.ScanType import ScanType
-from schemas.Template import TemplateScanConfigData
 from api_gateway.routers.auth import is_authenticated
 from .utils import is_safe_redirect_url
 

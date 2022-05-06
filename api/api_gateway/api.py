@@ -40,6 +40,7 @@ if environ.get("AWS_LOCALSTACK", False):
 
 app.mount("/static", StaticFiles(directory="front_end/static"), name="static")
 
+
 # Log more details when invalid requests received
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
