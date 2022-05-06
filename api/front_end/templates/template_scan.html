@@ -30,7 +30,11 @@
   <span class="flex-shrink mx-4 text-gray-400"><strong>{{ name_locale }}</strong>: {{ template.name }}</span>
   <div class="flex-grow border-t border-gray-400"></div>
 </div>
+{% if template_scan %}
+<form id="templateScan" name="templateScan" action="/scans/template/{{template.id}}/scan/{{template_scan.id}}" method="PUT">
+{% else %}
 <form id="templateScan" name="templateScan" action="/scans/template/{{template.id}}/scan" method="POST">
+{% endif %}
 <div class="container">
   <div class="min-h-screen justify-center items-center">
     <div class="lg:col-span-2">
@@ -45,7 +49,7 @@
         <div class="flex items-center px-8 py-5">
           <select
               id="select-scans"
-              name="scans"
+              name="scanType"
               multiple
               placeholder="Select scans..."
               autocomplete="off"
@@ -89,11 +93,24 @@
             </tr>
           </thead>
           <tbody>
+          {% for exclude in scan_configs.exclude %}
+          <tr class="border-t" id="{{loop.index}}">
+            <td class="flex justify-between items-center px-4 py-1">
+              <span>{{ exclude }}</span>
+              <input type="hidden" name="exclude" value="{{ exclude }}">
+              <button class="text-sm uppercase text-red-500 px-2 py-1 rounded hover:bg-red-100" onclick="deleteRow(this)">x</button>
+            </td>
+          </tr>
+          {% endfor %}
           </tbody>
         </table>
       </div>
       <div class="flex-col pt-2">
-        <button class="flex items-center justify-center bg-green-600 text-sm font-medium w-full h-10 rounded text-blue-50 hover:bg-green-700">Save</button>
+        {% if template_scan %}
+        <button class="flex items-center justify-center bg-green-600 text-sm font-medium w-full h-10 rounded text-blue-50 hover:bg-green-700">{{ update_locale }}</button>
+        {% else %}
+        <button class="flex items-center justify-center bg-green-600 text-sm font-medium w-full h-10 rounded text-blue-50 hover:bg-green-700">{{ save_locale }}</button>
+        {% endif %}
       </div>
     </div>
   </div>

@@ -22,6 +22,31 @@ function deleteRow(button) {
   $row.remove();
 }
 
+// Convert form data into JSON string
+function getFormData($form){
+  var unindexed_array = $form.serializeArray();
+  var indexed_array = {};
+
+  $.map(unindexed_array, function(n, i){
+      console.log(n['name']);
+      if(Array.isArray(indexed_array[n['name']])){
+        indexed_array[n['name']].push(n['value']);
+      }else{
+        if (indexed_array[n['name']]){
+          save_value = indexed_array[n['name']];
+          indexed_array[n['name']] = new Array();
+          indexed_array[n['name']].push(save_value);
+          indexed_array[n['name']].push(n['value']);
+        }else{
+          indexed_array[n['name']] = n['value'];
+        }
+      }
+      
+  });
+
+  return JSON.stringify(indexed_array);
+}
+
 $(document).ready(function () {
   let data = $('#javascript_data').data();
   new TomSelect('#select-scans', {
@@ -41,7 +66,7 @@ $(document).ready(function () {
     $.ajax({
       url: form.attr("action"),
       type: form.attr("method"),
-      data: JSON.stringify(form.serializeArray()),
+      data: getFormData(form),
       contentType: "application/json; charset=utf-8",
       dataType: "json",
       success: function () {
