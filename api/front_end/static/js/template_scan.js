@@ -28,7 +28,6 @@ function getFormData($form){
   var indexed_array = {};
 
   $.map(unindexed_array, function(n, i){
-      console.log(n['name']);
       if(Array.isArray(indexed_array[n['name']])){
         indexed_array[n['name']].push(n['value']);
       }else{
