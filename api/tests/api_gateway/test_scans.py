@@ -214,9 +214,60 @@ def test_create_template_scan_valid(session, authorized_request):
 
     response = logged_in_client.post(
         f"/scans/template/{str(template.id)}/scan",
+        json={"url": "https://www.example.com", "scanType": scan_type.name},
+    )
+    assert response.json() == {"id": ANY}
+    assert response.status_code == 200
+
+
+def test_create_template_scan_valid_single_exclude_url(session, authorized_request):
+    logged_in_client, _, organisation = authorized_request
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory()
+    session.commit()
+
+    response = logged_in_client.post(
+        f"/scans/template/{str(template.id)}/scan",
         json={
-            "data": {"url": "https://www.example.com"},
-            "scan_types": [{"scanType": scan_type.name}],
+            "url": "https://www.example.com",
+            "scanType": scan_type.name,
+            "exclude": "https://www.example.com",
+        },
+    )
+    assert response.json() == {"id": ANY}
+    assert response.status_code == 200
+
+
+def test_create_template_scan_valid_invalid_exclude_url(session, authorized_request):
+    logged_in_client, _, organisation = authorized_request
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory()
+    session.commit()
+
+    response = logged_in_client.post(
+        f"/scans/template/{str(template.id)}/scan",
+        json={
+            "url": "https://www.example.com",
+            "scanType": scan_type.name,
+            "exclude": "foo",
+        },
+    )
+    assert "invalid or missing URL scheme" in str(response.text)
+    assert response.status_code == 422
+
+
+def test_create_template_scan_valid_multiple_exclude_url(session, authorized_request):
+    logged_in_client, _, organisation = authorized_request
+    template = TemplateFactory(organisation=organisation)
+    scan_type = ScanTypeFactory()
+    session.commit()
+
+    response = logged_in_client.post(
+        f"/scans/template/{str(template.id)}/scan",
+        json={
+            "url": "https://www.example.com",
+            "scanType": scan_type.name,
+            "exclude": ["https://www.example.com", "https://www.foo.com"],
         },
     )
     assert response.json() == {"id": ANY}
@@ -236,10 +287,7 @@ def test_create_template_scan_when_already_exist(
 
     response = logged_in_client.post(
         f"/scans/template/{str(template.id)}/scan",
-        json={
-            "data": {"url": "https://www.example.com"},
-            "scan_types": [{"scanType": scan_type.name}],
-        },
+        json={"url": "https://www.example.com", "scanType": scan_type.name},
     )
     assert response.json() == {"id": ANY}
     assert response.status_code == 200
@@ -258,10 +306,7 @@ def test_create_template_scan_not_my_org(
 
     response = logged_in_client.post(
         f"/scans/template/{str(template.id)}/scan",
-        json={
-            "data": {"url": "https://www.example.com"},
-            "scan_types": [{"scanType": scan_type.name}],
-        },
+        json={"url": "https://www.example.com", "scanType": scan_type.name},
     )
     assert response.status_code == 401
 
@@ -277,10 +322,7 @@ def test_create_template_scan_unknown_scan_type(
 
     response = logged_in_client.post(
         f"/scans/template/{str(template.id)}/scan",
-        json={
-            "data": {"url": "https://www.example.com"},
-            "scan_types": [{"scanType": "foo"}],
-        },
+        json={"url": "https://www.example.com", "scanType": "foo"},
     )
     assert response.json() == {
         "error": "error creating template: No row was found when one was required"
@@ -300,10 +342,7 @@ def test_create_template_scan_invalid_url(
 
     response = logged_in_client.post(
         f"/scans/template/{str(template.id)}/scan",
-        json={
-            "data": {"url": "ftp://www.example.com"},
-            "scan_types": [{"scanType": scan_type.name}],
-        },
+        json={"url": "ftp://www.example.com", "scanType": scan_type.name},
     )
 
     assert "URL scheme not permitted" in str(response.text)
@@ -321,7 +360,7 @@ def test_create_template_scan_url_missing(
 
     response = logged_in_client.post(
         f"/scans/template/{str(template.id)}/scan",
-        json={"data": {"foo": "bar"}, "scan_types": [{"scanType": "axe-core"}]},
+        json={"foo": "bar", "scanType": "axe-core"},
     )
 
     assert "value_error.missing" in str(response.text)
@@ -341,10 +380,7 @@ def test_update_template_scan_valid(
 
     response = logged_in_client.put(
         f"/scans/template/{str(template.id)}/scan/{str(template_scan.id)}",
-        json={
-            "data": {"url": "https://other.example.com"},
-            "scan_types": [{"scanType": scan_type.name}],
-        },
+        json={"url": "https://other.example.com", "scanType": scan_type.name},
     )
     assert response.json() == {"id": ANY}
     assert response.status_code == 200
@@ -364,10 +400,7 @@ def test_update_template_scan_not_my_template(
 
     response = logged_in_client.put(
         f"/scans/template/{str(template.id)}/scan/{str(template_scan.id)}",
-        json={
-            "data": {"url": "https://other.example.com"},
-            "scan_types": [{"scanType": scan_type.name}],
-        },
+        json={"url": "https://other.example.com", "scanType": scan_type.name},
     )
     assert response.status_code == 401
 
@@ -383,10 +416,7 @@ def test_update_template_scan_invalid_template(
 
     response = logged_in_client.put(
         "/scans/template/foo/scan/bar",
-        json={
-            "data": {"url": "https://other.example.com"},
-            "scan_types": [{"scanType": scan_type.name}],
-        },
+        json={"url": "https://other.example.com", "scanType": scan_type.name},
     )
     assert response.status_code == 401
 

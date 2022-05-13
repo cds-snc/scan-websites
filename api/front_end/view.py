@@ -12,7 +12,6 @@ from models.Organisation import Organisation
 from models.Template import Template
 from models.User import User
 from models.ScanType import ScanType
-from schemas.Template import TemplateScanConfigData
 from api_gateway.routers.auth import is_authenticated
 from .utils import is_safe_redirect_url
 
@@ -346,27 +345,26 @@ async def template_scan(
         )
         scan_types = session.query(ScanType).all()
 
-        scan_configs = []
         return_template_scan = None
+        scan_configs = {}
+        selected_scans = []
 
         # Currently only allows one template scan per template
         for template_scan in template.template_scans:
             if template_scan.id == template_scan_id:
+                selected_scans.append(template_scan.scan_type.name)
                 return_template_scan = template_scan
                 for key, value in template_scan.data.items():
                     if value is not None:
-                        scan_configs.append(
-                            TemplateScanConfigData(
-                                id=str(uuid.uuid4()), key=key, value=value
-                            )
-                        )
+                        scan_configs[key] = value
 
         result = {"request": request}
         result.update(languages[locale])
         result.update({"template": template})
         result.update({"scan_types": scan_types})
-        result.update({"scan_config": scan_configs})
         result.update({"template_scan": return_template_scan})
+        result.update({"selected_scans": selected_scans})
+        result.update({"scan_configs": scan_configs})
     except Exception as e:
         log.error(e)
         raise HTTPException(status_code=500, detail=str(e))

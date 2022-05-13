@@ -1,8 +1,12 @@
 {% extends "base.html" %}
 {% block includes %}
+<script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet"/>
 <script src="{{ url_for('static', path='js/template_scan.js') }}"></script>
+
 {% endblock %}
 {% block body %}
+<meta id="javascript_data" data-selected_scans="{{selected_scans|join(',')}}">
 <nav
   class="block text-sm text-left text-green-800 h-12 flex items-center p-4 mb-5 border-2 border-gray-500"
   role="alert"
@@ -21,88 +25,103 @@
     {% endif %}
   </ol>
 </nav>
+<div class="relative flex py-5 items-center">
+  <div class="flex-grow border-t border-gray-400"></div>
+  <span class="flex-shrink mx-4 text-gray-400"><strong>{{ name_locale }}</strong>: {{ template.name }}</span>
+  <div class="flex-grow border-t border-gray-400"></div>
+</div>
 {% if template_scan %}
-<h1 class="text-gray-700 font-semibold uppercase text-xl mb-7">{{ update_scan_locale }}</h1>
+<form id="templateScan" name="templateScan" action="/scans/template/{{template.id}}/scan/{{template_scan.id}}" method="PUT">
 {% else %}
-<h1 class="text-gray-700 font-semibold uppercase text-xl mb-7">{{ add_new_scan_locale }}</h1>
+<form id="templateScan" name="templateScan" action="/scans/template/{{template.id}}/scan" method="POST">
 {% endif %}
-<hr class="my-3"/>
-<div><strong>{{ name_locale }}</strong>: {{ template.name }}</div></br>
-
 <div class="container">
-  <div class="row mb-8">
-    <div class="flex flex-col ... divide-y">
-      <div>
-        <section><strong>{{ scan_types_locale }}:</strong>
-          <select id="scanType" aria-label="{{ scan_types_locale }}">
-            {% for scan_type in scan_types %}
-            <option id="{{ scan_type.name }}" value="{{ scan_type.id }}" aria-label="{{ scan_type.name }}">{{ scan_type.name }}</option>
-            {% endfor %}
-          </select>
-
-          <button class="bg-green-500 hover:bg-green-700 text-white font-bold  px-2 rounded" type="button"
-            id="addScanButton" class="btn btn-primary" onclick="scanAdd();">&#43;
-          </button>
-        </section>
-      </div>
-      <div class="shadow ...">
+  <div class="min-h-screen justify-center items-center">
+    <div class="lg:col-span-2">
+      <div class="col-span-2">
+        <label class="text-xs font-bold" for="url">URL to be scanned</label><label class="pl-1 text-red-700 text-xs font-bold" for="url">(required)</label>
         {% if template_scan %}
-        <form id="templateScan" name="templateScan" action="/scans/template/{{template.id}}/scan/{{template_scan.id}}" method="PUT">
+        <input class="flex items-center h-10 border mt-1 rounded px-4 w-full text-sm" name="url" value="{{template_scan.data['url']}}" type="text" placeholder="https://digital.canada.ca">  
         {% else %}
-        <form id="templateScan" name="templateScan" action="/scans/template/{{template.id}}/scan" method="POST">
+        <input class="flex items-center h-10 border mt-1 rounded px-4 w-full text-sm" name="url" type="text" placeholder="https://digital.canada.ca"> 
         {% endif %}
-          <div id="container" class="border-double border-4 border-light-blue-500 ...">
-            <strong>Selected scan type</strong></br>
-            {% if template_scan %}
-            <div id='child'>
-              <input type="text" id="scanType-{{ template_scan.scan_type.id }}"name="scanType" value="{{ template_scan.scan_type.name }}" readonly class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"></input>  
-              <button class="bg-red-500 hover:bg-red-700 text-white font-bold  px-2 rounded" type="button" id="addScanButton" class="btn btn-primary" onclick="scanClear();">{{ clear_locale }}</button>
-            </div>
-            {% endif %}
-            
-          </div>
-          <table id="dataTable" class="table-auto" id="editableTable">
-            <thead>
-              <tr>
-                <th class="px-4 py-2">{{ key_locale }}</th>
-                <th class="px-4 py-2">{{ value_locale }}</th>
-                <th>
-                  <button class="bg-green-500 hover:bg-green-700 text-white font-bold px-2 rounded" type="button"
-                    id="addButton" class="btn btn-primary" onclick="dataAdd();">&#43;</button>
-
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              
-              {% if template_scan %}
-                  {% for data in scan_config %}
-                    <tr data-id="{{data.id}}">
-                      <td class='border px-4 py-2'>
-                        <input type='text' name='key' value="{{data.key}}" aria-label="{{ key_locale }}"/>
-                      </td>
-                      <td class='border px-4 py-2'>
-                        <input type='text' name='value' value="{{data.value}}" aria-label="{{ value_locale }}"/>
-                      </td>
-                    </tr>
-                  {% endfor %}
-              {% else %}
-                <tr data-id="1">
-                  <td class="border px-4 py-2"><input type="text" name="key" value="url" aria-label="{{ key_locale }}"/></td>
-                  <td class="border px-4 py-2"><input type="text" name="value" value="https://" aria-label="{{ value_locale }}"/></td>
-                </tr>
-              {% endif %}
-            </tbody>
-          </table>
-          {% if template_scan %}
-          <button id="updateBtn" class="h-12 mt-3 text-white w-full rounded bg-red-800 hover:bg-red-900">{{ update_locale }}</button>
+      </div>
+      <div class="gap-8 mt-4">
+        <label class="text-xs font-bold" >Scan to run </label>
+      </div>
+      <div class="bg-white rounded  shadow-lg">
+        <div class="flex items-center px-8 py-5">
+          <select
+              id="select-scans"
+              name="scanType"
+              multiple
+              placeholder="Select scans..."
+              autocomplete="off"
+              class="block w-full rounded-sm cursor-pointer focus:outline-none"
+              >
+              {% for scan_type in scan_types %}
+              <option id="{{ scan_type.id }}" value="{{ scan_type.name }}" aria-label="{{ scan_type.name }}">{{ scan_type.name }}</option>
+              {% endfor %}
+            </select>
+        </div>
+      </div>
+      <div class="gap-8 mt-4">
+        <label class="text-xs font-bold" >Scan options </label>
+      </div>
+      <div class="bg-white rounded  shadow-lg">
+        <div class="flex items-center px-8 py-5">
+          {% if scan_configs and 'crawl' in scan_configs %}
+          <input id="crawl_scan" class="w-4 h-4 rounded-full border-2 border-white" name="crawl" type="checkbox" checked>
           {% else %}
-          <button id="submitBtn" class="h-12 mt-3 text-white w-full rounded bg-red-800 hover:bg-red-900">{{ save_locale }}</button>
+          <input id="crawl_scan" class="w-4 h-4 rounded-full border-2 border-white" name="crawl" type="checkbox">
           {% endif %}
-        </form>
+          <label for="crawl_scan" class="text-sm font-medium ml-4">Crawl</label>
+        </div>
+      </div>
+      
+      <div class="relative flex py-5 items-center">
+        <div class="flex-grow border-t border-gray-400"></div>
+        <span class="flex-shrink mx-4 text-gray-400">URL exclusion rules</span>
+        <div class="flex-grow border-t border-gray-400"></div>
+      </div>
+      <div class="flex space-x-2" x-data="services()">
+        <input id="regex" type="text" class="px-2 py-1 border flex-1 rounded" placeholder="URL regular expression">
+        <button type="button" class="border bg-blue-600 hover:bg-blue-700 text-white rounded px-4 py-1" onclick="addExclusion();">Add
+        exclusion</button>
+      </div>
+      <div class="rounded border mt-4 text-xs">
+        <table id="dataTable" class="w-full">
+          <thead>
+            <tr>
+              <th class="bg-gray-100 font-normal text-gray-500 uppercase py-2">Excluded</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% if scan_configs %}
+          {% for exclude in scan_configs.exclude %}
+          <tr class="border-t" id="{{loop.index}}">
+            <td class="flex justify-between items-center px-4 py-1">
+              <span>{{ exclude }}</span>
+              <input type="hidden" name="exclude" value="{{ exclude }}">
+              <button class="text-sm uppercase text-red-500 px-2 py-1 rounded hover:bg-red-100" onclick="deleteRow(this)">x</button>
+            </td>
+          </tr>
+          {% endfor %}
+          {% endif %}
+          </tbody>
+        </table>
+      </div>
+      <div class="flex-col pt-2">
+        {% if template_scan %}
+        <button class="flex items-center justify-center bg-green-600 text-sm font-medium w-full h-10 rounded text-blue-50 hover:bg-green-700">{{ update_locale }}</button>
+        {% else %}
+        <button class="flex items-center justify-center bg-green-600 text-sm font-medium w-full h-10 rounded text-blue-50 hover:bg-green-700">{{ save_locale }}</button>
+        {% endif %}
       </div>
     </div>
+  </div>
 </div>
+</form>
 {% block footer %}
 {{super()}}
 {% endblock %}

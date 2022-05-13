@@ -31,7 +31,7 @@ from models.ScanIgnore import ScanIgnore
 from models.ScanType import ScanType
 from models.A11yReport import A11yReport
 from models.SecurityReport import SecurityReport
-from schemas.Template import TemplateCreate, TemplateScanCreateList
+from schemas.Template import TemplateCreate, TemplateScanData
 from schemas.ScanIgnore import ScanIgnoreCreate
 from pub_sub import pub_sub
 
@@ -256,18 +256,17 @@ async def save_template_scan(
     request: Request,
     response: Response,
     template_id: uuid.UUID,
-    config: TemplateScanCreateList,
+    config: TemplateScanData,
     session: Session = Depends(get_session),
 ):
     try:
         scan_type = (
-            session.query(ScanType)
-            .filter(ScanType.name == config.scan_types[0].scanType)
-            .one()
+            session.query(ScanType).filter(ScanType.name == config.scanType).one()
         )
+
         config_dict = json.loads(config.json())
         new_template_scan = TemplateScan(
-            data=config_dict["data"], template_id=template_id, scan_type=scan_type
+            data=config_dict, template_id=template_id, scan_type=scan_type
         )
         session.add(new_template_scan)
         session.commit()
@@ -287,7 +286,7 @@ async def update_template_scan(
     response: Response,
     template_id: uuid.UUID,
     template_scan_id: uuid.UUID,
-    config: TemplateScanCreateList,
+    config: TemplateScanData,
     session: Session = Depends(get_session),
 ):
     try:
@@ -301,20 +300,18 @@ async def update_template_scan(
         )
 
         scan_type = (
-            session.query(ScanType)
-            .filter(ScanType.name == config.scan_types[0].scanType)
-            .one()
+            session.query(ScanType).filter(ScanType.name == config.scanType).one()
         )
         config_dict = json.loads(config.json())
         if template_scan is None:
             new_template_scan = TemplateScan(
-                data=config_dict["data"], template_id=template_id, scan_type=scan_type
+                data=config_dict, template_id=template_id, scan_type=scan_type
             )
             session.add(new_template_scan)
             session.commit()
             return {"id": new_template_scan.id}
         else:
-            template_scan.data = config_dict["data"]
+            template_scan.data = config_dict
             template_scan.scan_type = scan_type
             session.add(template_scan)
             session.commit()
