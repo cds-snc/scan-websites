@@ -13,28 +13,28 @@ on:
       - main
     paths:
       - api/requirements.txt
-      - scanners/axe-core/package-lock.json      
-      - .github/workflows/generate_sbom.yml      
+      - scanners/axe-core/package-lock.json
+      - .github/workflows/generate_sbom.yml
 
 jobs:
-  generate-api-sbom:
-    name: Generate API SBOM
-    uses: cds-snc/security-tools/.github/workflows/generate_sbom.yml@main
-    with:
-      project_name: scan-websites/api
-      project_type: python
-      project_version: main
-      working_directory: api
-    secrets:
-      dependency_track_api_key: ${{ secrets.DEPENDENCY_TRACK_API_KEY }}
+  generate-sbom:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
 
-  generate-scanner-axe-core-sbom:
-    name: Generate axe-core SBOM
-    uses: cds-snc/security-tools/.github/workflows/generate_sbom.yml@main
-    with:
-      project_name: scan-websites/scanner/axe-core
-      project_type: node
-      project_version: main
-      working_directory: scanners/axe-core
-    secrets:
-      dependency_track_api_key: ${{ secrets.DEPENDENCY_TRACK_API_KEY }}      
+      - name: Generate api SBOM
+        uses: cds-snc/security-tools/.github/actions/generate-sbom@d39a08b2145375940f52c0b4b8c58a8cf3603bdb
+        with:
+          dependency_track_api_key: ${{ secrets.DEPENDENCY_TRACK_API_KEY }}
+          project_name: scan-websites/api
+          project_type: python
+          working_directory: api
+
+      - name: Generate scanners/axe-core SBOM
+        uses: cds-snc/security-tools/.github/actions/generate-sbom@d39a08b2145375940f52c0b4b8c58a8cf3603bdb
+        with:
+          dependency_track_api_key: ${{ secrets.DEPENDENCY_TRACK_API_KEY }}
+          project_name: scan-websites/scanners/axe-core
+          project_type: node
+          working_directory: scanners/axe-core
