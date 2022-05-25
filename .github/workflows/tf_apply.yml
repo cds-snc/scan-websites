@@ -38,7 +38,7 @@ jobs:
           role-session-name: TFApply
           aws-region: "ca-central-1"
 
-      - uses: dorny/paths-filter@3b817c99747a70f3b42db7c51bcc44407b73481e # tag=v2.2.1
+      - uses: dorny/paths-filter@b2feaf19c27470162a626bd6fa8438ae5b263721 # tag=v2.10.2
         id: filter
         with:
           filters: |

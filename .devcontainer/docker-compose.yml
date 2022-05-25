@@ -67,7 +67,7 @@ services:
       REPORT_DATA_BUCKET: "axe-core-report-data"
       SCREENSHOT_BUCKET: "axe-core-screenshots"
   db:
-    image: postgres:11.2
+    image: postgres:11.16
     volumes:
       - ./initdb:/docker-entrypoint-initdb.d
     restart: always
@@ -86,7 +86,7 @@ services:
       - "5433:5432"
 
   test-db:
-    image: postgres:11.2
+    image: postgres:11.16
     volumes:
       - ./initdb:/docker-entrypoint-initdb.d
     restart: always
