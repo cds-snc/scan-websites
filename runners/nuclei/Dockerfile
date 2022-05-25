@@ -1,10 +1,10 @@
-FROM golang:1.17.2-alpine as build-env
+FROM golang:1.18.2-alpine as build-env
 
 RUN apk update && apk upgrade
 
 RUN go install -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
 
-FROM alpine:3.14
+FROM alpine:3.16
 
 ARG GLIBC_VER=2.31-r0
 ARG AWS_CLI_VERSION="2.2.29"

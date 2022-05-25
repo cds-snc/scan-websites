@@ -1,4 +1,4 @@
-FROM golang:1.17.2-alpine as build
+FROM golang:1.18.2-alpine as build
 
 # This is needed or the build will fail with the following error: 
 # $GOPATH/go.mod exists but should not
