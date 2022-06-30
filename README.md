@@ -29,7 +29,7 @@ Run this in a dev container.
 To interact with aws localstack `use` laws
 
 ### Initial Run Reqs
-`cd api && make install && make install-dev`
+`make install && make install-dev`
 
 #### VS Code Path Env
 `export PATH="$PATH:/home/vscode/.local/bin/"`
