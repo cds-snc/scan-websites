@@ -76,8 +76,7 @@ complete -C /usr/local/bin/terraform terragrunt\n\
 alias tf='terraform'\n\
 alias tg='terragrunt'\n\
 alias ll='la -la' \n\
-alias laws='aws --endpoint-url=http://localstack:4566 --region=ca-central-1' \n\
-export PATH=$PATH:/usr/local/go/bin/" >> /home/vscode/.zshrc
+alias laws='aws --endpoint-url=http://localstack:4566 --region=ca-central-1'" >> /home/vscode/.zshrc
 
 # Setup AWS Credentials
 RUN mkdir -p /home/vscode/.aws
@@ -95,5 +94,3 @@ output=json\n\
 " >> /home/vscode/.aws/config
 
 RUN su vscode -c "source /usr/local/share/nvm/nvm.sh && npm install -g typescript" 2>&1
-ENV DEV_ENVIRONMENT=true
-ENV PATH=/home/vscode/.local/bin/:${PATH}

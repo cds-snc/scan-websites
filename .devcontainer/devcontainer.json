@@ -6,6 +6,10 @@
   "service": "app",
   "workspaceFolder": "/workspace",
   "shutdownAction": "stopCompose",
+  "remoteEnv": {
+    "DEV_ENVIRONMENT": "true",
+    "PATH": "${containerEnv:PATH}:/usr/local/go/bin:/home/vscode/.local/bin"
+  },
   // Set *default* container specific settings.json values on container create.
   "settings": {
     "python.pythonPath": "/usr/local/bin/python",
@@ -32,8 +36,7 @@
         "username": "postgres",
         "password": "postgres"
       }
-    ],
-    "terminal.integrated.shell.linux": "/bin/zsh"
+    ]
   },
   // Add the IDs of extensions you want installed when the container is created.
   "extensions": [
@@ -49,6 +52,6 @@
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // "forwardPorts": [],
   // Use 'postCreateCommand' to run commands after the container is created.
-  // "postCreateCommand": "make install && make install-dev",
+  "postCreateCommand": "make install && make install-dev",
   "remoteUser": "vscode"
 }
