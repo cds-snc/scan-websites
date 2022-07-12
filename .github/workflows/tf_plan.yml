@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
+        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3.0.2
 
       - name: Setup terraform tools
         uses: cds-snc/terraform-tools-setup@7c8f52956e11bbed68cc5576dd0d07a4694761b4 # tag=v1
@@ -53,7 +53,7 @@ jobs:
           aws-region: "ca-central-1"
 
       - name: Terraform plan
-        uses: cds-snc/terraform-plan@dce0ba2ac808e5c2b3499c8073adef25aaa559f3 # tag=v2
+        uses: cds-snc/terraform-plan@dce0ba2ac808e5c2b3499c8073adef25aaa559f3 # tag=v2.0.8
         with:
           comment-delete: true
           comment-title: Plan for ${{ matrix.module }}
