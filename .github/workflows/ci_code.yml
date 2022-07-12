@@ -52,7 +52,7 @@ jobs:
 
       - name: Setup node
         if: ${{ steps.filter.outputs.changes == 'true' && matrix.folder != 'terragrunt' }}
-        uses: actions/setup-node@1f8c6b94b26d0feae1e387ca63ccbdc44d27b561 # tag=v2
+        uses: actions/setup-node@5b949b50c3461bbcd5a540b150c368278160234a # tag=v3.4.0
         with:
           node-version: "14"
 
