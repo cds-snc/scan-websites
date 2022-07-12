@@ -7,7 +7,7 @@ require (
 	github.com/aws/aws-sdk-go-v2 v1.16.4
 	github.com/aws/aws-sdk-go-v2/config v1.15.7
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.26.10
-	github.com/shurcooL/githubv4 v0.0.0-20210922025249-6831e00d857f
+	github.com/shurcooL/githubv4 v0.0.0-20220520033151-0b4e3294ff00
 	golang.org/x/oauth2 v0.0.0-20211005180243-6b3c2da341f1
 )
 
