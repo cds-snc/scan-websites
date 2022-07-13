@@ -11,21 +11,18 @@ client = TestClient(api.app)
 
 
 @patch("api_gateway.routers.auth.oauth.google.authorize_access_token")
-@patch("api_gateway.routers.auth.oauth.google.parse_id_token")
 @patch("database.db.get_session")
 def test_google_oauth_callback(
     mock_get_session,
-    mock_parse_id_token,
     mock_authorize_access_token,
 ):
     fresh_client = TestClient(api.app)
-    mock_authorize_access_token.return_value = {"access_token": "TOKEN"}
-    mock_parse_id_token.return_value = UserInfo(
+    mock_authorize_access_token.return_value = {'userinfo': UserInfo(
         {
             "email": "user@cds-snc.ca",
             "name": "User McUser",
         }
-    )
+    )}
     response = fresh_client.get("/auth/google")
 
     assert response.cookies["session"] is not None

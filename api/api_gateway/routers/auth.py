@@ -102,11 +102,11 @@ async def auth_google(
 ):
     try:
         token = await oauth.google.authorize_access_token(request)
+        user = token['userinfo']
+        email = user["email"]
     except OAuthError as error:
         log.error(error)
         return HTMLResponse(f"<h1>{error.error}</h1>")
-    user = await oauth.google.parse_id_token(request, token)
-    email = user["email"]
 
     db_user = session.query(User).filter(User.email_address == email).scalar()
     if db_user is None:
