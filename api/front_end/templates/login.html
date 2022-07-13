@@ -6,9 +6,9 @@
           <div class="flex justify-between items-center mt-3">
             <span class="p-2 text-gray-400 mb-1">{{ login_text_locale }}</span>
           </div> 
-          {% if heroku %}
-            <form action="/login/heroku">
-              <button class="h-12 mt-3 text-white w-full rounded bg-purple-800 hover:bg-purple-900">Heroku</button>
+          {% if preview %}
+            <form action="/login/preview">
+              <button class="h-12 mt-3 text-white w-full rounded bg-purple-800 hover:bg-purple-900">Login (Preview)</button>
             </form>
           {% else %}
             <form action="/login/google">
