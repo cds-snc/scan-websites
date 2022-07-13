@@ -1,9 +1,9 @@
 alembic==1.8.0
 aiofiles==0.8.0
 Authlib==1.0.1
-aws-lambda-powertools==1.26.0
-babel==2.10.1
-boto3==1.24.20
+aws-lambda-powertools==1.26.3
+babel==2.10.3
+boto3==1.24.23
 bcrypt==3.2.2
 fastapi==0.78.0
 httpx==0.23.0
@@ -16,7 +16,7 @@ opentelemetry-instrumentation-fastapi==0.26b1
 opentelemetry-instrumentation-sqlalchemy==0.26b1
 psycopg2-binary==2.9.3
 python-multipart==0.0.5
-SQLAlchemy==1.4.36
+SQLAlchemy==1.4.39
 scrapy==2.6.1
-scrapy-playwright==0.0.17
+scrapy-playwright==0.0.18
 uvloop==0.16.0
