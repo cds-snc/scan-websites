@@ -1,6 +1,6 @@
 alembic==1.8.0
 aiofiles==0.8.0
-Authlib==0.15.5
+Authlib==1.0.1
 aws-lambda-powertools==1.26.3
 babel==2.10.3
 boto3==1.24.23

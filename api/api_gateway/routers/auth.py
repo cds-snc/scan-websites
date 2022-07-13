@@ -59,9 +59,9 @@ async def login_google(request: Request):
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 
-@router.get("/login/heroku")
-async def login_heroku(request: Request, session: Session = Depends(get_session)):
-    if environ.get("HEROKU_PR_NUMBER", False):
+@router.get("/login/preview")
+async def login_preview(request: Request, session: Session = Depends(get_session)):
+    if environ.get("PREVIEW_APP", False):
         db_user = (
             session.query(User)
             .filter(User.email_address == "scan-websites+seed@cds-sns.ca")

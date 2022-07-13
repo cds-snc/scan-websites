@@ -5,7 +5,7 @@ test_case = '' # Run all tests by default; otherwise run user specified test
 build: ;
 
 dev:
-	FASTAPI_SECRET_KEY='e8cb82f5-b966-4496-b96e-8c021892e265' HEROKU_PR_NUMBER=42 uvicorn main:app --reload --host 0.0.0.0 --port 8000
+	FASTAPI_SECRET_KEY='e8cb82f5-b966-4496-b96e-8c021892e265' uvicorn main:app --reload --host 0.0.0.0 --port 8000
 
 fmt:
 	black . $(ARGS)
@@ -21,6 +21,8 @@ lint:
 
 lint-ci:
 	flake8 .
+
+setup-db: migrations seed
 
 migrations:
 	cd db_migrations &&\

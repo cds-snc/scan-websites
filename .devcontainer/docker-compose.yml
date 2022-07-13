@@ -4,6 +4,17 @@ x-db-connection-strings: &db-connection-strings
   SQLALCHEMY_DATABASE_URI: postgresql://postgres:postgres@db/scan-websites
   SQLALCHEMY_DATABASE_TEST_URI: postgresql://postgres:postgres@test-db/scan-websites
 
+x-api_envs: &api_envs
+  AWS_LOCALSTACK: "True"
+  AXE_CORE_URLS_TOPIC: "arn:aws:sns:ca-central-1:000000000000:axe-core-urls-topic"
+  OWASP_ZAP_URLS_TOPIC: "arn:aws:sns:ca-central-1:000000000000:owasp-zap-urls-topic"
+  NUCLEI_URLS_TOPIC: "arn:aws:sns:ca-central-1:000000000000:nuclei-urls-topic"
+  AXE_CORE_REPORT_DATA_BUCKET: axe-core-report-data
+  AXE_CORE_SCREENSHOT_BUCKET: axe-core-screenshots
+  OWASP_ZAP_REPORT_DATA_BUCKET: owasp-zap-report-data 
+  FASTAPI_SECRET_KEY: e8cb82f5-b966-4496-b96e-8c021892e265
+  PREVIEW_APP: "True"
+
 services:
   app:
     platform: linux/x86_64
@@ -28,12 +39,7 @@ services:
     command: sleep infinity
     environment:
       SHELL: /bin/zsh
-      AWS_LOCALSTACK: "True"
-      AXE_CORE_URLS_TOPIC: "arn:aws:sns:ca-central-1:000000000000:axe-core-urls-topic"
-      AXE_CORE_REPORT_DATA_BUCKET: axe-core-report-data
-      AXE_CORE_SCREENSHOT_BUCKET: axe-core-screenshots
-      OWASP_ZAP_REPORT_DATA_BUCKET: owasp-zap-report-data 
-      <<: *db-connection-strings
+      <<: [*db-connection-strings, *api_envs]
   scanner-github:
     build:
       context: ../scanners/github/
@@ -47,15 +53,7 @@ services:
     volumes:
       - ../api:/function
     environment:
-      <<: *db-connection-strings
-      AWS_LOCALSTACK: "True"
-      AXE_CORE_URLS_TOPIC: "arn:aws:sns:ca-central-1:000000000000:axe-core-urls-topic"
-      OWASP_ZAP_URLS_TOPIC: "arn:aws:sns:ca-central-1:000000000000:owasp-zap-urls-topic"
-      NUCLEI_URLS_TOPIC: "arn:aws:sns:ca-central-1:000000000000:nuclei-urls-topic"
-      AXE_CORE_REPORT_DATA_BUCKET: axe-core-report-data
-      AXE_CORE_SCREENSHOT_BUCKET: axe-core-screenshots
-      OWASP_ZAP_REPORT_DATA_BUCKET: owasp-zap-report-data 
-      FASTAPI_SECRET_KEY: e8cb82f5-b966-4496-b96e-8c021892e265
+      <<: [*db-connection-strings, *api_envs]
     ports:
       - "8080:8080" 
       

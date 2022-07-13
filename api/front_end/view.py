@@ -379,7 +379,7 @@ async def login(request: Request, locale: str):
 
         result = {
             "request": request,
-            "heroku": os.environ.get("HEROKU_PR_NUMBER", False),
+            "preview": os.environ.get("PREVIEW_APP", False),
         }
         result.update(languages[locale])
         return templates.TemplateResponse("login.html", result)
