@@ -17,12 +17,14 @@ def test_google_oauth_callback(
     mock_authorize_access_token,
 ):
     fresh_client = TestClient(api.app)
-    mock_authorize_access_token.return_value = {'userinfo': UserInfo(
-        {
-            "email": "user@cds-snc.ca",
-            "name": "User McUser",
-        }
-    )}
+    mock_authorize_access_token.return_value = {
+        "userinfo": UserInfo(
+            {
+                "email": "user@cds-snc.ca",
+                "name": "User McUser",
+            }
+        )
+    }
     response = fresh_client.get("/auth/google")
 
     assert response.cookies["session"] is not None

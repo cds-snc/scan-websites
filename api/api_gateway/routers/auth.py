@@ -102,7 +102,7 @@ async def auth_google(
 ):
     try:
         token = await oauth.google.authorize_access_token(request)
-        user = token['userinfo']
+        user = token["userinfo"]
         email = user["email"]
     except OAuthError as error:
         log.error(error)
