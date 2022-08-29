@@ -42,7 +42,7 @@ jobs:
 
       - name: Configure AWS credentials
         id: aws-creds
-        uses: aws-actions/configure-aws-credentials@05b148adc31e091bafbaf404f745055d4d3bc9d2 # tag=v1.6.1
+        uses: aws-actions/configure-aws-credentials@67fbcbb121271f7775d2e7715933280b06314838 # tag=v1.7.0
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

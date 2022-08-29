@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:11.8
+        image: postgres:11.16
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -46,7 +46,7 @@ jobs:
 
       - name: Setup python
         if: ${{ steps.filter.outputs.changes == 'true' }}
-        uses: actions/setup-python@b55428b1882923874294fa556849718a1d7f2ca5 # tag=v4
+        uses: actions/setup-python@b55428b1882923874294fa556849718a1d7f2ca5 # tag=v4.2.0
         with:
           python-version: "3.9"
 
