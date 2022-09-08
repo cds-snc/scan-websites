@@ -15,7 +15,7 @@ module "rds" {
   preferred_backup_window     = "07:00-09:00"
   backup_retention_period     = 1
   allow_major_version_upgrade = true
-  
+
   /* 
   When upgrade_immediately is set to TRUE there will be db downtime
   as your db will be taken offline immediately instead of being rebuilt
@@ -23,7 +23,7 @@ module "rds" {
   
   **TAKE A SNAPSHOT BEFORE APPLYING AND BE READY TO ROLLBACK IF UPGRADE DOES NOT GO SMOOTHLY** 
   */
-  upgrade_immediately         = true
+  upgrade_immediately = true
 
   serverless_min_capacity = 0.5
   serverless_max_capacity = 1.0
