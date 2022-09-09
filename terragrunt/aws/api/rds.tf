@@ -6,7 +6,7 @@ module "rds" {
   instances      = 1
   instance_class = "db.serverless"
   engine         = "aurora-postgresql"
-  engine_version = "13.6"
+  engine_version = "14.3"
   username       = var.rds_username
   password       = var.rds_password
 
@@ -15,6 +15,15 @@ module "rds" {
   preferred_backup_window     = "07:00-09:00"
   backup_retention_period     = 1
   allow_major_version_upgrade = true
+
+  /* 
+  When upgrade_immediately is set to TRUE there will be db downtime
+  as your db will be taken offline immediately instead of being rebuilt
+  in the next maintenance window. 
+  
+  **TAKE A SNAPSHOT BEFORE APPLYING AND BE READY TO ROLLBACK IF UPGRADE DOES NOT GO SMOOTHLY** 
+  */
+  upgrade_immediately = true
 
   serverless_min_capacity = 0.5
   serverless_max_capacity = 1.0
