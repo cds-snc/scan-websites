@@ -26,7 +26,7 @@ resource "aws_lambda_function" "api" {
       AWS_LAMBDA_EXEC_WRAPPER             = "/opt/otel-instrument"
       OPENTELEMETRY_COLLECTOR_CONFIG_FILE = "/function/collector.yaml"
       OTEL_BSP_MAX_EXPORT_BATCH_SIZE      = 1
-      OTEL_PYTHON_ID_GENERATOR            = "aws_xray"
+      OTEL_PYTHON_ID_GENERATOR            = "xray"
       OTEL_PROPAGATORS                    = "xray"
       OTEL_EXPORTER_OTLP_ENDPOINT         = "127.0.0.1:4317"
       RERUNING_TASK_ID                    = "0"
