@@ -11,9 +11,6 @@ jinja2==3.1.2
 itsdangerous==2.1.2
 logzero==1.7.0
 mangum==0.15.1
-opentelemetry-api==1.12.0
-opentelemetry-instrumentation-fastapi==0.26b1
-opentelemetry-instrumentation-sqlalchemy==0.26b1
 psycopg2-binary==2.9.3
 python-multipart==0.0.5
 SQLAlchemy==1.4.40

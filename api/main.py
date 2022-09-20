@@ -5,7 +5,6 @@ from aws_lambda_powertools import Metrics
 from database.migrate import migrate_head
 from logger import log
 from mangum import Mangum
-from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from storage import storage
 
 # Import so that the application is aware of these Models
@@ -38,7 +37,6 @@ def handler(event, context):
     # TODO: handle different events other than https
     if "httpMethod" in event:
         # Assume it is an API Gateway event
-        FastAPIInstrumentor.instrument_app(app)
         asgi_handler = Mangum(app)
         response = asgi_handler(event, context)
         return response

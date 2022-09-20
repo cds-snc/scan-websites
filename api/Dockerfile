@@ -56,8 +56,6 @@ RUN pip install --target /pymodules \
 # Copy function code
 COPY . ${FUNCTION_DIR}
 
-RUN unzip otel-layer.zip -d /opt && rm otel-layer.zip
-
 # Set build variables
 ARG git_sha
 ENV GIT_SHA=$git_sha
