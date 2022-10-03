@@ -25,8 +25,8 @@ module "rds" {
   */
   upgrade_immediately = true
 
-  serverless_min_capacity = 1.0
-  serverless_max_capacity = 1.5
+  serverless_min_capacity = 4.0
+  serverless_max_capacity = 8.0
 
   billing_tag_value = var.billing_code
 }
