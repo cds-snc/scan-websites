@@ -1,6 +1,6 @@
 FROM golang:1.19.2-alpine@sha256:f3e683657ddf73726b5717c2ff80cdcd9e9efb7d81f77e4948fada9a10dc7257 as build-env
 
-RUN apk update && apk upgrade
+RUN apk update && apk upgrade && apk add --no-cache build-base
 
 RUN go install -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
 
