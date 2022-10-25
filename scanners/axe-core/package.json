@@ -23,10 +23,10 @@
   },
   "homepage": "https://github.com/cds-snc/scan-websites#readme",
   "devDependencies": {
-    "@types/aws-lambda": "8.10.106",
+    "@types/aws-lambda": "8.10.107",
     "@types/jest": "29.1.2",
-    "@types/node": "16.11.65",
-    "@types/puppeteer": "5.4.6",
+    "@types/node": "16.11.66",
+    "@types/puppeteer": "5.4.7",
     "@types/redis": "4.0.10",
     "@typescript-eslint/eslint-plugin": "5.40.1",
     "@typescript-eslint/parser": "5.40.1",
