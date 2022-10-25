@@ -5,7 +5,7 @@ module "vpc" {
   enable_flow_log   = false
 
   single_nat_gateway = true
-  billing_tag_value  = var.billing_code  
+  billing_tag_value  = var.billing_code
 }
 
 resource "aws_network_acl_rule" "https" {
