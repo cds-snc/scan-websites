@@ -1,4 +1,4 @@
-FROM golang:1.19.2-alpine@sha256:f3e683657ddf73726b5717c2ff80cdcd9e9efb7d81f77e4948fada9a10dc7257 as build
+FROM golang:1.19.2-alpine@sha256:e4dcdac3ed37d8c2b3b8bcef2909573b2ad9c2ab53ba53c608909e8b89ccee36 as build
 
 # This is needed or the build will fail with the following error: 
 # $GOPATH/go.mod exists but should not
