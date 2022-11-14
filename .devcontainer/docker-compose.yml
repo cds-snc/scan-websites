@@ -67,7 +67,7 @@ services:
       REPORT_DATA_BUCKET: "axe-core-report-data"
       SCREENSHOT_BUCKET: "axe-core-screenshots"
   db:
-    image: postgres:14.5@sha256:742d81929714eac14b8f53e0e78ab3b9e2bee6740d7b39d6bc3b54ebb8398b50
+    image: postgres:14.6@sha256:9b7088219492a24fd13210bdefcbe6843acc958db1055b29bf9fb5a82cd1a383
     volumes:
       - ./initdb:/docker-entrypoint-initdb.d
     restart: unless-stopped
@@ -86,7 +86,7 @@ services:
       - "5433:5432"
 
   test-db:
-    image: postgres:14.5@sha256:742d81929714eac14b8f53e0e78ab3b9e2bee6740d7b39d6bc3b54ebb8398b50
+    image: postgres:14.6@sha256:9b7088219492a24fd13210bdefcbe6843acc958db1055b29bf9fb5a82cd1a383
     volumes:
       - ./initdb:/docker-entrypoint-initdb.d
     restart: unless-stopped
