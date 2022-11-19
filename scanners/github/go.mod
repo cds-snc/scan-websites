@@ -6,7 +6,7 @@ require (
 	github.com/aws/aws-lambda-go v1.34.1
 	github.com/aws/aws-sdk-go-v2 v1.17.1
 	github.com/aws/aws-sdk-go-v2/config v1.17.10
-	github.com/aws/aws-sdk-go-v2/service/s3 v1.29.1
+	github.com/aws/aws-sdk-go-v2/service/s3 v1.29.2
 	github.com/shurcooL/githubv4 v0.0.0-20221021030919-a134b1472cc7
 	golang.org/x/oauth2 v0.1.0
 )
