@@ -1,10 +1,10 @@
 FROM golang:1.19.3-alpine@sha256:d171aa333fb386089206252503bc6ab545072670e0286e3d1bbc644362825c6e as build-env
 
-RUN apk update && apk upgrade && apk add --no-cache build-base
+RUN apk update && apk upgrade && apk add --no-cache build-base 
 
 RUN go install -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
 
-FROM alpine:3.16
+FROM alpine:3.17@sha256:36a03c95c2f0c83775d500101869054b927143a8320728f0e135dc151cb8ae61
 
 ARG GLIBC_VER=2.31-r0
 ARG AWS_CLI_VERSION="2.2.29"
@@ -23,7 +23,7 @@ ARG GLIBC_SRC=https://github.com/sgerrand/alpine-pkg-glibc/releases/download
 RUN curl -sL https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub -o /etc/apk/keys/sgerrand.rsa.pub
 RUN curl -sLO ${GLIBC_SRC}/${GLIBC_VER}/glibc-${GLIBC_VER}.apk
 RUN curl -sLO ${GLIBC_SRC}/${GLIBC_VER}/glibc-bin-${GLIBC_VER}.apk
-RUN apk add --no-cache glibc-${GLIBC_VER}.apk glibc-bin-${GLIBC_VER}.apk
+RUN apk add --no-cache --force-overwrite glibc-${GLIBC_VER}.apk glibc-bin-${GLIBC_VER}.apk
 
 COPY --from=build-env /go/bin/nuclei /usr/local/bin/nuclei
 RUN aws/install
