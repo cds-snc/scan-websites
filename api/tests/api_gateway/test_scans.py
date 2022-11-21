@@ -1269,7 +1269,8 @@ def test_delete_scan_ignore(
     )
     session.commit()
 
-    response = logged_in_client.delete(
+    response = logged_in_client.request(
+        "DELETE",
         f"/scans/template/{str(template.id)}/scan/{str(scan.id)}/type/{str(scan_type.id)}",
         json={
             "violation": scan_ignore.violation,
@@ -1302,7 +1303,8 @@ def test_delete_scan_ignore_doesnt_exist(
 
     session.commit()
 
-    response = logged_in_client.delete(
+    response = logged_in_client.request(
+        "DELETE",
         f"/scans/template/{str(template.id)}/scan/{str(scan.id)}/type/{str(scan_type.id)}",
         json={
             "violation": "foo",
