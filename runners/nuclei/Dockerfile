@@ -4,7 +4,7 @@ RUN apk update && apk upgrade && apk add --no-cache build-base
 
 RUN go install -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
 
-FROM alpine:3.17@sha256:36a03c95c2f0c83775d500101869054b927143a8320728f0e135dc151cb8ae61
+FROM alpine:3.17@sha256:8914eb54f968791faf6a8638949e480fef81e697984fba772b3976835194c6d4
 
 ARG GLIBC_VER=2.31-r0
 ARG AWS_CLI_VERSION="2.2.29"
