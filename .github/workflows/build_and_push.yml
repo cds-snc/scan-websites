@@ -10,12 +10,7 @@ env:
   REGISTRY: ${{ secrets.AWS_ACCOUNT }}.dkr.ecr.ca-central-1.amazonaws.com/scan-websites
 
 permissions:
-  id-token: write
   contents: write
-  pull-requests: write
-  actions: write
-  checks: write
-  statuses: write
   security-events: write
 
 jobs:
