@@ -74,6 +74,6 @@ jobs:
       - name: Docker dependency scan
         uses: cds-snc/security-tools/.github/actions/docker-scan@aa6a6b097e75fd2007aee070b89a8d03c955ac81 # v1.1.5
         with:
-          docker_image: ${{ env.REGISTRY }}/${{ matrix.image }}:${{ env.GITHUB_SHA }}
+          docker_image: ${{ env.REGISTRY }}/${{ matrix.image }}:latest
           sbom_name: ${{ matrix.image }}
           token: ${{ secrets.GITHUB_TOKEN }}
