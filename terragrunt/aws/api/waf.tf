@@ -198,7 +198,7 @@ resource "aws_wafv2_regex_pattern_set" "body_exclusions" {
     regex_string = "^/scans/template/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}/(scan|scan/[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12})$"
   }
   regular_expression {
-    regex_string = "^/scans/template/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/(scan/\w{8}-\w{4}-\w{4}-\w{4}-\w{12})/(type/\w{8}-\w{4}-\w{4}-\w{4}-\w{12})$"
+    regex_string = "^/scans/template/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/scan/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/type/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}$"
   }
 }
 
