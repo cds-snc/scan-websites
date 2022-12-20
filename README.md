@@ -27,7 +27,23 @@ On-demand scanning of websites for accessibility and security vulnerabilities/co
 - https://scan-websites.alpha.canada.ca/en/template > New
 - Create the new scan with the selected scanner
 - Grab the token for the template scan created
-- Create a step in the project you would like to scan
+- Create a scheduled workflow in the project you would like to scan:
+```yml
+name: Scan for security vulnerabilities (Weekly on Sunday)
+
+on:
+  schedule:
+  - cron: "0 12 * * 0"
+
+jobs:
+  security-scan:
+    name: Run scan websites (security)
+    uses: cds-snc/scan-websites/.github/workflows/start_scan.yml@main
+    with:
+      dynamic: true
+    secrets:
+      scan_websites_key: ${{ secrets.SCAN_WEBSITES_KEY }}
+      scan_websites_template: ${{ secrets.SCAN_WEBSITES_TEMPLATE }}
 -  `curl -X GET -H 'X-API-KEY: ${{ secrets.SCAN_WEBSITES_KEY }}' -H 'X-TEMPLATE-TOKEN: ${{ secrets.SCAN_WEBSITES_TEMPLATE }}' https://scan-websites.alpha.canada.ca/scans/start`
 
 ## Run Locally
