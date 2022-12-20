@@ -44,7 +44,9 @@ jobs:
     secrets:
       scan_websites_key: ${{ secrets.SCAN_WEBSITES_KEY }}
       scan_websites_template: ${{ secrets.SCAN_WEBSITES_TEMPLATE }}
--  `curl -X GET -H 'X-API-KEY: ${{ secrets.SCAN_WEBSITES_KEY }}' -H 'X-TEMPLATE-TOKEN: ${{ secrets.SCAN_WEBSITES_TEMPLATE }}' https://scan-websites.alpha.canada.ca/scans/start`
+-  You can also trigger a scan directly in a workflow with:
+```sh
+curl -X GET -H 'X-API-KEY: ${{ secrets.SCAN_WEBSITES_KEY }}' -H 'X-TEMPLATE-TOKEN: ${{ secrets.SCAN_WEBSITES_TEMPLATE }}' https://scan-websites.alpha.canada.ca/scans/start`
 
 ## Run Locally
 
