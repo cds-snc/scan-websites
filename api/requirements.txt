@@ -1,4 +1,4 @@
-alembic==1.8.1
+alembic==1.9.0
 aiofiles==0.8.0
 Authlib==1.2.0
 aws-lambda-powertools==1.31.1
