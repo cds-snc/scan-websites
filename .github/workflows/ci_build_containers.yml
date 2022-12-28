@@ -19,7 +19,7 @@ jobs:
       images: ${{ steps.filter.outputs.changes }}
     steps:
       - name: Checkout
-        uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3.1.0
+        uses: actions/checkout@755da8c3cf115ac066823e79a1e1788f8940201b # v3.2.0
 
       - uses: dorny/paths-filter@4512585405083f25c027a35db413c2b3b9006d50 # tag=v2.11.1
         id: filter
@@ -42,7 +42,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3.1.0
+        uses: actions/checkout@755da8c3cf115ac066823e79a1e1788f8940201b # v3.2.0
 
       - name: Configure AWS credentials
         id: aws-creds
@@ -64,7 +64,7 @@ jobs:
           -t $REGISTRY/${{ matrix.image }}:latest .
       
       - name: Docker dependency scan
-        uses: cds-snc/security-tools/.github/actions/docker-scan@f0d609b2a8f51dbb4b1760b02a35fb1aadbae7f1 # v1.1.6
+        uses: cds-snc/security-tools/.github/actions/docker-scan@4368a5486da1f0bb698ffe717687612d4231c6cd # v1.1.7
         with:
           docker_image: ${{ env.REGISTRY }}/${{ matrix.image }}:latest
           dockerfile_path: "${{ matrix.image }}/Dockerfile"
