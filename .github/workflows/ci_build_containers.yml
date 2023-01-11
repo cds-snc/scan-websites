@@ -62,11 +62,3 @@ jobs:
           docker build \
           --build-arg git_sha=$GITHUB_SHA \
           -t $REGISTRY/${{ matrix.image }}:latest .
-      
-      - name: Docker dependency scan
-        uses: cds-snc/security-tools/.github/actions/docker-scan@4368a5486da1f0bb698ffe717687612d4231c6cd # v1.1.7
-        with:
-          docker_image: ${{ env.REGISTRY }}/${{ matrix.image }}:latest
-          dockerfile_path: "${{ matrix.image }}/Dockerfile"
-          sbom_name: ${{ matrix.image }}
-          token: ${{ secrets.GITHUB_TOKEN }}
