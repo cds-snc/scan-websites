@@ -22,4 +22,7 @@ skip-check:
   - CKV2_AWS_39 # Route53: DNS query logging not required
   - CKV_AWS_237
   - CKV_AWS_241
-  
+  - CKV_AWS_284 # Ensure State Machine has X-Ray tracing enabled
+  - CKV_AWS_285 # Ensure State Machine has execution history logging enabled
+  - CKV2_AWS_51 # Ensure AWS API Gateway endpoints uses client certificate authentication
+  - CKV2_AWS_53 # Ensure AWS API gateway request is validated

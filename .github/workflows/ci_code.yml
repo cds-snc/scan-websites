@@ -46,13 +46,13 @@ jobs:
 
       - name: Setup python
         if: ${{ steps.filter.outputs.changes == 'true' }}
-        uses: actions/setup-python@5ccb29d8773c3f3f653e1705f474dfaa8a06a912 # v4.4.0
+        uses: actions/setup-python@d27e3f3d7c64b4bbf8e4abfb9b63b83e846e0435 # v4.5.0
         with:
           python-version: "3.9"
 
       - name: Setup node
         if: ${{ steps.filter.outputs.changes == 'true' && matrix.folder != 'terragrunt' }}
-        uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 # tag=v3.5.1
+        uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
         with:
           node-version: "14"
 
