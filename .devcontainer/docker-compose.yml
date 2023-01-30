@@ -101,7 +101,7 @@ services:
       POSTGRES_DB: scan-websites
 
   localstack:
-    image: localstack/localstack@sha256:7de5284d4deb57ed3cf4a84bc2e96c0ced7403e2355358da55b59674c07d5490
+    image: localstack/localstack@sha256:75429c033610fa29edef2c3a9eefae429af639d81b6a5ebea02202891510c08f
     hostname: localstack
     volumes:
       - "./data:/tmp/localstack"
