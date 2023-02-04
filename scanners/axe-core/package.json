@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/cds-snc/scan-websites#readme",
   "devDependencies": {
-    "@types/aws-lambda": "8.10.109",
+    "@types/aws-lambda": "8.10.110",
     "@types/jest": "29.2.6",
     "@types/node": "16.18.11",
     "@types/puppeteer": "5.4.7",
