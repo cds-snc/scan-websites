@@ -14,6 +14,6 @@ mangum==0.17.0
 psycopg2-binary==2.9.5
 python-multipart==0.0.5
 SQLAlchemy==1.4.46
-scrapy==2.7.1
+scrapy==2.8.0
 scrapy-playwright==0.0.25
 uvloop==0.17.0
