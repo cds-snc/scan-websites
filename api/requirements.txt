@@ -3,7 +3,7 @@ aiofiles==0.8.0
 Authlib==1.2.0
 aws-lambda-powertools==1.31.1
 babel==2.11.0
-boto3==1.26.59
+boto3==1.26.64
 bcrypt==4.0.1
 fastapi==0.89.1
 httpx==0.23.3
@@ -15,5 +15,5 @@ psycopg2-binary==2.9.5
 python-multipart==0.0.5
 SQLAlchemy==1.4.46
 scrapy==2.8.0
-scrapy-playwright==0.0.25
+scrapy-playwright==0.0.26
 uvloop==0.17.0
