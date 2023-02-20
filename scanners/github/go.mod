@@ -8,7 +8,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.18.12
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.30.2
 	github.com/shurcooL/githubv4 v0.0.0-20230215024106-420ad0987b9b
-	golang.org/x/oauth2 v0.4.0
+	golang.org/x/oauth2 v0.5.0
 )
 
 require (
@@ -29,7 +29,7 @@ require (
 	github.com/aws/smithy-go v1.13.5 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/shurcooL/graphql v0.0.0-20200928012149-18c5c3165e3a // indirect
-	golang.org/x/net v0.5.0 // indirect
+	golang.org/x/net v0.6.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
 )
