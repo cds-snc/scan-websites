@@ -1,4 +1,4 @@
-FROM python:3.8-alpine@sha256:a21dbe385cc561ce9150377c55ff0ad07134dc0031a2c6d7c8510fd66cd38b90
+FROM python:3.8-alpine@sha256:8518dd6657131d938f283ea97385b1db6724e35d45ddab6cd1c583796e35566a
 
 WORKDIR /scan
 
