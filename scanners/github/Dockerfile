@@ -1,4 +1,4 @@
-FROM golang:1.20.1-alpine@sha256:87d0a3309b34e2ca732efd69fb899d3c420d3382370fd6e7e6d2cb5c930f27f9 as build
+FROM golang:1.20.2-alpine@sha256:1db127655b32aa559e32ed3754ed2ea735204d967a433e4b605aed1dd44c5084 as build
 
 # This is needed or the build will fail with the following error: 
 # $GOPATH/go.mod exists but should not
@@ -12,7 +12,7 @@ RUN  go mod download
 COPY *.go ./
 RUN  go build -o /main
 # copy artifacts to a clean image
-FROM alpine:latest@sha256:69665d02cb32192e52e07644d76bc6f25abeb5410edc1c7a81a10ba3f0efb90a
+FROM alpine:latest@sha256:ff6bdca1701f3a8a67e328815ff2346b0e4067d32ec36b7992c1fdc001dc8517
 
 COPY --from=build /main /main
 
