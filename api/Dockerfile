@@ -1,4 +1,4 @@
-FROM python:3.8-slim-buster@sha256:f51af6b4116b1c3a5a7934070b0761d1dcb82592ee7e8ecee8ab93d3e2a3cfe2
+FROM python:3.8-slim-buster@sha256:f2199258d29ec06b8bcd3ddcf93615cdc8210d18a942a56b1a488136074123f3
 
 # Define function directory
 ARG FUNCTION_DIR="/function"
