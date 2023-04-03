@@ -1,5 +1,5 @@
 {
   "extends": [
-    "github>cds-snc/renovate-config"
+    "github>cds-snc/renovate-config", "schedule:every weekday", "prCreation:immediate"
   ]
 }
