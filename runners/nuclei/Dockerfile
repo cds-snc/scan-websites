@@ -1,10 +1,10 @@
-FROM golang:1.20.2-alpine@sha256:1db127655b32aa559e32ed3754ed2ea735204d967a433e4b605aed1dd44c5084 as build-env
+FROM golang:1.20.2-alpine@sha256:87734b78d26a52260f303cf1b40df45b0797f972bd0250e56937c42114bf472c as build-env
 
 RUN apk update && apk upgrade && apk add --no-cache build-base 
 
 RUN go install -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
 
-FROM alpine:3.17@sha256:ff6bdca1701f3a8a67e328815ff2346b0e4067d32ec36b7992c1fdc001dc8517
+FROM alpine:3.17@sha256:124c7d2707904eea7431fffe91522a01e5a861a624ee31d03372cc1d138a3126
 
 ARG GLIBC_VER=2.31-r0
 ARG AWS_CLI_VERSION="2.2.29"
