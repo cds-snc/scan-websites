@@ -1,9 +1,9 @@
-alembic==1.10.2
+alembic==1.10.3
 aiofiles==0.8.0
 Authlib==1.2.0
 aws-lambda-powertools==1.31.1
 babel==2.12.1
-boto3==1.26.106
+boto3==1.26.109
 bcrypt==4.0.1
 fastapi==0.92.0
 httpx==0.23.3
