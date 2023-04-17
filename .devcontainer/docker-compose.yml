@@ -67,7 +67,7 @@ services:
       REPORT_DATA_BUCKET: "axe-core-report-data"
       SCREENSHOT_BUCKET: "axe-core-screenshots"
   db:
-    image: postgres:14.7@sha256:577d48a963bdd16e8b93e853aa830c78fc4622ebe9717bc95f6736d9aa5003e3
+    image: postgres:14.7@sha256:19c87e38a0b13def945579f5d8fcd68aadfd0060816ea6991cb009b7d8da0c89
     volumes:
       - ./initdb:/docker-entrypoint-initdb.d
     restart: unless-stopped
@@ -86,7 +86,7 @@ services:
       - "5433:5432"
 
   test-db:
-    image: postgres:14.7@sha256:577d48a963bdd16e8b93e853aa830c78fc4622ebe9717bc95f6736d9aa5003e3
+    image: postgres:14.7@sha256:19c87e38a0b13def945579f5d8fcd68aadfd0060816ea6991cb009b7d8da0c89
     volumes:
       - ./initdb:/docker-entrypoint-initdb.d
     restart: unless-stopped
@@ -101,7 +101,7 @@ services:
       POSTGRES_DB: scan-websites
 
   localstack:
-    image: localstack/localstack@sha256:af440dfb12e4cf9f0b8f2d5927e65b7e2949fc9e54369fe19e6665d4c38e1414
+    image: localstack/localstack@sha256:d606e2a1ec386ffc76d02623b9084f7c1da553f608157b6a53dd1cf4716d9361
     hostname: localstack
     volumes:
       - "./data:/tmp/localstack"
